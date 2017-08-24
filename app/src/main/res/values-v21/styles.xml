@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="AppTheme.FullScreen" parent="AppTheme.NoActionBar">
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowTranslucentStatus">true</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:windowDrawsSystemBarBackgrounds">true</item>
+    </style>
+
+    <style name="AppTheme.TransparentStatus" parent="AppTheme.FullScreen">
+        <item name="android:statusBarColor">@android:color/transparent</item>
+    </style>
+
+    <style name="Button.Action" parent="Button">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@drawable/bg_action_button</item>
+        <item name="android:stateListAnimator">@null</item>
+    </style>
+</resources>

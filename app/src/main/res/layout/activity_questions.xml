@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.design.internal.ScrimInsetsFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                                                        xmlns:app="http://schemas.android.com/apk/res-auto"
+                                                        android:id="@+id/contentView"
+                                                        android:layout_width="match_parent"
+                                                        android:layout_height="match_parent"
+                                                        android:background="@drawable/bg_screen"
+                                                        android:fitsSystemWindows="@bool/transparentFitsSystemWindows"
+                                                        app:insetForeground="@color/transparent">
+
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
+    </android.support.design.widget.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="?attr/actionBarSize">
+
+        <com.eokoe.sagui.widgets.CircleProgressView
+            android:id="@+id/circleProgress"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="32dp"
+            app:cpv_circle_starting_degree="-90"
+            app:cpv_finished_color="#fbda61"
+            app:cpv_finished_end_color="#f76b1c"
+            app:cpv_finished_stroke_width="18dp"
+            app:cpv_max="0"
+            app:cpv_text_color="#8b572a"
+            app:cpv_text_size="42sp"
+            app:cpv_unfinished_color="#DFDFDF"/>
+
+        <LinearLayout
+            android:id="@+id/actionsStart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:background="@drawable/bg_white_r8"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Responda a perguntas e complete com suas observações"
+                    android:textStyle="bold"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Escolha a opção que represente melhor a sua resposta"/>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btnStart"
+                style="@style/Button.Action.Rounded"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/start"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/actionsFinal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:orientation="vertical"
+            android:visibility="gone">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="16dp"
+                android:background="@drawable/bg_white_r8"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Você já respondeu todas as perguntas. Obrigado!"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Gostaria de enviar observações?"
+                    android:textStyle="bold"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <Button
+                    style="@style/Button.Action"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/no"/>
+
+                <Button
+                    style="@style/Button.Action"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="@string/yes"/>
+            </LinearLayout>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <include layout="@layout/content_questions"/>
+
+</android.support.design.internal.ScrimInsetsFrameLayout>

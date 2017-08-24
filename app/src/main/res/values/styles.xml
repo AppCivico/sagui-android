@@ -1,15 +1,44 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.AppCompat">
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
         <!-- Customize your theme here. -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+    </style>
 
-        <!--<item name="android:background">@android:color/white</item>
-        <item name="android:colorBackground">@android:color/white</item>-->
-        <item name="android:windowBackground">@android:color/white</item>
+    <style name="AppTheme.NoActionBar" parent="AppTheme">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.FullScreen" parent="AppTheme.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <style name="AppTheme.TransparentStatus" parent="AppTheme.NoActionBar">
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
+
+    <style name="Button"/>
+
+    <style name="Button.Action" parent="Button">
+        <item name="android:textColor">@android:color/white</item>
+        <item name="android:background">@drawable/bg_action_button</item>
+    </style>
+
+    <style name="Button.Action.Rounded" parent="Button.Action">
+        <item name="android:background">@drawable/bg_rounded_action_button</item>
+    </style>
+
+    <style name="Button.Transparent" parent="Button">
+        <item name="android:textColor">@color/colorAccent</item>
+        <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 
 </resources>

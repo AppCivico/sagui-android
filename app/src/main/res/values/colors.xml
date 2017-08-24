@@ -3,4 +3,13 @@
     <color name="colorPrimary">#FFC300</color>
     <color name="colorPrimaryDark">#E0AB00</color>
     <color name="colorAccent">#FE8320</color>
+    <color name="colorAccentLight">#FAD05C</color>
+    <color name="colorAccentAlpha55">#55FE8320</color>
+    <color name="colorAccentAlpha88">#88FE8320</color>
+
+    <color name="transparent">#00000000</color>
+    <color name="blackAlpha88">#88000000</color>
+
+    <color name="colorTextPrimary">#9E9E9E</color>
+    <color name="colorTextSecondary">#272727</color>
 </resources>
