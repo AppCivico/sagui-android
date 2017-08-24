@@ -1,7 +1,6 @@
 package com.eokoe.sagui.features.categories.survey_list
 
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -23,7 +22,9 @@ class SurveyListFragment: BaseFragment(),
 
     private lateinit var surveyListAdapter: SurveyListAdapter
     override lateinit var presenter: SurveyListContract.Presenter
-    var category: Category? = null
+
+    private var category: Category? = null
+    private var surveys: ArrayList<Survey>? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_survey_list, container, false)
@@ -37,12 +38,15 @@ class SurveyListFragment: BaseFragment(),
 
     override fun init(view: View?, savedInstanceState: Bundle?) {
         category = arguments[EXTRA_CATEGORY] as Category
-        presenter.list(category!!)
+        if (surveys == null) {
+            presenter.list(category!!)
+        } else {
+            surveyListAdapter.items = surveys
+        }
         setupRecyclerView()
     }
 
     private fun setupRecyclerView() {
-        rvSurveys.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         rvSurveys.adapter = surveyListAdapter
         rvSurveys.setHasFixedSize(true)
         surveyListAdapter.onItemClickListener = object : SurveyListAdapter.OnItemClickListener {
@@ -52,14 +56,30 @@ class SurveyListFragment: BaseFragment(),
         }
     }
 
-    override fun load(items: List<Survey>) {
-        surveyListAdapter.items = items
+    override fun load(surveys: List<Survey>) {
+        this.surveys = ArrayList(surveys)
+        surveyListAdapter.items = surveys
+    }
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (savedInstanceState != null) {
+            surveys = savedInstanceState.getParcelableArrayList(STATE_SURVEYS)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (surveys != null) {
+            outState.putParcelableArrayList(STATE_SURVEYS, surveys)
+        }
     }
 
     companion object {
         val TAG = "SurveyListFragment"
 
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
+        private val STATE_SURVEYS = "STATE_SURVEYS"
 
         fun newInstance(category: Category): SurveyListFragment {
             val fragment = SurveyListFragment()

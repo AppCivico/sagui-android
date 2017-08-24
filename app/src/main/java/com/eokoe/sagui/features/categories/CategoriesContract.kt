@@ -10,7 +10,7 @@ import io.reactivex.Observable
  */
 interface CategoriesContract {
     interface View {
-        fun load(items: List<Category>)
+        fun load(categories: List<Category>)
     }
 
     interface Presenter : BasePresenter<View> {

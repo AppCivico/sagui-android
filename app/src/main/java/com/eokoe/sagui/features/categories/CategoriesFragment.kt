@@ -1,7 +1,6 @@
 package com.eokoe.sagui.features.categories
 
 import android.os.Bundle
-import android.support.v7.widget.LinearLayoutManager
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +21,15 @@ class CategoriesFragment: BaseFragment(),
     private lateinit var categoriesAdapter: CategoriesAdapter
     override lateinit var presenter: CategoriesContract.Presenter
 
+    var categories: ArrayList<Category>? = null
+
+    companion object {
+        private val TAG = "CategoriesFragment"
+        private val STATE_CATEGORIES = "STATE_CATEGORIES"
+
+        fun newInstance() = CategoriesFragment()
+    }
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_categories, container, false)
@@ -34,12 +42,15 @@ class CategoriesFragment: BaseFragment(),
     }
 
     override fun init(view: View?, savedInstanceState: Bundle?) {
-        presenter.list()
+        if (categories == null) {
+            presenter.list()
+        } else {
+            categoriesAdapter.items = categories
+        }
         setupRecyclerView()
     }
 
     private fun setupRecyclerView() {
-        rvCategories.layoutManager = LinearLayoutManager(context, LinearLayoutManager.VERTICAL, false)
         rvCategories.adapter = categoriesAdapter
         rvCategories.setHasFixedSize(true)
         categoriesAdapter.onItemClickListener = object : CategoriesAdapter.OnItemClickListener {
@@ -47,17 +58,27 @@ class CategoriesFragment: BaseFragment(),
                 if (activity is OnCategoryClickListener) {
                     (activity as OnCategoryClickListener).onCategoryClick(category)
                 }
-//                startActivity(SurveyActivity.getIntent(activity, category))
             }
         }
     }
 
-    override fun load(items: List<Category>) {
-        categoriesAdapter.items = items
+    override fun load(categories: List<Category>) {
+        this.categories = ArrayList(categories)
+        categoriesAdapter.items = categories
     }
 
-    companion object {
-        fun newInstance() = CategoriesFragment()
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        if (savedInstanceState != null) {
+            categories = savedInstanceState.getParcelableArrayList(STATE_CATEGORIES)
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        if (categories != null) {
+            outState.putParcelableArrayList(STATE_CATEGORIES, categories)
+        }
     }
 
     interface OnCategoryClickListener {

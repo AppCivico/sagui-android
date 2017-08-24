@@ -11,7 +11,7 @@ import io.reactivex.Observable
  */
 interface SurveyListContract {
     interface View {
-        fun load(items: List<Survey>)
+        fun load(surveys: List<Survey>)
     }
 
     interface Presenter : BasePresenter<View> {

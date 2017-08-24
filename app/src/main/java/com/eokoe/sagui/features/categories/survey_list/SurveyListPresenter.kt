@@ -4,7 +4,6 @@ import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Survey
 import com.eokoe.sagui.data.model.SurveyModel
 import com.eokoe.sagui.features.base.presenter.BasePresenterImpl
-import io.reactivex.Observable
 import io.reactivex.observers.DisposableObserver
 
 /**
@@ -14,9 +13,8 @@ import io.reactivex.observers.DisposableObserver
 class SurveyListPresenter constructor(private val surveyModel: SurveyModel)
     : SurveyListContract.Presenter, BasePresenterImpl<SurveyListContract.View>() {
 
-    override fun list(category: Category): Observable<List<Survey>> {
-        return exec(surveyModel.getSurveyList(category), SurveyListObserver())
-    }
+    override fun list(category: Category) =
+            exec(surveyModel.getSurveyList(category), SurveyListObserver())
 
     inner class SurveyListObserver : DisposableObserver<List<Survey>>() {
         override fun onNext(surveyList: List<Survey>) {
