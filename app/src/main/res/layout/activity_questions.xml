@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.internal.ScrimInsetsFrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                                                        xmlns:app="http://schemas.android.com/apk/res-auto"
-                                                        android:id="@+id/contentView"
-                                                        android:layout_width="match_parent"
-                                                        android:layout_height="match_parent"
-                                                        android:background="@drawable/bg_screen"
-                                                        android:fitsSystemWindows="@bool/transparentFitsSystemWindows"
-                                                        app:insetForeground="@color/transparent">
+<android.support.design.internal.ScrimInsetsFrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/contentView"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_screen"
+    android:fitsSystemWindows="@bool/transparentFitsSystemWindows"
+    app:insetForeground="@color/transparent">
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

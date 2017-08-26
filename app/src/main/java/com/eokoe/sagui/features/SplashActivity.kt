@@ -4,14 +4,14 @@ import android.os.Bundle
 import android.os.Handler
 import android.support.v7.app.AppCompatActivity
 import com.eokoe.sagui.R
-import com.eokoe.sagui.features.categories.CategoriesActivity
+import com.eokoe.sagui.features.dashboard.DashboardActivity
 
 class SplashActivity : AppCompatActivity() {
 
     private val SPLASH_TIME = 1500L
     private val mHandler = Handler()
     private val mSplashRunnable = Runnable {
-        startActivity(CategoriesActivity.getIntent(this))
+        startActivity(DashboardActivity.getIntent(this))
         finish()
     }
 

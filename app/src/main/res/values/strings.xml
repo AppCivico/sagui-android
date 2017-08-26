@@ -16,4 +16,6 @@
     <string name="no">Não</string>
     <string name="yes">Sim</string>
     <string name="select_survey">Selecione a enquete</string>
+    <string name="splash_text">Aliquam pretium pellentesque metus a viverra. Nam ac metus ut mi egestas tincidunt. Etiam dignissim libero urna, quis pulvinar ante molestie sollicitudin.</string>
+    <string name="title_activity_dashboard">Dashboard</string>
 </resources>

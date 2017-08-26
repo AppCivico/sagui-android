@@ -48,6 +48,8 @@ dependencies {
     compile "com.android.support:recyclerview-v7:$supportLibraryVersion"
     compile "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
 
+    compile "de.hdodenhof:circleimageview:2.1.0"
+
     compile "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
     compile "io.reactivex.rxjava2:rxkotlin:$rxKotlinVersion"
     compile "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"

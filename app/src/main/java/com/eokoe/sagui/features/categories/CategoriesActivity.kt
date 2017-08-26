@@ -19,12 +19,6 @@ class CategoriesActivity : BaseActivity(),
 
     private var contentFragment: Fragment? = null
 
-    companion object {
-        private val STATE_FRAGMENT = "STATE_FRAGMENT"
-
-        fun getIntent(context: Context): Intent = Intent(context, CategoriesActivity::class.java)
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_categories)
@@ -46,8 +40,10 @@ class CategoriesActivity : BaseActivity(),
 
     override fun onCategoryClick(category: Category) {
         supportFragmentManager.beginTransaction()
-                .setCustomAnimations(R.anim.enter_from_right, R.anim.exit_to_left,
-                        R.anim.enter_from_left, R.anim.exit_to_right)
+                .setCustomAnimations(
+                        R.anim.enter_from_right, R.anim.exit_to_left,
+                        R.anim.enter_from_left, R.anim.exit_to_right
+                )
                 .replace(R.id.content, SurveyListFragment.newInstance(category))
                 .addToBackStack(SurveyListFragment.TAG)
                 .commit()
@@ -69,5 +65,11 @@ class CategoriesActivity : BaseActivity(),
         if (contentFragment != null) {
             supportFragmentManager.putFragment(outState, STATE_FRAGMENT, contentFragment)
         }
+    }
+
+    companion object {
+        private val STATE_FRAGMENT = "STATE_FRAGMENT"
+
+        fun getIntent(context: Context): Intent = Intent(context, CategoriesActivity::class.java)
     }
 }

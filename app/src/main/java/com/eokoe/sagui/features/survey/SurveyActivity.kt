@@ -3,6 +3,7 @@ package com.eokoe.sagui.features.survey
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.support.design.widget.TextInputLayout
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Question
@@ -73,8 +74,25 @@ class SurveyActivity : BaseActivity(),
     override fun loadQuestion(question: Question) {
         tvSurveyTitle.text = question.title
         tvQuestion.text = question.description
-        btnNext.setOnClickListener {
-            presenter.answer("")
+        rlAnswer.removeAllViews()
+        when(question.type) {
+            Question.Type.TEXT -> {
+                val viewAnswer = layoutInflater.inflate(R.layout.answer_text, rlAnswer, false) as TextInputLayout
+                rlAnswer.addView(viewAnswer)
+                btnNext.setOnClickListener {
+                    presenter.answer(viewAnswer.editText?.text.toString())
+                }
+            }
+            Question.Type.MULTIPLE -> {
+                btnNext.setOnClickListener {
+                    presenter.answer("")
+                }
+            }
+            Question.Type.TRAFFIC_LIGHT -> {
+                btnNext.setOnClickListener {
+                    presenter.answer("")
+                }
+            }
         }
     }
 

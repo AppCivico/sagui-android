@@ -32,17 +32,11 @@ private constructor(private val view: View, private val visibilityState: Int)
     override fun onAnimationRepeat(animation: Animator) {}
 
     companion object {
-        fun show(view: View): VisibilityAnimatorListener {
-            return VisibilityAnimatorListener(view, View.VISIBLE)
-        }
+        fun show(view: View) = VisibilityAnimatorListener(view, View.VISIBLE)
 
-        fun hide(view: View): VisibilityAnimatorListener {
-            return VisibilityAnimatorListener(view, View.GONE)
-        }
+        fun hide(view: View) = VisibilityAnimatorListener(view, View.GONE)
 
-        fun invisible(view: View): VisibilityAnimatorListener {
-            return VisibilityAnimatorListener(view, View.INVISIBLE)
-        }
+        fun invisible(view: View) = VisibilityAnimatorListener(view, View.INVISIBLE)
     }
 
 }

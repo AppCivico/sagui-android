@@ -23,13 +23,6 @@ class CategoriesFragment: BaseFragment(),
 
     var categories: ArrayList<Category>? = null
 
-    companion object {
-        private val TAG = "CategoriesFragment"
-        private val STATE_CATEGORIES = "STATE_CATEGORIES"
-
-        fun newInstance() = CategoriesFragment()
-    }
-
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
         return inflater.inflate(R.layout.fragment_categories, container, false)
@@ -79,6 +72,12 @@ class CategoriesFragment: BaseFragment(),
         if (categories != null) {
             outState.putParcelableArrayList(STATE_CATEGORIES, categories)
         }
+    }
+
+    companion object {
+        private val STATE_CATEGORIES = "STATE_CATEGORIES"
+
+        fun newInstance() = CategoriesFragment()
     }
 
     interface OnCategoryClickListener {
