@@ -21,7 +21,7 @@ class CategoriesAdapter : RecyclerViewAdapter<Category, RecyclerView.ViewHolder>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return if (viewType == ITEM_VIEW_TYPE) ItemViewHolder(inflate(R.layout.item_category, parent))
-        else TextViewHolder(inflate(R.layout.item_header, parent), R.id.title, R.string.select_category)
+        else TextViewHolder(inflate(R.layout.item_header, parent), R.id.title, R.string.choose_category)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

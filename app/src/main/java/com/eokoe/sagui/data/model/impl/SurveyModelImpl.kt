@@ -9,6 +9,9 @@ import com.eokoe.sagui.data.net.services.SurveyService
  * @author Pedro Silva
  */
 class SurveyModelImpl : SurveyModel {
+    override fun getEnterprises() =
+            ServiceGenerator.getService(SurveyService::class.java).enterprises()
+
     override fun getCategories() =
             ServiceGenerator.getService(SurveyService::class.java).categories()
 

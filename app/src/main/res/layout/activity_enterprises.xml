@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    tools:context=".features.MainActivity"
+    tools:context=".features.enterprises.EnterprisesActivity"
     tools:openDrawer="start">
 
     <android.support.design.widget.CoordinatorLayout
@@ -15,7 +15,7 @@
 
         <include layout="@layout/appbar"/>
 
-        <include layout="@layout/content_main"/>
+        <include layout="@layout/content_enterprises"/>
     </android.support.design.widget.CoordinatorLayout>
 
     <include layout="@layout/navigation_view"/>

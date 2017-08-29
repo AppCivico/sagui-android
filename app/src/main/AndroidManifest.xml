@@ -28,6 +28,11 @@
         </activity>
 
         <activity
+            android:name="com.eokoe.sagui.features.enterprises.EnterprisesActivity"
+            android:label="@string/title_activity_enterprises"
+            android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
             android:name="com.eokoe.sagui.features.dashboard.DashboardActivity"
             android:label="@string/title_activity_dashboard"
             android:theme="@style/AppTheme.NoActionBar"/>

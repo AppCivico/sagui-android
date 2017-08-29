@@ -8,14 +8,16 @@
     <string name="action_filter">Filter</string>
     <string name="background_image">Background image</string>
     <string name="title_activity_categories">Enquete</string>
-    <string name="select_category">Selecione a categoria</string>
+    <string name="choose_category">Selecione a categoria</string>
+    <string name="choose_enterprise">Selecione um empreendimento</string>
+    <string name="choose_survey">Selecione a enquete</string>
     <string name="title_activity_survey">Enquete %s</string>
     <string name="start">Iniciar</string>
     <string name="close_questions">Close questions</string>
     <string name="next">Avançar</string>
     <string name="no">Não</string>
     <string name="yes">Sim</string>
-    <string name="select_survey">Selecione a enquete</string>
     <string name="splash_text">Aliquam pretium pellentesque metus a viverra. Nam ac metus ut mi egestas tincidunt. Etiam dignissim libero urna, quis pulvinar ante molestie sollicitudin.</string>
     <string name="title_activity_dashboard">Dashboard</string>
+    <string name="title_activity_enterprises">Empreendimentos</string>
 </resources>

@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v7.widget.CardView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginBottom="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginLeft="16dp"
+    android:layout_marginRight="16dp"
+    android:layout_marginStart="16dp"
+    android:background="?attr/selectableItemBackground"
+    app:cardCornerRadius="8dp">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="8dp">
+
+        <com.eokoe.sagui.widgets.CircleImageView
+            android:id="@+id/imgEnterprise"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            app:civ_fill_color="#aaa"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/tvEnterpriseName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_toEndOf="@id/imgEnterprise"
+            android:layout_toRightOf="@id/imgEnterprise"
+            tools:text="Porto Suape"/>
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/imgPin"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_alignLeft="@id/tvEnterpriseName"
+            android:layout_alignStart="@id/tvEnterpriseName"
+            android:layout_below="@id/tvEnterpriseName"
+            android:layout_marginTop="8dp"
+            android:tint="@color/colorPrimary"
+            app:srcCompat="@drawable/ic_location"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/labelLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/imgPin"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_toEndOf="@id/imgPin"
+            android:layout_toRightOf="@id/imgPin"
+            android:text="Localização"
+            app:textAllCaps="true"/>
+
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/tvLocation"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/labelLocation"
+            android:layout_alignStart="@id/labelLocation"
+            android:layout_below="@id/labelLocation"
+            tools:text="Km 10, Rodovia PE-60, s/n - Cabo de Santo Agostinho, Ipojuca - PE, 55590-972"/>
+    </RelativeLayout>
+</android.support.v7.widget.CardView>

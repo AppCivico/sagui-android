@@ -58,19 +58,19 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Responda a perguntas e complete com suas observações"
                     android:textStyle="bold"/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Escolha a opção que represente melhor a sua resposta"/>
             </LinearLayout>
 
-            <Button
+            <android.support.v7.widget.AppCompatButton
                 android:id="@+id/btnStart"
                 style="@style/Button.Action.Rounded"
                 android:layout_width="match_parent"
@@ -94,12 +94,12 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Você já respondeu todas as perguntas. Obrigado!"/>
 
-                <TextView
+                <android.support.v7.widget.AppCompatTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Gostaria de enviar observações?"
@@ -111,14 +111,14 @@
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
 
-                <Button
+                <android.support.v7.widget.AppCompatButton
                     style="@style/Button.Action"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:text="@string/no"/>
 
-                <Button
+                <android.support.v7.widget.AppCompatButton
                     style="@style/Button.Action"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
