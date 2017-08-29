@@ -8,7 +8,6 @@ import com.eokoe.sagui.BuildConfig
 import com.eokoe.sagui.features.base.presenter.BasePresenter
 import io.fabric.sdk.android.Fabric
 
-
 /**
  * @author Pedro Silva
  * @since 16/08/17

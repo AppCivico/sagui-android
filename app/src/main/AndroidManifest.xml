@@ -29,11 +29,13 @@
 
         <activity
             android:name="com.eokoe.sagui.features.dashboard.DashboardActivity"
-            android:label="@string/title_activity_dashboard"/>
+            android:label="@string/title_activity_dashboard"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name="com.eokoe.sagui.features.categories.CategoriesActivity"
-            android:label="@string/title_activity_categories"/>
+            android:label="@string/title_activity_categories"
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name="com.eokoe.sagui.features.survey.SurveyActivity"

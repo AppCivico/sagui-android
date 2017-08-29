@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="?attr/actionBarSize"
+    android:background="@drawable/bg_screen"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp">
+
+        <com.eokoe.sagui.widgets.FullHeightCircleImageView
+            android:id="@+id/civAnswerSurvey"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/btnAnswerSurvey"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            app:civ_border_color="#e7ddd2"
+            app:civ_border_width="10dp"
+            app:civ_fill_color="#7EFFFFFF"
+            app:srcCompat="@drawable/ic_answer_survey"/>
+
+        <Button
+            android:id="@id/btnAnswerSurvey"
+            style="@style/Button.Action.Rounded"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:paddingEnd="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingStart="16dp"
+            android:text="RESPONDER ENQUETE"/>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:padding="16dp">
+
+        <com.eokoe.sagui.widgets.FullHeightCircleImageView
+            android:id="@+id/civSeeNotes"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/btnSeeNotes"
+            android:layout_centerInParent="true"
+            android:layout_marginBottom="16dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            app:civ_border_color="#e7ddd2"
+            app:civ_border_width="10dp"
+            app:civ_fill_color="#7EFFFFFF"
+            app:srcCompat="@drawable/ic_see_notes"/>
+
+        <Button
+            android:id="@id/btnSeeNotes"
+            style="@style/Button.Action.Rounded"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:paddingEnd="16dp"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:paddingStart="16dp"
+            android:text="VER APONTAMENTOS"/>
+    </RelativeLayout>
+
+</LinearLayout>

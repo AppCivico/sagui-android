@@ -16,8 +16,7 @@ abstract class BaseFragment: Fragment() {
         super.onViewCreated(view, savedInstanceState)
         setUp(view, savedInstanceState)
         if (this is ViewPresenter<*>) {
-            val view = this as ViewPresenter<BasePresenter<Any>>
-            view.presenter.attach(this)
+            (this as ViewPresenter<BasePresenter<Any>>).presenter.attach(this)
         }
         init(view, savedInstanceState)
     }

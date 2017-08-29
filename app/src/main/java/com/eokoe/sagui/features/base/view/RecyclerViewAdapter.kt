@@ -17,7 +17,7 @@ abstract class RecyclerViewAdapter<E, VH : RecyclerView.ViewHolder> : RecyclerVi
 
     private val itemList = ArrayList<E>()
 
-    var items: List<E>?
+    var items: Collection<E>?
         get() = itemList
         set(value) {
             itemList.clear()
@@ -34,7 +34,7 @@ abstract class RecyclerViewAdapter<E, VH : RecyclerView.ViewHolder> : RecyclerVi
     open fun getItem(position: Int) = itemList[position]
 
     fun appendItems(items: Collection<E>?) {
-        if (items != null && items.isNotEmpty()) {
+        if (items!!.isNotEmpty()) {
             val count = itemCount
             itemList.addAll(items)
             if (count == 0) {

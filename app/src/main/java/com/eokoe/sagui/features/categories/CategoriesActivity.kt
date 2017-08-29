@@ -7,14 +7,14 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
-import com.eokoe.sagui.features.base.view.BaseActivity
+import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.categories.survey_list.SurveyListFragment
 
 /**
  * @author Pedro Silva
  * @since 16/08/17
  */
-class CategoriesActivity : BaseActivity(),
+class CategoriesActivity : BaseActivityNavDrawer(),
         CategoriesFragment.OnCategoryClickListener, FragmentManager.OnBackStackChangedListener {
 
     private var contentFragment: Fragment? = null
@@ -31,6 +31,7 @@ class CategoriesActivity : BaseActivity(),
     }
 
     override fun init(savedInstanceState: Bundle?) {
+        showBackButton()
         if (contentFragment == null) {
             supportFragmentManager.beginTransaction()
                     .replace(R.id.content, CategoriesFragment.newInstance())

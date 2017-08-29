@@ -1,76 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<android.support.v4.widget.DrawerLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/drawerLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_screen"
-    android:orientation="vertical">
+    android:fitsSystemWindows="true"
+    tools:context=".features.dashboard.DashboardActivity"
+    tools:openDrawer="start">
 
-    <RelativeLayout
+    <android.support.design.widget.CoordinatorLayout
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="16dp">
+        android:layout_height="match_parent">
 
-        <com.eokoe.sagui.widgets.CircleImageView
-            android:id="@+id/civAnswerSurvey"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/btnAnswerSurvey"
-            android:layout_centerInParent="true"
-            android:layout_marginBottom="16dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            app:civ_border_color="#e7ddd2"
-            app:civ_border_width="10dp"
-            app:civ_fill_color="#7EFFFFFF"/>
+        <include layout="@layout/appbar"/>
 
-        <Button
-            android:id="@id/btnAnswerSurvey"
-            style="@style/Button.Action.Rounded"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:paddingEnd="16dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingStart="16dp"
-            android:text="RESPONDER ENQUETE"/>
-    </RelativeLayout>
+        <include layout="@layout/content_dashboard" />
+    </android.support.design.widget.CoordinatorLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:padding="16dp">
+    <include layout="@layout/navigation_view"/>
 
-        <com.eokoe.sagui.widgets.CircleImageView
-            android:id="@+id/civSeeNotes"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_above="@+id/btnSeeNotes"
-            android:layout_centerInParent="true"
-            android:layout_marginBottom="16dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:clickable="true"
-            app:civ_border_color="#e7ddd2"
-            app:civ_border_width="10dp"
-            app:civ_fill_color="#7EFFFFFF"/>
-
-        <Button
-            android:id="@id/btnSeeNotes"
-            style="@style/Button.Action.Rounded"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_centerHorizontal="true"
-            android:paddingEnd="16dp"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp"
-            android:paddingStart="16dp"
-            android:text="VER APONTAMENTOS"/>
-    </RelativeLayout>
-
-</LinearLayout>
+</android.support.v4.widget.DrawerLayout>
