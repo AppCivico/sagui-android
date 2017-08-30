@@ -9,6 +9,7 @@ import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.eokoe.sagui.R
 import com.eokoe.sagui.features.categories.CategoriesActivity
+import com.eokoe.sagui.features.enterprises.EnterprisesActivity
 
 /**
  * @author Pedro Silva
@@ -64,13 +65,14 @@ abstract class BaseActivityNavDrawer : BaseActivity(), NavigationView.OnNavigati
             R.id.nav_survey -> {
                 startActivity(CategoriesActivity.getIntent(this))
             }
-            R.id.nav_pointing -> {
+            R.id.nav_complaints -> {
             }
             R.id.nav_notifications -> {
             }
             R.id.nav_pending -> {
             }
             R.id.nav_change_development -> {
+                startActivityAndClearStack(EnterprisesActivity.getIntent(this))
             }
             R.id.nav_settings -> {
             }

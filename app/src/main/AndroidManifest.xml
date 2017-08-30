@@ -17,7 +17,7 @@
             android:value="${fabricApiKey}"/>
 
         <activity
-            android:name="com.eokoe.sagui.features.SplashActivity"
+            android:name="com.eokoe.sagui.features.splash.SplashActivity"
             android:label="@string/app_name"
             android:theme="@style/AppTheme.FullScreen">
             <intent-filter>

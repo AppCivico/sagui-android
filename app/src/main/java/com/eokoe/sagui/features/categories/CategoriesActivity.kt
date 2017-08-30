@@ -37,6 +37,7 @@ class CategoriesActivity : BaseActivityNavDrawer(),
                     .replace(R.id.content, CategoriesFragment.newInstance())
                     .commit()
         }
+        navigationView.setCheckedItem(R.id.nav_survey)
     }
 
     override fun onCategoryClick(category: Category) {

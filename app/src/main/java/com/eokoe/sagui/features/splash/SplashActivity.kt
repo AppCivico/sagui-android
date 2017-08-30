@@ -1,4 +1,4 @@
-package com.eokoe.sagui.features
+package com.eokoe.sagui.features.splash
 
 import android.os.Bundle
 import android.os.Handler

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import com.eokoe.sagui.R
+import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.categories.CategoriesActivity
 import kotlinx.android.synthetic.main.content_dashboard.*
@@ -13,14 +14,25 @@ import kotlinx.android.synthetic.main.content_dashboard.*
  * @since 25/08/17
  */
 class DashboardActivity : BaseActivityNavDrawer() {
+
+    private lateinit var enterprise: Enterprise
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
     }
 
     override fun init(savedInstanceState: Bundle?) {
+        enterprise = intent.extras[EXTRA_ENTERPRISE] as Enterprise
+        title = enterprise.name
+
         civAnswerSurvey.setOnClickListener { navigateToSurveys() }
         btnAnswerSurvey.setOnClickListener { navigateToSurveys() }
+    }
+
+    override fun onResume() {
+        navigationView.setCheckedItem(R.id.nav_none)
+        super.onResume()
     }
 
     private fun navigateToSurveys() {
@@ -28,6 +40,12 @@ class DashboardActivity : BaseActivityNavDrawer() {
     }
 
     companion object {
-        fun getIntent(context: Context) = Intent(context, DashboardActivity::class.java)
+        val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
+
+        fun getIntent(context: Context, enterprise: Enterprise): Intent {
+            val intent = Intent(context, DashboardActivity::class.java)
+            intent.putExtra(EXTRA_ENTERPRISE, enterprise)
+            return intent
+        }
     }
 }

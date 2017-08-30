@@ -54,7 +54,7 @@ class EnterprisesActivity : BaseActivityNavDrawer(), ViewPresenter<EnterprisesCo
         rvEnterprises.setHasFixedSize(true)
         enterprisesAdapter.onItemClickListener = object : EnterprisesAdapter.OnItemClickListener {
             override fun onClick(enterprise: Enterprise) {
-                startActivity(DashboardActivity.getIntent(this@EnterprisesActivity))
+                startActivity(DashboardActivity.getIntent(this@EnterprisesActivity, enterprise))
             }
         }
     }

@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
+import android.widget.LinearLayout
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Question
@@ -55,6 +56,10 @@ class SurveyActivity : BaseActivity(),
         btnStart.setOnClickListener {
             presenter.start()
         }
+
+        btnNo.setOnClickListener {
+            finish()
+        }
     }
 
     override fun onBackPressed() {
@@ -75,7 +80,7 @@ class SurveyActivity : BaseActivity(),
         tvSurveyTitle.text = question.title
         tvQuestion.text = question.description
         rlAnswer.removeAllViews()
-        when(question.type) {
+        when (question.type) {
             Question.Type.TEXT -> {
                 val viewAnswer = layoutInflater.inflate(R.layout.answer_text, rlAnswer, false) as TextInputLayout
                 rlAnswer.addView(viewAnswer)
@@ -89,6 +94,8 @@ class SurveyActivity : BaseActivity(),
                 }
             }
             Question.Type.TRAFFIC_LIGHT -> {
+                val viewAnswer = layoutInflater.inflate(R.layout.answer_traffic_light, rlAnswer, false) as LinearLayout
+                rlAnswer.addView(viewAnswer)
                 btnNext.setOnClickListener {
                     presenter.answer("")
                 }

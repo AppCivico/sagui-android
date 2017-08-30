@@ -1,6 +1,5 @@
 <resources>
     <string name="app_name">Sagui</string>
-    <string name="title_activity_main">MainActivity</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -20,4 +19,6 @@
     <string name="splash_text">Aliquam pretium pellentesque metus a viverra. Nam ac metus ut mi egestas tincidunt. Etiam dignissim libero urna, quis pulvinar ante molestie sollicitudin.</string>
     <string name="title_activity_dashboard">Dashboard</string>
     <string name="title_activity_enterprises">Empreendimentos</string>
+    <string name="location">Localização</string>
+    <string name="complaints">Apontamentos</string>
 </resources>

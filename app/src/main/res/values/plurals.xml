@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <plurals name="qty_complaints">
+        <item quantity="one">%d apontamento</item>
+        <item quantity="other">%d apontamentos</item>
+    </plurals>
+
+    <plurals name="qty_causes">
+        <item quantity="one">%d ocorrência</item>
+        <item quantity="other">%d ocorrências</item>
+    </plurals>
+</resources>

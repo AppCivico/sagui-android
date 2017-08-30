@@ -1,6 +1,8 @@
 package com.eokoe.sagui.features.base.view
 
+import android.content.Intent
 import android.os.Bundle
+import android.support.v4.content.IntentCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import com.crashlytics.android.Crashlytics
@@ -45,6 +47,11 @@ abstract class BaseActivity : AppCompatActivity() {
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    fun startActivityAndClearStack(intent: Intent) {
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or IntentCompat.FLAG_ACTIVITY_CLEAR_TASK)
+        startActivity(intent)
     }
 
     open fun setUp(savedInstanceState: Bundle?) {

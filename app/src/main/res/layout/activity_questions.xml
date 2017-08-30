@@ -112,6 +112,7 @@
                 android:orientation="horizontal">
 
                 <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/btnNo"
                     style="@style/Button.Action"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -119,6 +120,7 @@
                     android:text="@string/no"/>
 
                 <android.support.v7.widget.AppCompatButton
+                    android:id="@+id/btnYes"
                     style="@style/Button.Action"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -129,5 +131,4 @@
     </RelativeLayout>
 
     <include layout="@layout/content_questions"/>
-
 </android.support.design.internal.ScrimInsetsFrameLayout>

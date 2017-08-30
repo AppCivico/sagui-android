@@ -22,14 +22,22 @@
             android:id="@+id/imgEnterprise"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            app:civ_fill_color="#aaa"/>
+            android:layout_marginTop="4dp"
+            android:tint="@color/white"
+            app:civ_fill_color="#eee"
+            app:srcCompat="@drawable/ic_photo"/>
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/tvEnterpriseName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="12dp"
+            android:layout_marginStart="12dp"
             android:layout_toEndOf="@id/imgEnterprise"
             android:layout_toRightOf="@id/imgEnterprise"
+            android:ellipsize="end"
+            android:lines="1"
+            android:textSize="16sp"
             tools:text="Porto Suape"/>
 
         <android.support.v7.widget.AppCompatImageView
@@ -52,9 +60,10 @@
             android:layout_marginStart="8dp"
             android:layout_toEndOf="@id/imgPin"
             android:layout_toRightOf="@id/imgPin"
-            android:text="Localização"
+            android:text="@string/location"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="12sp"
             app:textAllCaps="true"/>
-
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/tvLocation"
@@ -64,5 +73,112 @@
             android:layout_alignStart="@id/labelLocation"
             android:layout_below="@id/labelLocation"
             tools:text="Km 10, Rodovia PE-60, s/n - Cabo de Santo Agostinho, Ipojuca - PE, 55590-972"/>
+
+        <android.support.v7.widget.AppCompatImageView
+            android:id="@+id/imgComplaint"
+            android:layout_width="16dp"
+            android:layout_height="16dp"
+            android:layout_alignLeft="@id/imgPin"
+            android:layout_alignStart="@id/imgPin"
+            android:layout_below="@id/tvLocation"
+            android:layout_marginTop="8dp"
+            android:tint="@color/colorPrimary"
+            app:srcCompat="@drawable/ic_menu_complaint"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/labelComplaint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/imgComplaint"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_toEndOf="@id/imgComplaint"
+            android:layout_toRightOf="@id/imgComplaint"
+            android:text="@string/complaints"
+            android:textColor="@color/colorTextPrimary"
+            android:textSize="12sp"
+            app:textAllCaps="true"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/tvQtyComplaints"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/labelComplaint"
+            android:layout_alignStart="@id/labelComplaint"
+            android:layout_below="@id/labelComplaint"
+            tools:text="23 apontamentos"/>
+
+        <android.support.v7.widget.AppCompatImageView
+            android:layout_width="6dp"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/tvQtyComplaints"
+            android:layout_alignTop="@id/tvQtyComplaints"
+            android:layout_marginLeft="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="2dp"
+            android:layout_toEndOf="@id/tvQtyComplaints"
+            android:layout_toRightOf="@id/tvQtyComplaints"
+            android:scaleType="centerInside"
+            android:tint="#75706c"
+            app:srcCompat="@drawable/ic_circle"/>
+
+        <android.support.v7.widget.AppCompatTextView
+            android:id="@+id/tvQtyCases"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/tvQtyComplaints"
+            android:layout_below="@id/labelComplaint"
+            android:layout_marginLeft="22dp"
+            android:layout_marginStart="22dp"
+            android:layout_toEndOf="@id/tvQtyComplaints"
+            android:layout_toRightOf="@id/tvQtyComplaints"
+            tools:text="09 ocorrências"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@id/tvQtyComplaints"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:weightSum="4">
+
+            <android.support.v7.widget.AppCompatImageView
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:background="#eee"
+                android:tint="@color/white"
+                app:srcCompat="@drawable/ic_photo"/>
+
+            <android.support.v7.widget.AppCompatImageView
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:background="#eee"
+                android:tint="@color/white"
+                app:srcCompat="@drawable/ic_photo"/>
+
+            <android.support.v7.widget.AppCompatImageView
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:background="#eee"
+                android:tint="@color/white"
+                app:srcCompat="@drawable/ic_photo"/>
+
+            <android.support.v7.widget.AppCompatImageView
+                android:layout_width="0dp"
+                android:layout_height="60dp"
+                android:layout_margin="4dp"
+                android:layout_weight="1"
+                android:background="#eee"
+                android:tint="@color/white"
+                app:srcCompat="@drawable/ic_photo"/>
+        </LinearLayout>
     </RelativeLayout>
 </android.support.v7.widget.CardView>
