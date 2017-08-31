@@ -1,6 +1,7 @@
 package com.eokoe.sagui.data.entities
 
 import com.google.gson.annotations.SerializedName
+import io.realm.RealmObject
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
 
@@ -10,13 +11,14 @@ import paperparcel.PaperParcelable
  */
 @PaperParcel
 @Suppress("ArrayInDataClass")
-data class Location(
+open class Location(
         @SerializedName("geo")
-        val latLong: DoubleArray,
+        open var latLong: LatLong = LatLong(),
         @SerializedName("human_address")
-        val location: String
-): PaperParcelable {
+        open var location: String = ""
+) : PaperParcelable, RealmObject() {
     companion object {
-        @JvmField val CREATOR = PaperParcelLocation.CREATOR
+        @JvmField
+        val CREATOR = PaperParcelLocation.CREATOR
     }
 }

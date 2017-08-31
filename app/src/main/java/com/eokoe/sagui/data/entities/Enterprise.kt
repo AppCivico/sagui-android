@@ -1,5 +1,7 @@
 package com.eokoe.sagui.data.entities
 
+import io.realm.RealmObject
+import io.realm.annotations.PrimaryKey
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
 
@@ -8,13 +10,15 @@ import paperparcel.PaperParcelable
  * @since 29/08/17
  */
 @PaperParcel
-data class Enterprise(
-        val id: Int,
-        val name: String,
-        val description: String,
-        val location: Location,
-        val data: Data
-) : PaperParcelable {
+open class Enterprise(
+        @PrimaryKey
+        open var id: Int = 0,
+        open var name: String = "",
+        open var description: String? = null,
+        open var location: Location = Location(),
+        open var data: Data = Data(),
+        open var selected: Boolean = false
+) : PaperParcelable, RealmObject() {
     companion object {
         @JvmField val CREATOR = PaperParcelEnterprise.CREATOR
     }

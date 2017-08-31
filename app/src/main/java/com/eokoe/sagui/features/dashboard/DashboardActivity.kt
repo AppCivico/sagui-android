@@ -15,16 +15,14 @@ import kotlinx.android.synthetic.main.content_dashboard.*
  */
 class DashboardActivity : BaseActivityNavDrawer() {
 
-    private lateinit var enterprise: Enterprise
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_dashboard)
     }
 
     override fun init(savedInstanceState: Bundle?) {
-        enterprise = intent.extras[EXTRA_ENTERPRISE] as Enterprise
-        title = enterprise.name
+        enterprise = intent.extras.getParcelable(EXTRA_ENTERPRISE)
+        title = enterprise!!.name
 
         civAnswerSurvey.setOnClickListener { navigateToSurveys() }
         btnAnswerSurvey.setOnClickListener { navigateToSurveys() }
@@ -36,7 +34,7 @@ class DashboardActivity : BaseActivityNavDrawer() {
     }
 
     private fun navigateToSurveys() {
-        startActivity(CategoriesActivity.getIntent(this))
+        startActivity(CategoriesActivity.getIntent(this, enterprise!!))
     }
 
     companion object {

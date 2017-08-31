@@ -11,9 +11,11 @@ import io.reactivex.Observable
 interface EnterprisesContract {
     interface View {
         fun load(enterprises: List<Enterprise>)
+        fun navigateToDashboard(enterprise: Enterprise)
     }
 
     interface Presenter : BasePresenter<View> {
+        fun setEnterprise(enterprise: Enterprise): Observable<Enterprise>
         fun list(): Observable<List<Enterprise>>
     }
 }

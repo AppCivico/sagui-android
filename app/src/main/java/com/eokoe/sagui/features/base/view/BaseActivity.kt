@@ -54,6 +54,10 @@ abstract class BaseActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    open fun showBackButton() {
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+    }
+
     open fun setUp(savedInstanceState: Bundle?) {
 
     }

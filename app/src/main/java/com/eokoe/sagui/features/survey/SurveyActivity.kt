@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.widget.LinearLayout
+import android.widget.Toast
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Question
@@ -12,6 +13,7 @@ import com.eokoe.sagui.data.entities.Survey
 import com.eokoe.sagui.extensions.*
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
+import com.eokoe.sagui.features.survey.note.NoteActivity
 import kotlinx.android.synthetic.main.activity_questions.*
 import kotlinx.android.synthetic.main.content_questions.*
 
@@ -28,17 +30,17 @@ class SurveyActivity : BaseActivity(),
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_questions)
         setSupportActionBar(toolbar)
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
         presenter = SurveyPresenter()
+        showBackButton()
     }
 
     @Suppress("UNCHECKED_CAST")
     override fun init(savedInstanceState: Bundle?) {
-        val category = intent.extras[EXTRA_CATEGORY] as Category
+        val category: Category = intent.extras.getParcelable(EXTRA_CATEGORY)
         title = getString(R.string.title_activity_survey, category.title.toLowerCase())
 
         /*if (Build.VERSION.SDK_INT >= 23) {
@@ -46,7 +48,7 @@ class SurveyActivity : BaseActivity(),
             decor.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
         }*/
 
-        val survey = intent.extras[EXTRA_SURVEY] as Survey
+        val survey: Survey = intent.extras.getParcelable(EXTRA_SURVEY)
         presenter.setSurvey(survey)
 
         btnClose.setOnClickListener {
@@ -58,7 +60,11 @@ class SurveyActivity : BaseActivity(),
         }
 
         btnNo.setOnClickListener {
-            finish()
+            surveyAnswered()
+        }
+
+        btnYes.setOnClickListener {
+            startActivityForResult(NoteActivity.getIntent(this@SurveyActivity), REQUEST_NOTES)
         }
     }
 
@@ -122,9 +128,25 @@ class SurveyActivity : BaseActivity(),
         hideQuestions()
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_NOTES) {
+            if (resultCode == RESULT_OK) {
+                surveyAnswered()
+            }
+            return
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    private fun surveyAnswered() {
+        Toast.makeText(this, "Enquete respondida", Toast.LENGTH_SHORT).show()
+        finish()
+    }
+
     companion object {
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
         private val EXTRA_SURVEY = "EXTRA_SURVEY"
+        private val REQUEST_NOTES = 1
 
         fun getIntent(context: Context, category: Category, survey: Survey): Intent {
             val intent = Intent(context, SurveyActivity::class.java)

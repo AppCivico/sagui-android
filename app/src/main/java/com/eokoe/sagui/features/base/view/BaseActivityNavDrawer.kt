@@ -8,6 +8,7 @@ import android.support.v7.app.ActionBarDrawerToggle
 import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.eokoe.sagui.R
+import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.features.categories.CategoriesActivity
 import com.eokoe.sagui.features.enterprises.EnterprisesActivity
 
@@ -17,6 +18,7 @@ import com.eokoe.sagui.features.enterprises.EnterprisesActivity
  */
 abstract class BaseActivityNavDrawer : BaseActivity(), NavigationView.OnNavigationItemSelectedListener {
 
+    protected var enterprise: Enterprise? = null
     protected val toolbar: Toolbar
         get() = findViewById(R.id.toolbar) as Toolbar
     protected val drawerLayout: DrawerLayout
@@ -37,7 +39,7 @@ abstract class BaseActivityNavDrawer : BaseActivity(), NavigationView.OnNavigati
         super.onPostCreate(savedInstanceState)
     }
 
-    fun showBackButton() {
+    override fun showBackButton() {
         drawerToggle.isDrawerIndicatorEnabled = false
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
         drawerToggle.setToolbarNavigationClickListener {
@@ -63,7 +65,7 @@ abstract class BaseActivityNavDrawer : BaseActivity(), NavigationView.OnNavigati
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_survey -> {
-                startActivity(CategoriesActivity.getIntent(this))
+                startActivity(CategoriesActivity.getIntent(this, enterprise!!))
             }
             R.id.nav_complaints -> {
             }

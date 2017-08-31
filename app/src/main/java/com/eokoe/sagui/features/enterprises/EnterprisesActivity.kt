@@ -54,13 +54,17 @@ class EnterprisesActivity : BaseActivityNavDrawer(), ViewPresenter<EnterprisesCo
         rvEnterprises.setHasFixedSize(true)
         enterprisesAdapter.onItemClickListener = object : EnterprisesAdapter.OnItemClickListener {
             override fun onClick(enterprise: Enterprise) {
-                startActivity(DashboardActivity.getIntent(this@EnterprisesActivity, enterprise))
+                presenter.setEnterprise(enterprise)
             }
         }
     }
 
     override fun load(enterprises: List<Enterprise>) {
         enterprisesAdapter.items = enterprises
+    }
+
+    override fun navigateToDashboard(enterprise: Enterprise) {
+        startActivity(DashboardActivity.getIntent(this, enterprise))
     }
 
     companion object {

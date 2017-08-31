@@ -1,6 +1,7 @@
 package com.eokoe.sagui.features.categories
 
 import com.eokoe.sagui.data.entities.Category
+import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.SurveyModel
 import com.eokoe.sagui.features.base.presenter.BasePresenterImpl
 import io.reactivex.observers.DisposableObserver
@@ -12,7 +13,8 @@ import io.reactivex.observers.DisposableObserver
 class CategoriesPresenter constructor(private val surveyModel: SurveyModel)
     : CategoriesContract.Presenter, BasePresenterImpl<CategoriesContract.View>() {
 
-    override fun list() = exec(surveyModel.getCategories(), CategoriesObserver())
+    override fun list(enterprise: Enterprise) =
+            exec(surveyModel.getCategories(enterprise), CategoriesObserver())
 
     inner class CategoriesObserver : DisposableObserver<List<Category>>() {
         override fun onNext(categories: List<Category>) {

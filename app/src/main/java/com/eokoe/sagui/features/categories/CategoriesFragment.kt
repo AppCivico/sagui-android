@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
+import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.impl.SurveyModelImpl
 import com.eokoe.sagui.features.base.view.BaseFragment
 import com.eokoe.sagui.features.base.view.ViewPresenter
@@ -15,13 +16,14 @@ import kotlinx.android.synthetic.main.fragment_categories.*
  * @author Pedro Silva
  * @since 23/08/17
  */
-class CategoriesFragment: BaseFragment(),
+class CategoriesFragment : BaseFragment(),
         CategoriesContract.View, ViewPresenter<CategoriesContract.Presenter> {
 
     private lateinit var categoriesAdapter: CategoriesAdapter
     override lateinit var presenter: CategoriesContract.Presenter
 
-    var categories: ArrayList<Category>? = null
+    private lateinit var enterprise: Enterprise
+    private var categories: ArrayList<Category>? = null
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
                               savedInstanceState: Bundle?): View? {
@@ -32,11 +34,12 @@ class CategoriesFragment: BaseFragment(),
         super.setUp(view, savedInstanceState)
         presenter = CategoriesPresenter(SurveyModelImpl())
         categoriesAdapter = CategoriesAdapter()
+        enterprise = arguments.getParcelable(EXTRA_ENTERPRISE)
     }
 
     override fun init(view: View?, savedInstanceState: Bundle?) {
         if (categories == null) {
-            presenter.list()
+            presenter.list(enterprise)
         } else {
             categoriesAdapter.items = categories
         }
@@ -75,9 +78,15 @@ class CategoriesFragment: BaseFragment(),
     }
 
     companion object {
+        private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val STATE_CATEGORIES = "STATE_CATEGORIES"
 
-        fun newInstance() = CategoriesFragment()
+        fun newInstance(enterprise: Enterprise): CategoriesFragment {
+            val fragment = CategoriesFragment()
+            fragment.arguments = Bundle()
+            fragment.arguments.putParcelable("EXTRA_ENTERPRISE", enterprise)
+            return fragment
+        }
     }
 
     interface OnCategoryClickListener {

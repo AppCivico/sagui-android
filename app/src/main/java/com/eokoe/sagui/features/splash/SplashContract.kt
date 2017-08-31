@@ -1,20 +1,20 @@
-package com.eokoe.sagui.features.categories
+package com.eokoe.sagui.features.splash
 
-import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.features.base.presenter.BasePresenter
 import io.reactivex.Observable
 
 /**
  * @author Pedro Silva
- * @since 16/08/17
+ * @since 30/08/17
  */
-interface CategoriesContract {
+interface SplashContract {
     interface View {
-        fun load(categories: List<Category>)
+        fun setEnterprise(enterprise: Enterprise)
+        fun onEmptyEnterprise()
     }
 
     interface Presenter : BasePresenter<View> {
-        fun list(enterprise: Enterprise): Observable<List<Category>>
+        fun getEnterprise(): Observable<Enterprise>
     }
 }

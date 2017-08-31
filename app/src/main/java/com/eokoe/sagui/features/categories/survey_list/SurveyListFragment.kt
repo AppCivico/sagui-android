@@ -37,7 +37,7 @@ class SurveyListFragment: BaseFragment(),
     }
 
     override fun init(view: View?, savedInstanceState: Bundle?) {
-        category = arguments[EXTRA_CATEGORY] as Category
+        category = arguments.getParcelable(EXTRA_CATEGORY)
         if (surveys == null) {
             presenter.list(category!!)
         } else {

@@ -7,6 +7,7 @@ import android.support.v4.app.Fragment
 import android.support.v4.app.FragmentManager
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
+import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.categories.survey_list.SurveyListFragment
 
@@ -30,14 +31,19 @@ class CategoriesActivity : BaseActivityNavDrawer(),
         super.onDestroy()
     }
 
-    override fun init(savedInstanceState: Bundle?) {
+    override fun setUp(savedInstanceState: Bundle?) {
+        super.setUp(savedInstanceState)
         showBackButton()
+        enterprise = intent.extras.getParcelable(EXTRA_ENTERPRISE)
+    }
+
+    override fun init(savedInstanceState: Bundle?) {
+        navigationView.setCheckedItem(R.id.nav_survey)
         if (contentFragment == null) {
             supportFragmentManager.beginTransaction()
-                    .replace(R.id.content, CategoriesFragment.newInstance())
+                    .replace(R.id.content, CategoriesFragment.newInstance(enterprise!!))
                     .commit()
         }
-        navigationView.setCheckedItem(R.id.nav_survey)
     }
 
     override fun onCategoryClick(category: Category) {
@@ -70,8 +76,13 @@ class CategoriesActivity : BaseActivityNavDrawer(),
     }
 
     companion object {
+        private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val STATE_FRAGMENT = "STATE_FRAGMENT"
 
-        fun getIntent(context: Context): Intent = Intent(context, CategoriesActivity::class.java)
+        fun getIntent(context: Context, enterprise: Enterprise): Intent {
+            val intent = Intent(context, CategoriesActivity::class.java)
+            intent.putExtra(EXTRA_ENTERPRISE, enterprise)
+            return intent
+        }
     }
 }
