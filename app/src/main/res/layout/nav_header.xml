@@ -26,8 +26,5 @@
         android:textColor="@color/white"
         android:textSize="@dimen/nav_header_title"/>
 
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/divider"/>
+    <include layout="@layout/divider" />
 </LinearLayout>

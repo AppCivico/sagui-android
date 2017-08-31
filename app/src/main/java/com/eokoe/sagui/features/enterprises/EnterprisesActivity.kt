@@ -11,6 +11,7 @@ import com.eokoe.sagui.data.model.impl.SurveyModelImpl
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.dashboard.DashboardActivity
+import com.eokoe.sagui.features.enterprises.filter.EnterprisesFilterActivity
 import kotlinx.android.synthetic.main.content_enterprises.*
 
 class EnterprisesActivity : BaseActivityNavDrawer(), ViewPresenter<EnterprisesContract.Presenter>, EnterprisesContract.View {
@@ -31,11 +32,15 @@ class EnterprisesActivity : BaseActivityNavDrawer(), ViewPresenter<EnterprisesCo
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_filter -> {
-                TODO("not implemented")
+                openFilter()
                 return true
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    private fun openFilter() {
+        startActivityForResult(EnterprisesFilterActivity.getIntent(this), REQUEST_FILTER)
     }
 
     override fun setUp(savedInstanceState: Bundle?) {
@@ -65,9 +70,11 @@ class EnterprisesActivity : BaseActivityNavDrawer(), ViewPresenter<EnterprisesCo
 
     override fun navigateToDashboard(enterprise: Enterprise) {
         startActivity(DashboardActivity.getIntent(this, enterprise))
+        finish()
     }
 
     companion object {
+        val REQUEST_FILTER = 1
         fun getIntent(context: Context) = Intent(context, EnterprisesActivity::class.java)
     }
 }

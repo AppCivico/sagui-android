@@ -23,4 +23,5 @@
     <string name="complaints">Apontamentos</string>
     <string name="title_activity_notes">Observações</string>
     <string name="send">Enviar</string>
+    <string name="title_activity_enterprises_filter">Filtrar</string>
 </resources>

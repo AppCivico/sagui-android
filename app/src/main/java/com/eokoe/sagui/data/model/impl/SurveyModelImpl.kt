@@ -13,36 +13,40 @@ import io.realm.Realm
  */
 class SurveyModelImpl : SurveyModel {
     override fun selectEnterprise(enterprise: Enterprise): Observable<Enterprise> {
-        Realm.getDefaultInstance().use { realm ->
-            return try {
-                realm.beginTransaction()
-                val results = realm.where(Enterprise::class.java)
-                        .equalTo("id", enterprise.id).or()
-                        .equalTo("selected", true)
-                        .findAll()
-                results.map { it.selected = it.id == enterprise.id }
-                realm.commitTransaction()
-                enterprise.selected = true
-                Observable.just(enterprise)
-            } catch (error: Exception) {
-                Observable.error(error)
+        return Observable.create { emitter ->
+            Realm.getDefaultInstance().use { realm ->
+                try {
+                    realm.beginTransaction()
+                    realm.where(Enterprise::class.java)
+                            .equalTo("id", enterprise.id).or()
+                            .equalTo("selected", true)
+                            .findAll()
+                            .map { it.selected = it.id == enterprise.id }
+                    realm.commitTransaction()
+                    enterprise.selected = true
+                    emitter.onNext(enterprise)
+                    emitter.onComplete()
+                } catch (error: Exception) {
+                    emitter.onError(error)
+                }
             }
         }
     }
 
     override fun getSelectedEnterprise(): Observable<Enterprise> {
-        Realm.getDefaultInstance().use { realm ->
-            return try {
-                val result = realm.where(Enterprise::class.java)
-                        .equalTo("selected", true)
-                        .findFirst()
-                if (result != null && result.isValid) {
-                    Observable.just(realm.copyFromRealm(result))
-                } else {
-                    Observable.empty()
+        return Observable.create { emitter ->
+            Realm.getDefaultInstance().use { realm ->
+                try {
+                    val result = realm.where(Enterprise::class.java)
+                            .equalTo("selected", true)
+                            .findFirst()
+                    if (result != null && result.isValid) {
+                        emitter.onNext(realm.copyFromRealm(result))
+                    }
+                    emitter.onComplete()
+                } catch (error: Exception) {
+                    emitter.onError(error)
                 }
-            } catch (error: Exception) {
-                Observable.error(error)
             }
         }
     }
@@ -50,18 +54,18 @@ class SurveyModelImpl : SurveyModel {
     override fun getEnterprises(): Observable<List<Enterprise>> {
         Realm.getDefaultInstance().use { realm ->
             val results = realm.where(Enterprise::class.java).findAll()
-            if (results.isNotEmpty()) {
+            return if (results.isNotEmpty()) {
                 val enterprises = realm.copyFromRealm(results)
-                return Observable.just(enterprises)
+                Observable.just(enterprises)
             } else {
-                return ServiceGenerator.getService(SurveyService::class.java).enterprises()
-                        .map {
+                ServiceGenerator.getService(SurveyService::class.java).enterprises()
+                        .map { enterprises ->
                             Realm.getDefaultInstance().use { realm ->
                                 realm.beginTransaction()
-                                realm.copyToRealmOrUpdate(it)
+                                realm.copyToRealmOrUpdate(enterprises)
                                 realm.commitTransaction()
                             }
-                            return@map it
+                            return@map enterprises
                         }
             }
         }

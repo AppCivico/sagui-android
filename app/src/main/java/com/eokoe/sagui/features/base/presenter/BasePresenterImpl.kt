@@ -14,20 +14,20 @@ import java.lang.ref.WeakReference
  */
 open class BasePresenterImpl<View>: BasePresenter<View> {
     private var viewReference: WeakReference<View>? = null
-    private var disposables: CompositeDisposable? = null
+    private val disposables = CompositeDisposable()
 
     protected var view: View? = null
         get() = viewReference?.get()
         private set
 
     override fun attach(view: View) {
-        viewReference = WeakReference<View>(view)
+        viewReference = WeakReference(view)
     }
 
     override fun detach() {
         viewReference?.clear()
-        if (disposables != null && !disposables!!.isDisposed) {
-            disposables!!.dispose()
+        if (!disposables.isDisposed) {
+            disposables.dispose()
         }
     }
 
@@ -40,9 +40,6 @@ open class BasePresenterImpl<View>: BasePresenter<View> {
     }
 
     private fun addDisposable(disposable: Disposable) {
-        if (disposables == null) {
-            disposables = CompositeDisposable()
-        }
-        disposables!!.add(disposable)
+        disposables.add(disposable)
     }
 }

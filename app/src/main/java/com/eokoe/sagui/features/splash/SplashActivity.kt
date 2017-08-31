@@ -13,7 +13,7 @@ import com.eokoe.sagui.features.enterprises.EnterprisesActivity
 
 class SplashActivity : BaseActivity(), SplashContract.View, ViewPresenter<SplashContract.Presenter> {
 
-    private val SPLASH_TIME = 1000L
+    private val SPLASH_TIME = 1500L
     private var mHandler: Handler? = null
     private var mSplashRunnable: Runnable? = null
 

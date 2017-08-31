@@ -20,7 +20,7 @@
             android:name="com.eokoe.sagui.features.splash.SplashActivity"
             android:label="@string/app_name"
             android:noHistory="true"
-            android:theme="@style/AppTheme.FullScreen">
+            android:theme="@style/AppTheme.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -31,8 +31,11 @@
         <activity
             android:name="com.eokoe.sagui.features.enterprises.EnterprisesActivity"
             android:label="@string/title_activity_enterprises"
-            android:noHistory="true"
             android:theme="@style/AppTheme.NoActionBar"/>
+
+        <activity
+            android:name=".features.enterprises.filter.EnterprisesFilterActivity"
+            android:label="@string/title_activity_enterprises_filter"/>
 
         <activity
             android:name="com.eokoe.sagui.features.dashboard.DashboardActivity"

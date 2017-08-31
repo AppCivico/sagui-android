@@ -62,7 +62,6 @@ abstract class BaseActivityNavDrawer : BaseActivity(), NavigationView.OnNavigati
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.nav_survey -> {
                 startActivity(CategoriesActivity.getIntent(this, enterprise!!))
