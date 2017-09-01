@@ -6,7 +6,7 @@ import android.os.Bundle
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
-import com.eokoe.sagui.features.categories.CategoriesActivity
+import com.eokoe.sagui.features.surveys.categories.CategoriesActivity
 import kotlinx.android.synthetic.main.content_dashboard.*
 
 /**

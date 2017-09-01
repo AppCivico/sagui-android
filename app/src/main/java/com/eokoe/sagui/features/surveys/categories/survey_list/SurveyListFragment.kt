@@ -1,4 +1,4 @@
-package com.eokoe.sagui.features.categories.survey_list
+package com.eokoe.sagui.features.surveys.categories.survey_list
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,7 +10,7 @@ import com.eokoe.sagui.data.entities.Survey
 import com.eokoe.sagui.data.model.impl.SurveyModelImpl
 import com.eokoe.sagui.features.base.view.BaseFragment
 import com.eokoe.sagui.features.base.view.ViewPresenter
-import com.eokoe.sagui.features.survey.SurveyActivity
+import com.eokoe.sagui.features.surveys.survey.SurveyActivity
 import kotlinx.android.synthetic.main.fragment_survey_list.*
 
 /**

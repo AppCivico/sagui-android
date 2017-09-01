@@ -1,4 +1,4 @@
-package com.eokoe.sagui.features.survey
+package com.eokoe.sagui.features.surveys.survey
 
 import com.eokoe.sagui.data.entities.Answer
 import com.eokoe.sagui.data.entities.Question

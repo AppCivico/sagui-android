@@ -1,4 +1,4 @@
-package com.eokoe.sagui.features.survey.note
+package com.eokoe.sagui.features.surveys.survey.note
 
 import android.app.Activity
 import android.content.Context

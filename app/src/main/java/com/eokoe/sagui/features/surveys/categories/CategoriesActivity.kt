@@ -1,4 +1,4 @@
-package com.eokoe.sagui.features.categories
+package com.eokoe.sagui.features.surveys.categories
 
 import android.content.Context
 import android.content.Intent
@@ -9,7 +9,7 @@ import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
-import com.eokoe.sagui.features.categories.survey_list.SurveyListFragment
+import com.eokoe.sagui.features.surveys.categories.survey_list.SurveyListFragment
 
 /**
  * @author Pedro Silva

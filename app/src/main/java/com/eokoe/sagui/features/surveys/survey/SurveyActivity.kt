@@ -1,4 +1,4 @@
-package com.eokoe.sagui.features.survey
+package com.eokoe.sagui.features.surveys.survey
 
 import android.content.Context
 import android.content.Intent
@@ -13,7 +13,7 @@ import com.eokoe.sagui.data.entities.Survey
 import com.eokoe.sagui.extensions.*
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
-import com.eokoe.sagui.features.survey.note.NoteActivity
+import com.eokoe.sagui.features.surveys.survey.note.NoteActivity
 import kotlinx.android.synthetic.main.activity_questions.*
 import kotlinx.android.synthetic.main.content_questions.*
 

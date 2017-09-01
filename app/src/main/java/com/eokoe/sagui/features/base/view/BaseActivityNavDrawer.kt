@@ -9,7 +9,7 @@ import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Enterprise
-import com.eokoe.sagui.features.categories.CategoriesActivity
+import com.eokoe.sagui.features.surveys.categories.CategoriesActivity
 import com.eokoe.sagui.features.enterprises.EnterprisesActivity
 
 /**

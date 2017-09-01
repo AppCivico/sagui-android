@@ -1,4 +1,4 @@
-package com.eokoe.sagui.features.categories
+package com.eokoe.sagui.features.surveys.categories
 
 import android.os.Bundle
 import android.view.LayoutInflater

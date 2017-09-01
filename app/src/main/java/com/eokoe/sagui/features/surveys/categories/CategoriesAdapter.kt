@@ -1,4 +1,4 @@
-package com.eokoe.sagui.features.categories
+package com.eokoe.sagui.features.surveys.categories
 
 import android.support.v7.widget.RecyclerView
 import android.view.View

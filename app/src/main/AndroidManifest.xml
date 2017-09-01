@@ -43,17 +43,17 @@
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name="com.eokoe.sagui.features.categories.CategoriesActivity"
+            android:name="com.eokoe.sagui.features.surveys.categories.CategoriesActivity"
             android:label="@string/title_activity_categories"
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name="com.eokoe.sagui.features.survey.SurveyActivity"
+            android:name="com.eokoe.sagui.features.surveys.survey.SurveyActivity"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
-            android:name=".features.survey.note.NoteActivity"
+            android:name="com.eokoe.sagui.features.surveys.survey.note.NoteActivity"
             android:label="@string/title_activity_notes"/>
     </application>
 
