@@ -17,7 +17,7 @@ android {
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         manifestPlaceholders = [
-                fabricApiKey: FABRIC_API_KEY,
+                fabricApiKey: System.getenv("FABRIC_API_KEY") ?: FABRIC_API_KEY,
         ]
     }
     kapt {
