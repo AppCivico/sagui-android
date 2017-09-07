@@ -33,5 +33,11 @@
         <attr name="civ_border_width" format="dimension"/>
         <attr name="civ_border_color" format="color"/>
         <attr name="civ_fill_color" format="color"/>
+        <attr name="civ_disable_circular" format="boolean"/>
+    </declare-styleable>
+
+    <declare-styleable name="CheckableCircleImageView">
+        <attr name="cciv_textColor" format="color"/>
+        <attr name="cciv_textSize" format="dimension"/>
     </declare-styleable>
 </resources>

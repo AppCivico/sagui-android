@@ -9,7 +9,7 @@ import io.reactivex.observers.DisposableObserver
  * @author Pedro Silva
  * @since 29/08/17
  */
-class EnterprisePresenter constructor(private val surveyModel: SurveyModel)
+class EnterprisesPresenter constructor(private val surveyModel: SurveyModel)
     : BasePresenterImpl<EnterprisesContract.View>(), EnterprisesContract.Presenter {
 
     override fun setEnterprise(enterprise: Enterprise) =

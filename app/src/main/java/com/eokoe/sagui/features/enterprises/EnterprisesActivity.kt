@@ -46,7 +46,7 @@ class EnterprisesActivity : BaseActivityNavDrawer(), ViewPresenter<EnterprisesCo
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
         enterprisesAdapter = EnterprisesAdapter()
-        presenter = EnterprisePresenter(SurveyModelImpl())
+        presenter = EnterprisesPresenter(SurveyModelImpl())
     }
 
     override fun init(savedInstanceState: Bundle?) {

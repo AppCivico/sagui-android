@@ -4,9 +4,12 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
-import android.widget.LinearLayout
+import android.text.Editable
+import android.text.TextWatcher
+import android.widget.RadioGroup
 import android.widget.Toast
 import com.eokoe.sagui.R
+import com.eokoe.sagui.data.entities.Answer
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Question
 import com.eokoe.sagui.data.entities.Survey
@@ -14,6 +17,7 @@ import com.eokoe.sagui.extensions.*
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.surveys.survey.note.NoteActivity
+import com.eokoe.sagui.widgets.CheckableCircleImageView
 import kotlinx.android.synthetic.main.activity_questions.*
 import kotlinx.android.synthetic.main.content_questions.*
 
@@ -86,13 +90,10 @@ class SurveyActivity : BaseActivity(),
         tvSurveyTitle.text = question.title
         tvQuestion.text = question.description
         rlAnswer.removeAllViews()
+        btnNext.disable()
         when (question.type) {
             Question.Type.TEXT -> {
-                val viewAnswer = layoutInflater.inflate(R.layout.answer_text, rlAnswer, false) as TextInputLayout
-                rlAnswer.addView(viewAnswer)
-                btnNext.setOnClickListener {
-                    presenter.answer(viewAnswer.editText?.text.toString())
-                }
+                buildViewText()
             }
             Question.Type.MULTIPLE -> {
                 btnNext.setOnClickListener {
@@ -100,12 +101,50 @@ class SurveyActivity : BaseActivity(),
                 }
             }
             Question.Type.TRAFFIC_LIGHT -> {
-                val viewAnswer = layoutInflater.inflate(R.layout.answer_traffic_light, rlAnswer, false) as LinearLayout
-                rlAnswer.addView(viewAnswer)
-                btnNext.setOnClickListener {
-                    presenter.answer("")
-                }
+                buildViewTrafficLight(question)
             }
+        }
+    }
+
+    private fun buildViewText() {
+        val viewAnswer = layoutInflater.inflate(R.layout.answer_text, rlAnswer, false) as TextInputLayout
+        rlAnswer.addView(viewAnswer)
+        viewAnswer.editText?.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {}
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+
+            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
+                btnNext.isEnabled = s.isNotEmpty()
+            }
+
+        })
+        btnNext.setOnClickListener {
+            presenter.answer(viewAnswer.editText?.text.toString())
+        }
+    }
+
+    private fun buildViewTrafficLight(question: Question) {
+        val viewAnswer = layoutInflater.inflate(R.layout.answer_traffic_light, rlAnswer, false) as RadioGroup
+        var answerSelected: Answer? = null
+        question.answers?.forEach { answer ->
+            val resId = resources.getIdentifier(answer.unit?.name?.toLowerCase(), "id", packageName)
+            val check = viewAnswer.findViewById(resId) as CheckableCircleImageView
+            check.setEnableText(false)
+            check.setText(answer.title)
+            check.setOnCheckedChangeListener(object : CheckableCircleImageView.OnCheckedChangeListener {
+                override fun onCheckedChanged(view: CheckableCircleImageView, checked: Boolean) {
+                    view.setEnableText(checked)
+                    if (checked) answerSelected = answer
+                }
+            })
+        }
+        viewAnswer.setOnCheckedChangeListener { group, checkedId ->
+            btnNext.isEnabled = checkedId != -1
+        }
+        rlAnswer.addView(viewAnswer)
+        btnNext.setOnClickListener {
+            presenter.answer(answerSelected!!)
         }
     }
 

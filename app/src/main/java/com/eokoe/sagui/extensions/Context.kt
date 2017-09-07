@@ -14,8 +14,6 @@ fun Context.getManifestValue(key: String): String? {
         return ai.metaData.getString(key)
     } catch (e: PackageManager.NameNotFoundException) {
         LogUtil.error(this, e)
-    } catch (e: NullPointerException) {
-        LogUtil.error(this, e)
     }
     return null
 }

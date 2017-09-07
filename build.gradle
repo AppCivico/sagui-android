@@ -50,5 +50,6 @@ ext {
     okhttpVersion = '3.7.0'
 
     junitVersion = '4.12'
+    mockitoVersion = '1.10.19'
     espressoVersion = '2.2.2'
 }

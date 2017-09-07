@@ -1,6 +1,8 @@
 package com.eokoe.sagui
 
 import android.app.Application
+import com.eokoe.sagui.data.net.ServiceGenerator
+import com.eokoe.sagui.extensions.getManifestValue
 import io.realm.Realm
 import io.realm.RealmConfiguration
 
@@ -12,7 +14,13 @@ import io.realm.RealmConfiguration
 class SaguiApp : Application() {
     override fun onCreate() {
         super.onCreate()
+        initServiceGenerator()
         initRealm()
+    }
+
+    private fun initServiceGenerator() {
+        val baseUrl = getManifestValue("apiBaseUrl")!!
+        ServiceGenerator.init(baseUrl)
     }
 
     private fun initRealm() {

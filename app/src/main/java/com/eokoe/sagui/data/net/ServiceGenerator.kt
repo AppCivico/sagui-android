@@ -14,11 +14,13 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 object ServiceGenerator {
 
-    private val BASE_URL = "http://fakeapi.eokoe.com/"
+    private lateinit var baseUrl: String
 
-    private var retrofitBuilder: Retrofit.Builder
+    private lateinit var retrofitBuilder: Retrofit.Builder
 
-    init {
+    fun init(baseUrl: String) {
+        this.baseUrl = baseUrl
+
         val gson = GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
                 .registerTypeAdapter(LatLong::class.java, LatLongTypeAdapter.INSTANCE)
@@ -33,7 +35,7 @@ object ServiceGenerator {
         }
 
         retrofitBuilder = Retrofit.Builder()
-                .baseUrl(BASE_URL)
+                .baseUrl(baseUrl)
                 .client(builder.build())
                 .addConverterFactory(GsonConverterFactory.create(gson))
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())

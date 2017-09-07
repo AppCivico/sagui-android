@@ -33,26 +33,35 @@ open class CircleImageView : AppCompatImageView {
 
     private var mBitmap: Bitmap? = null
     private var mBitmapShader: BitmapShader? = null
-    private var mBitmapWidth: Int = 0
-    private var mBitmapHeight: Int = 0
+    private var mBitmapWidth = 0
+    private var mBitmapHeight = 0
 
-    private var mDrawableRadius: Float = 0.toFloat()
-    private var mBorderRadius: Float = 0.toFloat()
+    private var mDrawableRadius = 0.toFloat()
+    private var mBorderRadius = 0.toFloat()
 
-    private var mReady: Boolean = false
-    private var mSetupPending: Boolean = false
+    private var mReady = false
+    private var mSetupPending = false
+
+    var disableCircularTransformation = false
+        set(value) {
+            if (field != value) {
+                field = value
+                initializeBitmap()
+            }
+        }
 
     constructor(context: Context) : super(context) {
         init()
     }
 
     @JvmOverloads
-    constructor(context: Context, attrs: AttributeSet, defStyle: Int = 0) : super(context, attrs, defStyle) {
+    constructor(context: Context, attrs: AttributeSet?, defStyle: Int = 0) : super(context, attrs, defStyle) {
         val a = context.obtainStyledAttributes(attrs, R.styleable.CircleImageView, defStyle, 0)
 
         mBorderWidth = a.getDimensionPixelSize(R.styleable.CircleImageView_civ_border_width, mBorderWidth)
         mBorderColor = a.getColor(R.styleable.CircleImageView_civ_border_color, mBorderColor)
         mFillColor = a.getColor(R.styleable.CircleImageView_civ_fill_color, mFillColor)
+        disableCircularTransformation = a.getBoolean(R.styleable.CircleImageView_civ_disable_circular, disableCircularTransformation)
 
         a.recycle()
 
@@ -71,6 +80,10 @@ open class CircleImageView : AppCompatImageView {
     override fun getScaleType() = SCALE_TYPE
 
     override fun onDraw(canvas: Canvas) {
+        if (disableCircularTransformation) {
+            super.onDraw(canvas)
+            return
+        }
         if (mBitmap == null) {
             return
         }

@@ -40,6 +40,7 @@ class DashboardActivity : BaseActivityNavDrawer() {
     companion object {
         val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
 
+        @JvmStatic
         fun getIntent(context: Context, enterprise: Enterprise): Intent {
             val intent = Intent(context, DashboardActivity::class.java)
             intent.putExtra(EXTRA_ENTERPRISE, enterprise)
