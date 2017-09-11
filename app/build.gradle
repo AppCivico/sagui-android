@@ -5,6 +5,12 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'realm-android'
 apply plugin: 'io.fabric'
 
+// App version
+ext.versionMajor = 0;
+ext.versionMinor = 1;
+ext.versionPatch = 2;
+ext.jenkinsBuildNumber = Integer.valueOf(System.env.BUILD_NUMBER ?: 0)
+
 android {
     compileSdkVersion 25
     buildToolsVersion '26.0.1'
@@ -12,8 +18,8 @@ android {
         applicationId "com.eokoe.sagui"
         minSdkVersion 9
         targetSdkVersion 25
-        versionCode 1
-        versionName "1.0"
+        versionCode computeVersionCode()
+        versionName computeVersionName()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
         manifestPlaceholders = [
@@ -74,4 +80,12 @@ dependencies {
     androidTestCompile("com.android.support.test.espresso:espresso-core:$espressoVersion", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
+}
+
+def computeVersionName() {
+    return "${versionMajor}.${versionMinor}.${versionPatch}"
+}
+
+def computeVersionCode() {
+    return (versionMajor * 100_000) + (versionMinor * 10_000) + (versionPatch * 1_000) + jenkinsBuildNumber
 }
