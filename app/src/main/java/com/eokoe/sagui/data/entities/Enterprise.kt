@@ -12,7 +12,7 @@ import paperparcel.PaperParcelable
 @PaperParcel
 open class Enterprise(
         @PrimaryKey
-        open var id: Int = 0,
+        open var id: String = "",
         open var name: String = "",
         open var description: String? = null,
         open var location: Location = Location(),

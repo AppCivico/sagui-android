@@ -15,7 +15,7 @@ interface SurveyService {
     fun enterprises(): Observable<List<Enterprise>>
 
     @GET("categories")
-    fun categories(@Query("enterprise") enterprise: Int): Observable<List<Category>>
+    fun categories(@Query("enterprise") enterprise: String): Observable<List<Category>>
 
     @GET("surveys")
     fun surveys(@Query("category") category: Int): Observable<List<Survey>>

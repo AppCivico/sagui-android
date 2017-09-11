@@ -51,25 +51,8 @@ class SurveyModelImpl : SurveyModel {
         }
     }
 
-    override fun getEnterprises(): Observable<List<Enterprise>> {
-        Realm.getDefaultInstance().use { realm ->
-            val results = realm.where(Enterprise::class.java).findAll()
-            return if (results.isNotEmpty()) {
-                val enterprises = realm.copyFromRealm(results)
-                Observable.just(enterprises)
-            } else {
-                ServiceGenerator.getService(SurveyService::class.java).enterprises()
-                        .map { enterprises ->
-                            Realm.getDefaultInstance().use { realm ->
-                                realm.beginTransaction()
-                                realm.copyToRealmOrUpdate(enterprises)
-                                realm.commitTransaction()
-                            }
-                            return@map enterprises
-                        }
-            }
-        }
-    }
+    override fun getEnterprises() =
+            ServiceGenerator.getService(SurveyService::class.java).enterprises()
 
     override fun getCategories(enterprise: Enterprise) =
             ServiceGenerator.getService(SurveyService::class.java).categories(enterprise.id)

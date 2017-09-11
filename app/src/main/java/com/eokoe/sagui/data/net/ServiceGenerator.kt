@@ -34,6 +34,8 @@ object ServiceGenerator {
             builder.addInterceptor(loggingInterceptor)
         }
 
+        builder.addInterceptor(RequestInterceptor())
+
         retrofitBuilder = Retrofit.Builder()
                 .baseUrl(baseUrl)
                 .client(builder.build())
