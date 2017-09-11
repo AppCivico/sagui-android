@@ -41,7 +41,7 @@
     </style>
 
     <style name="Button.Transparent" parent="Button">
-        <item name="android:textColor">@drawable/color_accent</item>
+        <item name="android:textColor">@drawable/color_text_button</item>
         <item name="android:background">?attr/selectableItemBackground</item>
     </style>
 

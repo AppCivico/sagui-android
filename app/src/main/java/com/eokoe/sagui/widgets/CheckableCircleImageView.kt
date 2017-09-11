@@ -23,7 +23,7 @@ import com.eokoe.sagui.utils.UnitUtils
  * [android.widget.AbsListView] elements with a
  * [choiceMode][android.widget.AbsListView.setChoiceMode] set.
  */
-class CheckableCircleImageView : CircleImageView, Checkable {
+class CheckableCircleImageView : CircleImageView, Checkable, View.OnClickListener {
 
     private var mChecked = false
     private var mRadioGroup: RadioGroup? = null
@@ -94,10 +94,7 @@ class CheckableCircleImageView : CircleImageView, Checkable {
 
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
-        super.setOnClickListener {
-            isChecked = !isChecked
-            mOnClickListener?.onClick(it)
-        }
+        super.setOnClickListener(this)
         mRadioGroup = parent as? RadioGroup
     }
 
@@ -115,6 +112,11 @@ class CheckableCircleImageView : CircleImageView, Checkable {
 
     fun setOnCheckedChangeListener(listener: OnCheckedChangeListener) {
         mOnCheckedChangeListener = listener
+    }
+
+    override fun onClick(v: View?) {
+        isChecked = true
+        mOnClickListener?.onClick(v)
     }
 
     companion object {

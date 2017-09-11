@@ -4,8 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
+import android.support.v7.widget.GridLayout
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
 import com.eokoe.sagui.R
@@ -20,6 +22,7 @@ import com.eokoe.sagui.features.surveys.survey.note.NoteActivity
 import com.eokoe.sagui.widgets.CheckableCircleImageView
 import kotlinx.android.synthetic.main.activity_questions.*
 import kotlinx.android.synthetic.main.content_questions.*
+
 
 /**
  * @author Pedro Silva
@@ -96,9 +99,7 @@ class SurveyActivity : BaseActivity(),
                 buildViewText()
             }
             Question.Type.MULTIPLE -> {
-                btnNext.setOnClickListener {
-                    presenter.answer("")
-                }
+                buildViewMultiple(question)
             }
             Question.Type.TRAFFIC_LIGHT -> {
                 buildViewTrafficLight(question)
@@ -124,6 +125,30 @@ class SurveyActivity : BaseActivity(),
         }
     }
 
+    private fun buildViewMultiple(question: Question) {
+        val viewAnswer = layoutInflater.inflate(R.layout.answer_multiple, rlAnswer, false) as GridLayout
+        var answerSelected: Answer? = null
+        var answerSelectedView: RadioButton? = null
+        question.answers?.forEach { answer ->
+            val view = layoutInflater.inflate(R.layout.answer_multiple_radio, viewAnswer, false) as RadioButton
+            view.text = answer.title
+            view.setOnClickListener {
+                if (it != answerSelectedView) {
+                    if (answerSelectedView != null)
+                        answerSelectedView!!.isChecked = false
+                    answerSelected = answer
+                    answerSelectedView = it as RadioButton
+                    btnNext.enable()
+                }
+            }
+            viewAnswer.addView(view)
+        }
+        rlAnswer.addView(viewAnswer)
+        btnNext.setOnClickListener {
+            presenter.answer(answerSelected!!)
+        }
+    }
+
     private fun buildViewTrafficLight(question: Question) {
         val viewAnswer = layoutInflater.inflate(R.layout.answer_traffic_light, rlAnswer, false) as RadioGroup
         var answerSelected: Answer? = null
@@ -136,11 +161,9 @@ class SurveyActivity : BaseActivity(),
                 override fun onCheckedChanged(view: CheckableCircleImageView, checked: Boolean) {
                     view.setEnableText(checked)
                     if (checked) answerSelected = answer
+                    btnNext.enable()
                 }
             })
-        }
-        viewAnswer.setOnCheckedChangeListener { group, checkedId ->
-            btnNext.isEnabled = checkedId != -1
         }
         rlAnswer.addView(viewAnswer)
         btnNext.setOnClickListener {
