@@ -28,6 +28,7 @@ class EnterprisesPresenter constructor(private val surveyModel: SurveyModel)
         }
 
         override fun onError(e: Throwable) {
+            e.printStackTrace()
             TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
     }

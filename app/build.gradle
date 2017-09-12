@@ -6,9 +6,9 @@ apply plugin: 'realm-android'
 apply plugin: 'io.fabric'
 
 // App version
-ext.versionMajor = 0;
-ext.versionMinor = 1;
-ext.versionPatch = 2;
+ext.versionMajor = 0
+ext.versionMinor = 1
+ext.versionPatch = 2
 ext.jenkinsBuildNumber = Integer.valueOf(System.env.BUILD_NUMBER ?: 0)
 
 android {
@@ -16,7 +16,7 @@ android {
     buildToolsVersion '26.0.1'
     defaultConfig {
         applicationId "com.eokoe.sagui"
-        minSdkVersion 9
+        minSdkVersion 14
         targetSdkVersion 25
         versionCode computeVersionCode()
         versionName computeVersionName()

@@ -12,21 +12,34 @@ import java.util.*
  * @since 20/07/17
  */
 
-class RequestInterceptor internal constructor() : Interceptor {
-    private var USER_AGENT = "Android " + Build.VERSION.RELEASE +
-            "/Model " + Build.BRAND + " " + Build.MODEL +
-            "/SFH " + BuildConfig.VERSION_NAME +
-            "/Time %s %s"
+class RequestInterceptor(
+        private val apiKeyManager: ApiKeyManager
+) : Interceptor {
 
     @Throws(IOException::class)
     override fun intercept(chain: Interceptor.Chain): Response {
         val original = chain.request()
-        val timezone = Calendar.getInstance().timeZone.id
         val request = original.newBuilder()
-                .header("User-Agent", String.format(USER_AGENT, System.currentTimeMillis(), timezone))
+                .header("User-Agent", USER_AGENT)
                 .header("Charset", "UTF-8")
                 .method(original.method(), original.body())
-                .build()
-        return chain.proceed(request)
+
+        if (apiKeyManager.hasApiKey()) {
+            request.header("X-API-KEY", apiKeyManager.getApiKey())
+        }
+        return chain.proceed(request.build())
+    }
+
+    companion object {
+        val USER_AGENT: String
+            get() = String.format(
+                    "Android %s/Model %s %s/Sagui %s/Time %s %s",
+                    Build.VERSION.RELEASE,
+                    Build.BRAND,
+                    Build.MODEL,
+                    BuildConfig.VERSION_NAME,
+                    System.currentTimeMillis(),
+                    Calendar.getInstance().timeZone.id
+            )
     }
 }

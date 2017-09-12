@@ -1,5 +1,6 @@
 package com.eokoe.sagui.data.net
 
+import android.content.Context
 import com.eokoe.sagui.BuildConfig
 import com.eokoe.sagui.data.entities.LatLong
 import com.google.gson.GsonBuilder
@@ -18,7 +19,7 @@ object ServiceGenerator {
 
     private lateinit var retrofitBuilder: Retrofit.Builder
 
-    fun init(baseUrl: String) {
+    fun init(context: Context, baseUrl: String) {
         this.baseUrl = baseUrl
 
         val gson = GsonBuilder()
@@ -34,7 +35,10 @@ object ServiceGenerator {
             builder.addInterceptor(loggingInterceptor)
         }
 
-        builder.addInterceptor(RequestInterceptor())
+        val apiKeyManager = ApiKeyManagerImpl(context, baseUrl)
+
+        builder.addInterceptor(RequestInterceptor(apiKeyManager))
+        builder.addInterceptor(AuthenticatorInterceptor(apiKeyManager))
 
         retrofitBuilder = Retrofit.Builder()
                 .baseUrl(baseUrl)
