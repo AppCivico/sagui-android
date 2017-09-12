@@ -68,6 +68,16 @@ class EnterprisesActivity : BaseActivityNavDrawer(), ViewPresenter<EnterprisesCo
         enterprisesAdapter.items = enterprises
     }
 
+    override fun showLoading() {
+    }
+
+    override fun hideLoading() {
+    }
+
+    override fun showError(error: Throwable) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     override fun navigateToDashboard(enterprise: Enterprise) {
         startActivity(DashboardActivity.getIntent(this, enterprise))
         finish()

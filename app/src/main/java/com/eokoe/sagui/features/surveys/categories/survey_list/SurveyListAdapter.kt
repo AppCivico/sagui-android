@@ -14,9 +14,6 @@ import kotlinx.android.synthetic.main.item_survey.view.*
  */
 class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder>() {
 
-    private val HEADER_VIEW_TYPE = 0
-    private val ITEM_VIEW_TYPE = 1
-
     var onItemClickListener: OnItemClickListener? = null
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {

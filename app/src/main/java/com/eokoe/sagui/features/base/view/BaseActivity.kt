@@ -1,7 +1,10 @@
 package com.eokoe.sagui.features.base.view
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Bundle
+import android.support.v4.app.ActivityCompat
 import android.support.v4.content.IntentCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
@@ -57,4 +60,14 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     abstract fun init(savedInstanceState: Bundle?)
+
+    fun hasLocationPermission() =
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+                    PackageManager.PERMISSION_GRANTED
+
+    fun requestLocationPermission(requestCode: Int) {
+        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION),
+                requestCode)
+    }
 }

@@ -89,7 +89,6 @@ class SurveyActivity : BaseActivity(),
 
     override fun loadQuestion(question: Question) {
         tvSurveyTitle.text = question.name
-        tvQuestion.text = question.description
         rlAnswer.removeAllViews()
         btnNext.disable()
         when (question.type) {

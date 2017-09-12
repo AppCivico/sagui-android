@@ -2,6 +2,8 @@ package com.eokoe.sagui.features.enterprises
 
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.features.base.presenter.BasePresenter
+import com.eokoe.sagui.features.base.view.ViewError
+import com.eokoe.sagui.features.base.view.ViewLoading
 import io.reactivex.Observable
 
 /**
@@ -9,7 +11,7 @@ import io.reactivex.Observable
  * @since 29/08/17
  */
 interface EnterprisesContract {
-    interface View {
+    interface View : ViewLoading, ViewError {
         fun load(enterprises: List<Enterprise>)
         fun navigateToDashboard(enterprise: Enterprise)
     }

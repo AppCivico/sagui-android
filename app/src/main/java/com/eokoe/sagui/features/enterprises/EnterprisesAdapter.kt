@@ -14,9 +14,6 @@ import kotlinx.android.synthetic.main.item_enterprise.view.*
  */
 class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHolder>() {
 
-    private val HEADER_VIEW_TYPE = 0
-    private val ITEM_VIEW_TYPE = 1
-
     var onItemClickListener: OnItemClickListener? = null
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {

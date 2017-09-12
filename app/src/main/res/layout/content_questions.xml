@@ -64,21 +64,10 @@
                 android:textColor="@color/colorTextPrimary"
                 android:textSize="24sp"/>
 
-            <TextView
-                android:id="@+id/tvQuestion"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:textColor="@color/colorTextSecondary"
-                android:textSize="18sp"/>
-
             <RelativeLayout
                 android:id="@+id/rlAnswer"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-
-            </RelativeLayout>
+                android:layout_height="wrap_content"/>
 
             <View
                 android:layout_width="match_parent"

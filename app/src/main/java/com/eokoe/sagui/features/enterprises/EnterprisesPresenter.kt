@@ -3,6 +3,7 @@ package com.eokoe.sagui.features.enterprises
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.SurveyModel
 import com.eokoe.sagui.features.base.presenter.BasePresenterImpl
+import io.reactivex.Observable
 import io.reactivex.observers.DisposableObserver
 
 /**
@@ -15,8 +16,10 @@ class EnterprisesPresenter constructor(private val surveyModel: SurveyModel)
     override fun setEnterprise(enterprise: Enterprise) =
             exec(surveyModel.selectEnterprise(enterprise), SaveEnterpriseObserver())
 
-    override fun list() =
-            exec(surveyModel.getEnterprises(), EnterprisesObserver())
+    override fun list(): Observable<List<Enterprise>> {
+        view?.showLoading()
+        return exec(surveyModel.getEnterprises(), EnterprisesObserver())
+    }
 
     inner class EnterprisesObserver : DisposableObserver<List<Enterprise>>() {
         override fun onNext(enterprises: List<Enterprise>) {
@@ -24,12 +27,11 @@ class EnterprisesPresenter constructor(private val surveyModel: SurveyModel)
         }
 
         override fun onComplete() {
-
+            view?.hideLoading()
         }
 
         override fun onError(e: Throwable) {
-            e.printStackTrace()
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            view?.showError(e)
         }
     }
 
@@ -39,11 +41,9 @@ class EnterprisesPresenter constructor(private val surveyModel: SurveyModel)
         }
 
         override fun onComplete() {
-
         }
 
         override fun onError(e: Throwable) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
     }
 }

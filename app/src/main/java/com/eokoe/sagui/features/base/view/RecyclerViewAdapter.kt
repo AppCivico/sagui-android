@@ -15,6 +15,11 @@ import android.widget.TextView
  */
 abstract class RecyclerViewAdapter<E, VH : RecyclerView.ViewHolder> : RecyclerView.Adapter<VH>() {
 
+    protected val HEADER_VIEW_TYPE = 0
+    protected val ITEM_VIEW_TYPE = 1
+    protected val LOADING_VIEW_TYPE = 2
+    protected val ERROR_VIEW_TYPE = 3
+
     private val itemList = ArrayList<E>()
 
     var items: Collection<E>?

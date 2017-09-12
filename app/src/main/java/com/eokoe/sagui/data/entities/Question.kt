@@ -11,7 +11,6 @@ import paperparcel.PaperParcelable
 data class Question(
         val id: String? = null,
         val name: String,
-        val description: String? = null,
         val type: Type,
         val answers: List<Answer>? = null
 ) : PaperParcelable {

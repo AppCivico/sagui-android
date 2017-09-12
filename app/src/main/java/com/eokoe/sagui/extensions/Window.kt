@@ -23,9 +23,9 @@ fun Window.statusBarOverlay() {
 
 fun Window.restoreStatusBarColor() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-        statusBarColor = ContextCompat.getColor(context, R.color.colorPrimaryDark)
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_VISIBLE
         }
+        statusBarColor = ContextCompat.getColor(context, R.color.colorPrimaryDark)
     }
 }
