@@ -3,7 +3,6 @@ package com.eokoe.sagui.features.enterprises
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
 import android.view.MenuItem
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Enterprise
@@ -24,10 +23,11 @@ class EnterprisesActivity : BaseActivityNavDrawer(), ViewPresenter<EnterprisesCo
         setContentView(R.layout.activity_enterprises)
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+    // TODO create filter layout
+    /*override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.main, menu)
         return true
-    }
+    }*/
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {

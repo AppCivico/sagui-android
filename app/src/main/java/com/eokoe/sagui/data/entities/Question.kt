@@ -9,8 +9,8 @@ import paperparcel.PaperParcelable
  */
 @PaperParcel
 data class Question(
-        val id: Int? = null,
-        val title: String,
+        val id: String? = null,
+        val name: String,
         val description: String? = null,
         val type: Type,
         val answers: List<Answer>? = null

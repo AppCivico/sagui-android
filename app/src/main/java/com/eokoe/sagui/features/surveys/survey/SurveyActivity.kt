@@ -33,6 +33,8 @@ class SurveyActivity : BaseActivity(),
 
     override lateinit var presenter: SurveyContract.Presenter
 
+    private var statusBarColor: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_questions)
@@ -48,12 +50,7 @@ class SurveyActivity : BaseActivity(),
     @Suppress("UNCHECKED_CAST")
     override fun init(savedInstanceState: Bundle?) {
         val category: Category = intent.extras.getParcelable(EXTRA_CATEGORY)
-        title = getString(R.string.title_activity_survey, category.title.toLowerCase())
-
-        /*if (Build.VERSION.SDK_INT >= 23) {
-            val decor = window.decorView
-            decor.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
-        }*/
+        title = getString(R.string.title_activity_survey, category.name.toLowerCase())
 
         val survey: Survey = intent.extras.getParcelable(EXTRA_SURVEY)
         presenter.setSurvey(survey)
@@ -87,10 +84,11 @@ class SurveyActivity : BaseActivity(),
         loadQuestion(question)
         backdrop.showAnimated()
         rlQuestionsBox.showSlidingTop()
+        window.statusBarOverlay()
     }
 
     override fun loadQuestion(question: Question) {
-        tvSurveyTitle.text = question.title
+        tvSurveyTitle.text = question.name
         tvQuestion.text = question.description
         rlAnswer.removeAllViews()
         btnNext.disable()
@@ -182,6 +180,7 @@ class SurveyActivity : BaseActivity(),
     override fun hideQuestions() {
         rlQuestionsBox.hideSlidingBottom()
         backdrop.hideAnimated()
+        window.restoreStatusBarColor()
     }
 
     override fun finalize() {

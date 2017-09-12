@@ -1,5 +1,6 @@
 package com.eokoe.sagui.data.entities
 
+import com.google.gson.annotations.SerializedName
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
 
@@ -8,9 +9,10 @@ import paperparcel.PaperParcelable
  */
 @PaperParcel
 data class Survey(
-        val id: Int,
-        val title: String,
-        val category: Int,
+        val id: String,
+        val name: String,
+        @SerializedName("axis")
+        val categories: List<String>,
         val questions: List<Question>
 ) : PaperParcelable {
     companion object {

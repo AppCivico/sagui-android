@@ -41,7 +41,7 @@ class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder>()
 
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(survey: Survey) {
-            itemView.tvSurveyTitle.text = survey.title
+            itemView.tvSurveyTitle.text = survey.name
             itemView.setOnClickListener {
                 onItemClickListener?.onClick(survey)
             }

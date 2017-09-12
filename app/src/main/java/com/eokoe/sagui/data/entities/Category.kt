@@ -9,8 +9,8 @@ import paperparcel.PaperParcelable
  */
 @PaperParcel
 data class Category(
-        val id: Int,
-        val title: String
+        var id: String,
+        var name: String
 ) : PaperParcelable {
     companion object {
         @JvmField val CREATOR = PaperParcelCategory.CREATOR
