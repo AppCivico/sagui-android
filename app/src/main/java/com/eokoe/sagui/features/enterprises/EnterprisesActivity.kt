@@ -7,7 +7,9 @@ import android.view.MenuItem
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.impl.SurveyModelImpl
+import com.eokoe.sagui.extensions.friendlyMessage
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
+import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.dashboard.DashboardActivity
 import com.eokoe.sagui.features.enterprises.filter.EnterprisesFilterActivity
@@ -77,12 +79,16 @@ class EnterprisesActivity : BaseActivityNavDrawer(), ViewPresenter<EnterprisesCo
     }
 
     override fun showError(error: Throwable) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        enterprisesAdapter.showError(error.friendlyMessage, object : RecyclerViewAdapter.OnRetryClickListener {
+            override fun retry() {
+                enterprisesAdapter.clearError()
+                presenter.list()
+            }
+        })
     }
 
     override fun navigateToDashboard(enterprise: Enterprise) {
         startActivity(DashboardActivity.getIntent(this, enterprise))
-        finish()
     }
 
     companion object {

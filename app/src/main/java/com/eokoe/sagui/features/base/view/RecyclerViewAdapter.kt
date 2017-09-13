@@ -31,6 +31,9 @@ abstract class RecyclerViewAdapter<E, VH : RecyclerView.ViewHolder> : RecyclerVi
             notifyDataSetChanged()
         }
 
+    protected var error: String? = null
+    protected var retryClickListener: OnRetryClickListener? = null
+
     fun inflate(@LayoutRes layout: Int, parent: ViewGroup): View =
             LayoutInflater.from(parent.context).inflate(layout, parent, false)
 
@@ -48,6 +51,20 @@ abstract class RecyclerViewAdapter<E, VH : RecyclerView.ViewHolder> : RecyclerVi
                 notifyItemRangeChanged(count, itemList.size)
             }
         }
+    }
+
+    fun hasError() = error != null
+
+    fun showError(error: String, retryClickListener: OnRetryClickListener? = null) {
+        this.error = error
+        this.retryClickListener = retryClickListener
+        notifyDataSetChanged()
+    }
+
+    fun clearError() {
+        this.error = null
+        this.retryClickListener = null
+        notifyDataSetChanged()
     }
 
     open inner class SimpleViewHolder(view: View) : RecyclerView.ViewHolder(view)
@@ -77,5 +94,9 @@ abstract class RecyclerViewAdapter<E, VH : RecyclerView.ViewHolder> : RecyclerVi
         fun bind(@StringRes text: Int) {
             bind(itemView.context.getString(text))
         }
+    }
+
+    interface OnRetryClickListener {
+        fun retry()
     }
 }
