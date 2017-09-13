@@ -33,7 +33,7 @@ class SurveyListFragment: BaseFragment(),
     override fun setUp(view: View?, savedInstanceState: Bundle?) {
         super.setUp(view, savedInstanceState)
         presenter = SurveyListPresenter(SurveyModelImpl())
-        surveyListAdapter = SurveyListAdapter()
+        surveyListAdapter = SurveyListAdapter(surveys == null)
     }
 
     override fun init(view: View?, savedInstanceState: Bundle?) {
@@ -59,6 +59,14 @@ class SurveyListFragment: BaseFragment(),
     override fun load(surveys: List<Survey>) {
         this.surveys = ArrayList(surveys)
         surveyListAdapter.items = surveys
+    }
+
+    override fun showLoading() {
+        surveyListAdapter.isShowLoading = true
+    }
+
+    override fun hideLoading() {
+        surveyListAdapter.isShowLoading = false
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {

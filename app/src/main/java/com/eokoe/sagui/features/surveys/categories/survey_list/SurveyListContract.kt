@@ -3,6 +3,7 @@ package com.eokoe.sagui.features.surveys.categories.survey_list
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Survey
 import com.eokoe.sagui.features.base.presenter.BasePresenter
+import com.eokoe.sagui.features.base.view.ViewLoading
 import io.reactivex.Observable
 
 /**
@@ -10,7 +11,7 @@ import io.reactivex.Observable
  * @since 23/08/17
  */
 interface SurveyListContract {
-    interface View {
+    interface View : ViewLoading {
         fun load(surveys: List<Survey>)
     }
 
