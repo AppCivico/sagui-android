@@ -1,5 +1,6 @@
 package com.eokoe.sagui.data.entities
 
+import com.google.gson.annotations.SerializedName
 import io.realm.RealmObject
 import io.realm.annotations.PrimaryKey
 import paperparcel.PaperParcel
@@ -15,7 +16,8 @@ open class Enterprise(
         open var id: String = "",
         open var name: String = "",
         open var description: String? = null,
-        open var location: Location = Location(),
+        @SerializedName("human_address")
+        open var address: String = "",
         open var data: Data = Data(),
         open var selected: Boolean = false
 ) : PaperParcelable, RealmObject() {

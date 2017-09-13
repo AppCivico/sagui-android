@@ -9,7 +9,7 @@ import paperparcel.PaperParcelable
  */
 @PaperParcel
 data class Answer(
-        var unit: Unit? = null,
+        val unit: Unit? = null,
         val title: String
 ) : PaperParcelable {
     enum class Unit {

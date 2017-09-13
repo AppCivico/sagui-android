@@ -45,7 +45,7 @@ class EnterprisesActivity : BaseActivityNavDrawer(), ViewPresenter<EnterprisesCo
 
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
-        enterprisesAdapter = EnterprisesAdapter()
+        enterprisesAdapter = EnterprisesAdapter(true)
         presenter = EnterprisesPresenter(SurveyModelImpl())
     }
 
@@ -69,9 +69,11 @@ class EnterprisesActivity : BaseActivityNavDrawer(), ViewPresenter<EnterprisesCo
     }
 
     override fun showLoading() {
+        enterprisesAdapter.isShowLoading = true
     }
 
     override fun hideLoading() {
+        enterprisesAdapter.isShowLoading = false
     }
 
     override fun showError(error: Throwable) {
