@@ -30,13 +30,6 @@ class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHold
         this.isShowLoading = isShowLoading
     }
 
-    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        when (holder.itemViewType) {
-            ITEM_VIEW_TYPE -> (holder as ItemViewHolder).bind(getItem(position))
-            ERROR_VIEW_TYPE -> (holder as ErrorViewHolder).bind(error, retryClickListener)
-        }
-    }
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             when (viewType) {
                 ITEM_VIEW_TYPE -> ItemViewHolder(inflate(R.layout.item_enterprise, parent))
@@ -44,6 +37,13 @@ class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHold
                 ERROR_VIEW_TYPE -> ErrorViewHolder(inflate(R.layout.item_error, parent))
                 else -> TextViewHolder(inflate(R.layout.item_header, parent), R.id.title, R.string.choose_enterprise)
             }
+
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
+        when (holder.itemViewType) {
+            ITEM_VIEW_TYPE -> (holder as ItemViewHolder).bind(getItem(position))
+            ERROR_VIEW_TYPE -> (holder as ErrorViewHolder).bind(error, retryClickListener)
+        }
+    }
 
     override fun getItemViewType(position: Int) =
             when {
@@ -53,10 +53,7 @@ class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHold
                 else -> HEADER_VIEW_TYPE
             }
 
-    override fun getItemCount(): Int {
-        return if (isShowLoading) 1
-        else super.getItemCount() + 1
-    }
+    override fun getItemCount() = super.getItemCount() + 1
 
     override fun getItem(position: Int) = super.getItem(position - 1)
 
