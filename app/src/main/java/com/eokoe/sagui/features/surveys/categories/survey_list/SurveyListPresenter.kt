@@ -28,8 +28,8 @@ class SurveyListPresenter constructor(private val surveyModel: SurveyModel)
             view?.hideLoading()
         }
 
-        override fun onError(e: Throwable) {
-            TODO("not implemented")
+        override fun onError(error: Throwable) {
+            view?.showError(error)
         }
     }
 }

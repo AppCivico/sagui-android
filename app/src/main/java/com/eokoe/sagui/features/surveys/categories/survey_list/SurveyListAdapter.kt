@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Survey
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
+import kotlinx.android.synthetic.main.item_error.view.*
 import kotlinx.android.synthetic.main.item_survey.view.*
 
 /**
@@ -33,24 +34,24 @@ class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder> {
             when (viewType) {
                 ITEM_VIEW_TYPE -> ItemViewHolder(inflate(R.layout.item_survey, parent))
                 LOADING_VIEW_TYPE -> SimpleViewHolder(inflate(R.layout.item_progress, parent))
+                ERROR_VIEW_TYPE -> ErrorViewHolder(inflate(R.layout.item_error, parent))
                 else -> TextViewHolder(inflate(R.layout.item_header, parent), R.id.title, R.string.choose_survey)
             }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder.itemViewType == ITEM_VIEW_TYPE) {
-            (holder as ItemViewHolder).bind(getItem(position))
+        when (holder.itemViewType) {
+            ITEM_VIEW_TYPE -> (holder as ItemViewHolder).bind(getItem(position))
+            ERROR_VIEW_TYPE -> (holder as ErrorViewHolder).bind(error, retryClickListener)
         }
     }
 
-    override fun getItemCount(): Int {
-        return if (isShowLoading) 1
-        else super.getItemCount() + 1
-    }
+    override fun getItemCount() = super.getItemCount() + 1
 
     override fun getItem(position: Int) = super.getItem(position - 1)
 
     override fun getItemViewType(position: Int) =
             when {
+                hasError() -> ERROR_VIEW_TYPE
                 isShowLoading -> LOADING_VIEW_TYPE
                 position > 0 -> ITEM_VIEW_TYPE
                 else -> HEADER_VIEW_TYPE
@@ -61,6 +62,15 @@ class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder> {
             itemView.tvSurveyTitle.text = survey.name
             itemView.setOnClickListener {
                 onItemClickListener?.onClick(survey)
+            }
+        }
+    }
+
+    inner class ErrorViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        fun bind(error: String?, retryClickListener: OnRetryClickListener?) {
+            itemView.tvError.text = error
+            itemView.ivRefresh.setOnClickListener {
+                retryClickListener?.retry()
             }
         }
     }

@@ -30,8 +30,8 @@ class EnterprisesPresenter constructor(private val surveyModel: SurveyModel)
             view?.hideLoading()
         }
 
-        override fun onError(e: Throwable) {
-            view?.showError(e)
+        override fun onError(error: Throwable) {
+            view?.showError(error)
         }
     }
 
@@ -43,7 +43,7 @@ class EnterprisesPresenter constructor(private val surveyModel: SurveyModel)
         override fun onComplete() {
         }
 
-        override fun onError(e: Throwable) {
+        override fun onError(error: Throwable) {
         }
     }
 }

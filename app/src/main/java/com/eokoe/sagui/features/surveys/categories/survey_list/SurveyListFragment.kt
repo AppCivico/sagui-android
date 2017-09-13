@@ -8,7 +8,9 @@ import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Survey
 import com.eokoe.sagui.data.model.impl.SurveyModelImpl
+import com.eokoe.sagui.extensions.friendlyMessage
 import com.eokoe.sagui.features.base.view.BaseFragment
+import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.surveys.survey.SurveyActivity
 import kotlinx.android.synthetic.main.fragment_survey_list.*
@@ -67,6 +69,15 @@ class SurveyListFragment: BaseFragment(),
 
     override fun hideLoading() {
         surveyListAdapter.isShowLoading = false
+    }
+
+    override fun showError(error: Throwable) {
+        surveyListAdapter.showError(error.friendlyMessage, object : RecyclerViewAdapter.OnRetryClickListener {
+            override fun retry() {
+                surveyListAdapter.clearError()
+                presenter.list(category!!)
+            }
+        })
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
