@@ -16,14 +16,18 @@ class SurveyModelImpl : SurveyModel {
         return Observable.create { emitter ->
             Realm.getDefaultInstance().use { realm ->
                 try {
+                    enterprise.selected = true
                     realm.beginTransaction()
-                    realm.where(Enterprise::class.java)
+                    val enterprises = realm.where(Enterprise::class.java)
                             .equalTo("id", enterprise.id).or()
                             .equalTo("selected", true)
                             .findAll()
-                            .map { it.selected = it.id == enterprise.id }
+                    if (enterprises.isNotEmpty()) {
+                        enterprises.map { it.selected = it.id == enterprise.id }
+                    } else {
+                        realm.insertOrUpdate(enterprise)
+                    }
                     realm.commitTransaction()
-                    enterprise.selected = true
                     emitter.onNext(enterprise)
                     emitter.onComplete()
                 } catch (error: Exception) {
