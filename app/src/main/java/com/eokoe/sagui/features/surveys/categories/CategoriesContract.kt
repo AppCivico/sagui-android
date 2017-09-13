@@ -3,6 +3,7 @@ package com.eokoe.sagui.features.surveys.categories
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.features.base.presenter.BasePresenter
+import com.eokoe.sagui.features.base.view.ViewLoading
 import io.reactivex.Observable
 
 /**
@@ -10,7 +11,7 @@ import io.reactivex.Observable
  * @since 16/08/17
  */
 interface CategoriesContract {
-    interface View {
+    interface View : ViewLoading {
         fun load(categories: List<Category>)
     }
 

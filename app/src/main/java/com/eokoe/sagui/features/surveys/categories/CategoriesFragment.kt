@@ -33,7 +33,7 @@ class CategoriesFragment : BaseFragment(),
     override fun setUp(view: View?, savedInstanceState: Bundle?) {
         super.setUp(view, savedInstanceState)
         presenter = CategoriesPresenter(SurveyModelImpl())
-        categoriesAdapter = CategoriesAdapter()
+        categoriesAdapter = CategoriesAdapter(categories == null)
         enterprise = arguments.getParcelable(EXTRA_ENTERPRISE)
     }
 
@@ -61,6 +61,14 @@ class CategoriesFragment : BaseFragment(),
     override fun load(categories: List<Category>) {
         this.categories = ArrayList(categories)
         categoriesAdapter.items = categories
+    }
+
+    override fun showLoading() {
+        categoriesAdapter.isShowLoading = true
+    }
+
+    override fun hideLoading() {
+        categoriesAdapter.isShowLoading = false
     }
 
     override fun onViewStateRestored(savedInstanceState: Bundle?) {
