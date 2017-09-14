@@ -2,6 +2,7 @@ package com.eokoe.sagui.data.model.impl
 
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Enterprise
+import com.eokoe.sagui.data.entities.Submissions
 import com.eokoe.sagui.data.model.SurveyModel
 import com.eokoe.sagui.data.net.ServiceGenerator
 import com.eokoe.sagui.data.net.services.SurveyService
@@ -12,6 +13,7 @@ import io.realm.Realm
  * @author Pedro Silva
  */
 class SurveyModelImpl : SurveyModel {
+
     override fun selectEnterprise(enterprise: Enterprise): Observable<Enterprise> {
         return Observable.create { emitter ->
             Realm.getDefaultInstance().use { realm ->
@@ -63,4 +65,9 @@ class SurveyModelImpl : SurveyModel {
 
     override fun getSurveyList(category: Category) =
             ServiceGenerator.getService(SurveyService::class.java).surveys(category.id)
+
+    override fun sendAnswers(submissions: Submissions) : Observable<Submissions> {
+        // TODO call API
+        return Observable.just(submissions)
+    }
 }

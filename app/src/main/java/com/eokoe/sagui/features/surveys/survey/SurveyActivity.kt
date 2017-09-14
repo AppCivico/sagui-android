@@ -15,6 +15,7 @@ import com.eokoe.sagui.data.entities.Answer
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Question
 import com.eokoe.sagui.data.entities.Survey
+import com.eokoe.sagui.data.model.impl.SurveyModelImpl
 import com.eokoe.sagui.extensions.*
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
@@ -43,7 +44,7 @@ class SurveyActivity : BaseActivity(),
 
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
-        presenter = SurveyPresenter()
+        presenter = SurveyPresenter(SurveyModelImpl())
         showBackButton()
     }
 
@@ -58,15 +59,12 @@ class SurveyActivity : BaseActivity(),
         btnClose.setOnClickListener {
             hideQuestions()
         }
-
         btnStart.setOnClickListener {
             presenter.start()
         }
-
         btnNo.setOnClickListener {
             surveyAnswered()
         }
-
         btnYes.setOnClickListener {
             startActivityForResult(NoteActivity.getIntent(this@SurveyActivity), REQUEST_NOTES)
         }
@@ -93,7 +91,7 @@ class SurveyActivity : BaseActivity(),
         btnNext.disable()
         when (question.type) {
             Question.Type.TEXT -> {
-                buildViewText()
+                buildViewText(question)
             }
             Question.Type.MULTIPLE -> {
                 buildViewMultiple(question)
@@ -104,7 +102,7 @@ class SurveyActivity : BaseActivity(),
         }
     }
 
-    private fun buildViewText() {
+    private fun buildViewText(question: Question) {
         val viewAnswer = layoutInflater.inflate(R.layout.answer_text, rlAnswer, false) as TextInputLayout
         rlAnswer.addView(viewAnswer)
         viewAnswer.editText?.addTextChangedListener(object : TextWatcher {
@@ -118,7 +116,7 @@ class SurveyActivity : BaseActivity(),
 
         })
         btnNext.setOnClickListener {
-            presenter.answer(viewAnswer.editText?.text.toString())
+            presenter.answer(question.id, viewAnswer.editText?.text.toString())
         }
     }
 
@@ -128,7 +126,7 @@ class SurveyActivity : BaseActivity(),
         var answerSelectedView: RadioButton? = null
         question.answers?.forEach { answer ->
             val view = layoutInflater.inflate(R.layout.answer_multiple_radio, viewAnswer, false) as RadioButton
-            view.text = answer.title
+            view.text = answer.value
             view.setOnClickListener {
                 if (it != answerSelectedView) {
                     if (answerSelectedView != null)
@@ -142,7 +140,7 @@ class SurveyActivity : BaseActivity(),
         }
         rlAnswer.addView(viewAnswer)
         btnNext.setOnClickListener {
-            presenter.answer(answerSelected!!)
+            presenter.answer(question.id, answerSelected!!)
         }
     }
 
@@ -153,7 +151,7 @@ class SurveyActivity : BaseActivity(),
             val resId = resources.getIdentifier(answer.unit?.name?.toLowerCase(), "id", packageName)
             val check = viewAnswer.findViewById(resId) as CheckableCircleImageView
             check.setEnableText(false)
-            check.setText(answer.title)
+            check.setText(answer.value)
             check.setOnCheckedChangeListener(object : CheckableCircleImageView.OnCheckedChangeListener {
                 override fun onCheckedChanged(view: CheckableCircleImageView, checked: Boolean) {
                     view.setEnableText(checked)
@@ -164,7 +162,7 @@ class SurveyActivity : BaseActivity(),
         }
         rlAnswer.addView(viewAnswer)
         btnNext.setOnClickListener {
-            presenter.answer(answerSelected!!)
+            presenter.answer(question.id, answerSelected!!)
         }
     }
 
@@ -182,10 +180,28 @@ class SurveyActivity : BaseActivity(),
         window.restoreStatusBarColor()
     }
 
-    override fun finalize() {
+    override fun finalize(answers: List<Answer>) {
+        hideQuestions()
+        // TODO send location
+        presenter.sendAnswers(answers, null)
+    }
+
+    override fun answersSent() {
         actionsStart.hide()
         actionsFinal.show()
-        hideQuestions()
+    }
+
+    override fun showLoading() {
+        // TODO
+    }
+
+    override fun hideLoading() {
+        // TODO
+    }
+
+    override fun showError(error: Throwable) {
+        hideLoading()
+        // TODO
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

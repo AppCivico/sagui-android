@@ -1,16 +1,21 @@
 package com.eokoe.sagui
 
 import android.app.Application
+import com.eokoe.sagui.data.AnswerListAdapter
 import com.eokoe.sagui.data.net.ServiceGenerator
 import com.eokoe.sagui.extensions.getManifestValue
 import io.realm.Realm
 import io.realm.RealmConfiguration
+import paperparcel.Adapter
+import paperparcel.ProcessorConfig
 
 /**
  * @author Pedro Silva
  * @since 14/08/17
  */
-
+@ProcessorConfig(
+        adapters = arrayOf(Adapter(AnswerListAdapter::class))
+)
 class SaguiApp : Application() {
     override fun onCreate() {
         super.onCreate()
