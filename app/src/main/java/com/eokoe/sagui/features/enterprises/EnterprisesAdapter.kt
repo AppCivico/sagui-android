@@ -49,8 +49,8 @@ class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHold
     override fun getItemViewType(position: Int) =
             when {
                 hasError() -> ERROR_VIEW_TYPE
-                itemCount == 1 -> EMPTY_LIST_VIEW_TYPE
                 isShowLoading -> LOADING_VIEW_TYPE
+                itemCount == 1 -> EMPTY_LIST_VIEW_TYPE
                 position > 0 -> ITEM_VIEW_TYPE
                 else -> HEADER_VIEW_TYPE
             }
