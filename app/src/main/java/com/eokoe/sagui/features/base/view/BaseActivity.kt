@@ -66,7 +66,7 @@ abstract class BaseActivity : AppCompatActivity() {
     abstract fun init(savedInstanceState: Bundle?)
 
     fun hasLocationPermission() =
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) !=
+            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) ==
                     PackageManager.PERMISSION_GRANTED
 
     fun requestLocationPermission(requestCode: Int) {

@@ -2,6 +2,7 @@ package com.eokoe.sagui.features.surveys.survey
 
 import android.content.Context
 import android.content.Intent
+import android.location.Location
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v7.widget.GridLayout
@@ -15,6 +16,7 @@ import com.eokoe.sagui.extensions.*
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.surveys.survey.note.NoteActivity
+import com.eokoe.sagui.utils.LocationHelper
 import com.eokoe.sagui.widgets.CheckableCircleImageView
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
 import com.jakewharton.rxbinding2.widget.RxTextView
@@ -27,13 +29,16 @@ import kotlinx.android.synthetic.main.content_questions.*
  * @since 16/08/17
  */
 class SurveyActivity : BaseActivity(),
-        SurveyContract.View, ViewPresenter<SurveyContract.Presenter> {
+        SurveyContract.View, ViewPresenter<SurveyContract.Presenter>, LocationHelper.OnLocationReceivedListener {
+
+    private val REQUEST_CODE_START_QUESTIONS = 1
+    private val REQUEST_GOOGLE_PLAY_RESOLVE_ERROR = 1001
 
     override lateinit var presenter: SurveyContract.Presenter
-
     private lateinit var progressDialog: LoadingDialog
-
     private var submissionsId: String? = null
+    private val locationHelper = LocationHelper()
+    private var location: LatLong? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -46,6 +51,7 @@ class SurveyActivity : BaseActivity(),
         showBackButton()
         presenter = SurveyPresenter(SurveyModelImpl())
         progressDialog = LoadingDialog.newInstance(getString(R.string.sending_answers))
+        locationHelper.registerOnConnectionFailed(this, REQUEST_GOOGLE_PLAY_RESOLVE_ERROR)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -60,7 +66,12 @@ class SurveyActivity : BaseActivity(),
             hideQuestions()
         }
         btnStart.setOnClickListener {
-            presenter.start()
+            if (hasLocationPermission()) {
+                requestLocation()
+                presenter.start()
+            } else {
+                requestLocationPermission(REQUEST_CODE_START_QUESTIONS)
+            }
         }
         btnNo.setOnClickListener {
             surveyAnswered()
@@ -68,6 +79,16 @@ class SurveyActivity : BaseActivity(),
         btnYes.setOnClickListener {
             startActivityForResult(NoteActivity.getIntent(this@SurveyActivity, submissionsId!!), REQUEST_NOTES)
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        locationHelper.start()
+    }
+
+    override fun onStop() {
+        locationHelper.stop()
+        super.onStop()
     }
 
     override fun onBackPressed() {
@@ -85,6 +106,79 @@ class SurveyActivity : BaseActivity(),
             window.statusBarOverlay()
         }
         loadQuestion(question)
+    }
+
+    override fun updateProgress(index: Int, size: Int) {
+        circleProgress.max = size
+        circleProgress.progress = index.toFloat()
+
+        horizontalProgress.max = size
+        horizontalProgress.progress = index
+    }
+
+    override fun hideQuestions() {
+        hideKeyboard()
+        rlQuestionsBox.hideSlidingBottom()
+        backdrop.hideAnimated()
+        window.restoreStatusBarColor()
+    }
+
+    override fun finalize(answers: List<Answer>) {
+        hideQuestions()
+        presenter.sendAnswers(answers, location)
+    }
+
+    override fun answersSent(submissions: Submissions) {
+        actionsStart.hide()
+        actionsFinal.show()
+        submissionsId = submissions.id
+    }
+
+    override fun showLoading() {
+        progressDialog.show(supportFragmentManager)
+    }
+
+    override fun hideLoading() {
+        progressDialog.dismiss()
+    }
+
+    override fun showError(error: Throwable) {
+        hideLoading()
+        btnStart.setText(R.string.send_again)
+        Toast.makeText(this, "Falha ao enviar respostas. Tente novamente", Toast.LENGTH_LONG).show()
+    }
+
+    fun requestLocation() {
+        if (hasLocationPermission()) {
+            locationHelper.requestLocation(this, this)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_NOTES) {
+            if (resultCode == RESULT_OK) {
+                surveyAnswered()
+            }
+            return
+        } else if (requestCode == REQUEST_GOOGLE_PLAY_RESOLVE_ERROR) {
+            locationHelper.onActivityResult(resultCode, data)
+            return
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode == REQUEST_CODE_START_QUESTIONS) {
+            requestLocation()
+            presenter.start()
+            return
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    private fun surveyAnswered() {
+        Toast.makeText(this, "Enquete respondida", Toast.LENGTH_SHORT).show()
+        finish()
     }
 
     private fun loadQuestion(question: Question) {
@@ -170,60 +264,8 @@ class SurveyActivity : BaseActivity(),
         }
     }
 
-    override fun updateProgress(index: Int, size: Int) {
-        circleProgress.max = size
-        circleProgress.progress = index.toFloat()
-
-        horizontalProgress.max = size
-        horizontalProgress.progress = index
-    }
-
-    override fun hideQuestions() {
-        hideKeyboard()
-        rlQuestionsBox.hideSlidingBottom()
-        backdrop.hideAnimated()
-        window.restoreStatusBarColor()
-    }
-
-    override fun finalize(answers: List<Answer>) {
-        hideQuestions()
-        // TODO send location
-        presenter.sendAnswers(answers, null)
-    }
-
-    override fun answersSent(submissions: Submissions) {
-        actionsStart.hide()
-        actionsFinal.show()
-        submissionsId = submissions.id
-    }
-
-    override fun showLoading() {
-        progressDialog.show(supportFragmentManager)
-    }
-
-    override fun hideLoading() {
-        progressDialog.dismiss()
-    }
-
-    override fun showError(error: Throwable) {
-        hideLoading()
-        btnStart.setText(R.string.send_again)
-        Toast.makeText(this, "Falha ao enviar respostas. Tente novamente", Toast.LENGTH_LONG).show()
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_NOTES) {
-            if (resultCode == RESULT_OK) {
-                surveyAnswered()
-            }
-            return
-        }
-        super.onActivityResult(requestCode, resultCode, data)
-    }
-
-    private fun surveyAnswered() {
-        Toast.makeText(this, "Enquete respondida", Toast.LENGTH_SHORT).show()
-        finish()
+    override fun onLocationReceived(location: Location) {
+        this.location = LatLong(location.latitude, location.longitude)
     }
 
     companion object {

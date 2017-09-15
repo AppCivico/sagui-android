@@ -2,7 +2,6 @@ package com.eokoe.sagui.data.net
 
 import android.content.Context
 import com.eokoe.sagui.BuildConfig
-import com.eokoe.sagui.data.entities.LatLong
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -24,7 +23,7 @@ object ServiceGenerator {
 
         val gson = GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
-                .registerTypeAdapter(LatLong::class.java, LatLongTypeAdapter.INSTANCE)
+//                .registerTypeAdapter(LatLong::class.java, LatLongTypeAdapter.INSTANCE)
                 .create()
 
         val builder = OkHttpClient.Builder()
