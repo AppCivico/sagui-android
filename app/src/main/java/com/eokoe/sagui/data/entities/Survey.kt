@@ -13,7 +13,7 @@ data class Survey(
         val name: String,
         @SerializedName("axis")
         val categories: List<String>,
-        val questions: List<Question>
+        val questions: List<Question>? = null
 ) : PaperParcelable {
     companion object {
         @JvmField

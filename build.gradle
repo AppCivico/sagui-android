@@ -25,6 +25,7 @@ allprojects {
         mavenCentral()
         maven { url "https://jitpack.io" }
         maven { url 'https://maven.fabric.io/public' }
+        maven { url "https://maven.google.com" }
     }
 }
 
@@ -36,9 +37,9 @@ ext {
     crashlyticsVersion = '2.6.8@aar'
     crashlyticsNdkVersion = '1.1.6@aar'
 
-    supportLibraryVersion = '25.3.1'
+    supportLibraryVersion = '26.1.0'
     constraintLayoutVersion = '1.0.2'
-    playServicesVersion = '11.0.2'
+    playServicesVersion = '11.0.4'
 
     rxJavaVersion = '2.1.2'
     rxKotlinVersion = '2.0.3'

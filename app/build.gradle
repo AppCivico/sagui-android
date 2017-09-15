@@ -8,16 +8,16 @@ apply plugin: 'io.fabric'
 // App version
 ext.versionMajor = 0
 ext.versionMinor = 1
-ext.versionPatch = 2
+ext.versionPatch = 3
 ext.jenkinsBuildNumber = Integer.valueOf(System.env.BUILD_NUMBER ?: 0)
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion '26.0.1'
+    compileSdkVersion 26
+    buildToolsVersion '25.0.3'
     defaultConfig {
         applicationId "com.eokoe.sagui"
         minSdkVersion 14
-        targetSdkVersion 25
+        targetSdkVersion 26
         versionCode computeVersionCode()
         versionName computeVersionName()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"

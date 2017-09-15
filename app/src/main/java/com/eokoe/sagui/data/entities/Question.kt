@@ -12,7 +12,7 @@ data class Question(
         val id: String,
         val name: String,
         val type: Type,
-        val answers: List<Answer>? = null
+        val answers: List<Answer> = ArrayList()
 ) : PaperParcelable {
     enum class Type {
         @SerializedName("textarea")

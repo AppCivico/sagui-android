@@ -1,9 +1,6 @@
 package com.eokoe.sagui.data.model.impl
 
-import com.eokoe.sagui.data.entities.Category
-import com.eokoe.sagui.data.entities.Comment
-import com.eokoe.sagui.data.entities.Enterprise
-import com.eokoe.sagui.data.entities.Submissions
+import com.eokoe.sagui.data.entities.*
 import com.eokoe.sagui.data.model.SurveyModel
 import com.eokoe.sagui.data.net.ServiceGenerator
 import com.eokoe.sagui.data.net.services.SurveyService
@@ -64,8 +61,17 @@ class SurveyModelImpl : SurveyModel {
     override fun getCategories(enterprise: Enterprise) =
             ServiceGenerator.getService(SurveyService::class.java).categories(enterprise.id)
 
-    override fun getSurveyList(category: Category) =
-            ServiceGenerator.getService(SurveyService::class.java).surveys(category.id)
+    override fun getSurveyList(category: Category): Observable<List<Survey>> =
+            ServiceGenerator.getService(SurveyService::class.java)
+                    .surveys(category.id)
+                    .flatMapIterable {
+                        return@flatMapIterable it
+                    }
+                    .filter {
+                        return@filter it.questions != null && it.questions.isNotEmpty()
+                    }
+                    .toList()
+                    .toObservable()
 
     override fun sendAnswers(submissions: Submissions): Observable<Submissions> {
         return ServiceGenerator.getService(SurveyService::class.java)
