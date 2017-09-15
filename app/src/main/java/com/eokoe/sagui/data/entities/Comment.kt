@@ -1,5 +1,7 @@
 package com.eokoe.sagui.data.entities
 
+import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
 import io.realm.RealmObject
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
@@ -11,7 +13,9 @@ import paperparcel.PaperParcelable
 @PaperParcel
 open class Comment(
         open var id: String? = null,
-        open var surveyId: String? = null,
+        @SerializedName("submissions_id")
+        @Expose(serialize = false)
+        open var submissionsId: String? = null,
         open var content: String = ""
 ) : PaperParcelable, RealmObject() {
     companion object {

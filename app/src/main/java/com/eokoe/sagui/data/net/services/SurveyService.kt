@@ -20,6 +20,6 @@ interface SurveyService {
     @POST("surveys/{survey_id}/submissions")
     fun sendAnswers(@Path("survey_id") surveyId: String, @Body submissions: Submissions): Observable<Submissions>
 
-    @POST("surveys/{survey_id}/comments")
-    fun saveComment(@Path("survey_id") surveyId: String, @Body comment: Comment): Observable<Comment>
+    @POST("submissions/{submissions_id}/comments")
+    fun saveComment(@Path("submissions_id") submissionsId: String, @Body comment: Comment): Observable<Comment>
 }

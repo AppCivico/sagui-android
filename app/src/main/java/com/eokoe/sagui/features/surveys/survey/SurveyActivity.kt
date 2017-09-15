@@ -5,16 +5,11 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v7.widget.GridLayout
-import android.view.KeyEvent
-import android.view.inputmethod.EditorInfo
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
 import com.eokoe.sagui.R
-import com.eokoe.sagui.data.entities.Answer
-import com.eokoe.sagui.data.entities.Category
-import com.eokoe.sagui.data.entities.Question
-import com.eokoe.sagui.data.entities.Survey
+import com.eokoe.sagui.data.entities.*
 import com.eokoe.sagui.data.model.impl.SurveyModelImpl
 import com.eokoe.sagui.extensions.*
 import com.eokoe.sagui.features.base.view.BaseActivity
@@ -37,6 +32,8 @@ class SurveyActivity : BaseActivity(),
     override lateinit var presenter: SurveyContract.Presenter
 
     private lateinit var progressDialog: LoadingDialog
+
+    private var submissionsId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -69,7 +66,7 @@ class SurveyActivity : BaseActivity(),
             surveyAnswered()
         }
         btnYes.setOnClickListener {
-            startActivityForResult(NoteActivity.getIntent(this@SurveyActivity, survey.id), REQUEST_NOTES)
+            startActivityForResult(NoteActivity.getIntent(this@SurveyActivity, submissionsId!!), REQUEST_NOTES)
         }
     }
 
@@ -82,24 +79,33 @@ class SurveyActivity : BaseActivity(),
     }
 
     override fun showQuestion(question: Question) {
+        if (!rlQuestionsBox.isVisible()) {
+            backdrop.showAnimated()
+            rlQuestionsBox.showSlidingTop()
+            window.statusBarOverlay()
+        }
         loadQuestion(question)
-        backdrop.showAnimated()
-        rlQuestionsBox.showSlidingTop()
-        window.statusBarOverlay()
     }
 
-    override fun loadQuestion(question: Question) {
+    private fun loadQuestion(question: Question) {
         tvSurveyTitle.text = question.name
-        rlAnswer.removeAllViews()
         btnNext.disable()
         when (question.type) {
             Question.Type.TEXT -> {
-                buildViewText(question)
+                val answerText = findViewById(R.id.answerText) as? TextInputLayout
+                if (answerText == null) {
+                    rlAnswer.removeAllViews()
+                    buildViewText(question)
+                } else {
+                    answerText.editText!!.text = null
+                }
             }
             Question.Type.MULTIPLE -> {
+                rlAnswer.removeAllViews()
                 buildViewMultiple(question)
             }
             Question.Type.TRAFFIC_LIGHT -> {
+                rlAnswer.removeAllViews()
                 buildViewTrafficLight(question)
             }
         }
@@ -107,19 +113,12 @@ class SurveyActivity : BaseActivity(),
 
     private fun buildViewText(question: Question) {
         val viewAnswer = layoutInflater.inflate(R.layout.answer_text, rlAnswer, false) as TextInputLayout
-        rlAnswer.addView(viewAnswer)
         RxTextView.textChangeEvents(viewAnswer.editText!!)
                 .subscribe {
                     btnNext.isEnabled = it.text().isNotEmpty()
                 }
-        viewAnswer.editText?.setOnEditorActionListener { v, actionId, event ->
-            if (btnNext.isEnabled && (event?.keyCode == KeyEvent.KEYCODE_ENTER || actionId == EditorInfo.IME_ACTION_DONE)) {
-                btnNext.performClick()
-                true
-            } else {
-                false
-            }
-        }
+        rlAnswer.addView(viewAnswer)
+        showKeyboard(viewAnswer.editText!!)
         btnNext.setOnClickListener {
             presenter.answer(question.id, viewAnswer.editText?.text.toString())
         }
@@ -180,6 +179,7 @@ class SurveyActivity : BaseActivity(),
     }
 
     override fun hideQuestions() {
+        hideKeyboard()
         rlQuestionsBox.hideSlidingBottom()
         backdrop.hideAnimated()
         window.restoreStatusBarColor()
@@ -191,9 +191,10 @@ class SurveyActivity : BaseActivity(),
         presenter.sendAnswers(answers, null)
     }
 
-    override fun answersSent() {
+    override fun answersSent(submissions: Submissions) {
         actionsStart.hide()
         actionsFinal.show()
+        submissionsId = submissions.id
     }
 
     override fun showLoading() {

@@ -32,11 +32,12 @@ class LoadingDialog : DialogLoadFragment<Any>() {
     companion object {
         private val EXTRA_LOADING_MESSAGE = "EXTRA_LOADING_MESSAGE"
 
-        fun newInstance(msg: String): LoadingDialog {
+        fun newInstance(msg: String, cancelable: Boolean = false): LoadingDialog {
             val frag = LoadingDialog()
             val args = Bundle()
             args.putString(EXTRA_LOADING_MESSAGE, msg)
             frag.arguments = args
+            frag.isCancelable = cancelable
             return frag
         }
     }

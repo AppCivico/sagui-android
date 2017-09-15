@@ -78,7 +78,7 @@ class SurveyModelImpl : SurveyModel {
 
     override fun saveComment(comment: Comment): Observable<Comment> {
         return ServiceGenerator.getService(SurveyService::class.java)
-                .saveComment(comment.surveyId!!, comment)
+                .saveComment(comment.submissionsId!!, comment)
                 .map {
                     comment.id = it.id
                     return@map comment

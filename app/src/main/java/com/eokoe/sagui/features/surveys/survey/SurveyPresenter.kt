@@ -43,7 +43,7 @@ class SurveyPresenter constructor(private val surveyModel: SurveyModel)
             view?.finalize(answers)
             return
         }
-        view?.loadQuestion(questions!![currentQuestion])
+        view?.showQuestion(questions!![currentQuestion])
     }
 
     override fun answer(questionId: String, answer: Answer) {
@@ -68,7 +68,7 @@ class SurveyPresenter constructor(private val surveyModel: SurveyModel)
 
     inner class SendAnswersObserver : DisposableObserver<Submissions>() {
         override fun onNext(submissions: Submissions) {
-            view?.answersSent()
+            view?.answersSent(submissions)
         }
 
         override fun onComplete() {

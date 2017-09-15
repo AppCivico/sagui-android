@@ -36,9 +36,14 @@ class NoteActivity : BaseActivity(), NoteContract.View, ViewPresenter<NoteContra
     }
 
     override fun init(savedInstanceState: Bundle?) {
-        val surveyId = intent.extras.getString(EXTRA_SURVEY_ID)
+        val surveyId = intent.extras.getString(EXTRA_SUBMISSIONS_ID)
         btnSend.setOnClickListener {
-            presenter.sendNote(Comment(surveyId = surveyId, content = tvNote.text.toString()))
+            if (textNote.editText!!.text.isNotEmpty()) {
+                hideKeyboard(textNote.editText!!)
+                presenter.sendNote(Comment(submissionsId = surveyId, content = textNote.editText!!.text.toString()))
+            } else {
+                Toast.makeText(this, "Informe as observações", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 
@@ -56,15 +61,16 @@ class NoteActivity : BaseActivity(), NoteContract.View, ViewPresenter<NoteContra
     }
 
     override fun showError(error: Throwable) {
+        hideLoading()
         Toast.makeText(this, "Falha ao enviar observações. Tente novamente", Toast.LENGTH_LONG).show()
     }
 
     companion object {
-        private val EXTRA_SURVEY_ID = "EXTRA_SURVEY_ID"
+        private val EXTRA_SUBMISSIONS_ID = "EXTRA_SUBMISSIONS_ID"
 
-        fun getIntent(context: Context, surveyId: String): Intent {
+        fun getIntent(context: Context, submissionsId: String): Intent {
             val intent = Intent(context, NoteActivity::class.java)
-            intent.putExtra(EXTRA_SURVEY_ID, surveyId)
+            intent.putExtra(EXTRA_SUBMISSIONS_ID, submissionsId)
             return intent
         }
     }

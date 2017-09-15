@@ -1,6 +1,7 @@
 package com.eokoe.sagui.features.base.view
 
 import android.Manifest
+import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -8,8 +9,11 @@ import android.support.v4.app.ActivityCompat
 import android.support.v4.content.IntentCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import com.eokoe.sagui.features.base.presenter.BasePresenter
 import com.eokoe.sagui.utils.LogUtil
+
 
 /**
  * @author Pedro Silva
@@ -69,5 +73,19 @@ abstract class BaseActivity : AppCompatActivity() {
         ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION),
                 requestCode)
+    }
+
+    fun showKeyboard(view: View) {
+        view.post {
+            view.requestFocus()
+            val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+            imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
+        }
+    }
+
+    fun hideKeyboard(view: View? = null) {
+        view?.clearFocus()
+        val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
+        imm.hideSoftInputFromWindow((view ?: findViewById(android.R.id.content)).windowToken, 0)
     }
 }

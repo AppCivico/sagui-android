@@ -13,10 +13,9 @@ interface SurveyContract {
     interface View : ViewLoading, ViewError {
         fun showQuestion(question: Question)
         fun hideQuestions()
-        fun loadQuestion(question: Question)
         fun updateProgress(index: Int, size: Int)
         fun finalize(answers: List<Answer>)
-        fun answersSent()
+        fun answersSent(submissions: Submissions)
     }
 
     interface Presenter : BasePresenter<View> {
