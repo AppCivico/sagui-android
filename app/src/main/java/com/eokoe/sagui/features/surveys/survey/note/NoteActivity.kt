@@ -36,8 +36,9 @@ class NoteActivity : BaseActivity(), NoteContract.View, ViewPresenter<NoteContra
     }
 
     override fun init(savedInstanceState: Bundle?) {
+        val surveyId = intent.extras.getString(EXTRA_SURVEY_ID)
         btnSend.setOnClickListener {
-            presenter.sendNote(Comment(content = tvNote.text.toString()))
+            presenter.sendNote(Comment(surveyId = surveyId, content = tvNote.text.toString()))
         }
     }
 
@@ -59,6 +60,12 @@ class NoteActivity : BaseActivity(), NoteContract.View, ViewPresenter<NoteContra
     }
 
     companion object {
-        fun getIntent(context: Context) = Intent(context, NoteActivity::class.java)
+        private val EXTRA_SURVEY_ID = "EXTRA_SURVEY_ID"
+
+        fun getIntent(context: Context, surveyId: String): Intent {
+            val intent = Intent(context, NoteActivity::class.java)
+            intent.putExtra(EXTRA_SURVEY_ID, surveyId)
+            return intent
+        }
     }
 }

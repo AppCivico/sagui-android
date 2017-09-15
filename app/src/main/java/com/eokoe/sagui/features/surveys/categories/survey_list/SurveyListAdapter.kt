@@ -35,6 +35,7 @@ class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder> {
                 ITEM_VIEW_TYPE -> ItemViewHolder(inflate(R.layout.item_survey, parent))
                 LOADING_VIEW_TYPE -> SimpleViewHolder(inflate(R.layout.item_progress, parent))
                 ERROR_VIEW_TYPE -> ErrorViewHolder(inflate(R.layout.item_error, parent))
+                EMPTY_LIST_VIEW_TYPE -> SimpleViewHolder(inflate(R.layout.item_empty_survey, parent))
                 else -> TextViewHolder(inflate(R.layout.item_header, parent), R.id.title, R.string.choose_survey)
             }
 
@@ -53,6 +54,7 @@ class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder> {
             when {
                 hasError() -> ERROR_VIEW_TYPE
                 isShowLoading -> LOADING_VIEW_TYPE
+                itemCount == 1 -> EMPTY_LIST_VIEW_TYPE
                 position > 0 -> ITEM_VIEW_TYPE
                 else -> HEADER_VIEW_TYPE
             }

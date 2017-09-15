@@ -69,7 +69,7 @@ class SurveyActivity : BaseActivity(),
             surveyAnswered()
         }
         btnYes.setOnClickListener {
-            startActivityForResult(NoteActivity.getIntent(this@SurveyActivity), REQUEST_NOTES)
+            startActivityForResult(NoteActivity.getIntent(this@SurveyActivity, survey.id), REQUEST_NOTES)
         }
     }
 
