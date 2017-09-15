@@ -1,12 +1,8 @@
 package com.eokoe.sagui.data.net.services
 
-import com.eokoe.sagui.data.entities.Category
-import com.eokoe.sagui.data.entities.Enterprise
-import com.eokoe.sagui.data.entities.Survey
+import com.eokoe.sagui.data.entities.*
 import io.reactivex.Observable
-import retrofit2.http.GET
-import retrofit2.http.Path
-import retrofit2.http.Query
+import retrofit2.http.*
 
 /**
  * @author Pedro Silva
@@ -20,4 +16,10 @@ interface SurveyService {
 
     @GET("surveys")
     fun surveys(@Query("axis_id") category: String): Observable<List<Survey>>
+
+    @POST("surveys/{survey_id}/submissions")
+    fun sendAnswers(@Path("survey_id") surveyId: String, @Body submissions: Submissions): Observable<Submissions>
+
+    @POST("surveys/{survey_id}/comments")
+    fun saveComment(@Path("survey_id") surveyId: String, @Body comment: Comment): Observable<Comment>
 }

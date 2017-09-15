@@ -28,6 +28,10 @@ class SurveyPresenter constructor(private val surveyModel: SurveyModel)
     }
 
     override fun start() {
+        if (currentQuestion >= total) {
+            view?.finalize(answers)
+            return
+        }
         view?.showQuestion(questions!![currentQuestion])
     }
 

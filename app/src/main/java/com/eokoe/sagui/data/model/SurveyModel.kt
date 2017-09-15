@@ -1,9 +1,6 @@
 package com.eokoe.sagui.data.model
 
-import com.eokoe.sagui.data.entities.Category
-import com.eokoe.sagui.data.entities.Enterprise
-import com.eokoe.sagui.data.entities.Submissions
-import com.eokoe.sagui.data.entities.Survey
+import com.eokoe.sagui.data.entities.*
 import io.reactivex.Observable
 
 /**
@@ -21,4 +18,6 @@ interface SurveyModel {
     fun getSurveyList(category: Category): Observable<List<Survey>>
 
     fun sendAnswers(submissions: Submissions): Observable<Submissions>
+
+    fun saveComment(comment: Comment): Observable<Comment>
 }

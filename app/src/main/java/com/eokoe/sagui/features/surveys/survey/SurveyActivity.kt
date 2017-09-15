@@ -5,8 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v7.widget.GridLayout
-import android.text.Editable
-import android.text.TextWatcher
+import android.view.KeyEvent
+import android.view.inputmethod.EditorInfo
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
@@ -21,6 +21,8 @@ import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.surveys.survey.note.NoteActivity
 import com.eokoe.sagui.widgets.CheckableCircleImageView
+import com.eokoe.sagui.widgets.dialog.LoadingDialog
+import com.jakewharton.rxbinding2.widget.RxTextView
 import kotlinx.android.synthetic.main.activity_questions.*
 import kotlinx.android.synthetic.main.content_questions.*
 
@@ -34,7 +36,7 @@ class SurveyActivity : BaseActivity(),
 
     override lateinit var presenter: SurveyContract.Presenter
 
-    private var statusBarColor: Int = 0
+    private lateinit var progressDialog: LoadingDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,8 +46,9 @@ class SurveyActivity : BaseActivity(),
 
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
-        presenter = SurveyPresenter(SurveyModelImpl())
         showBackButton()
+        presenter = SurveyPresenter(SurveyModelImpl())
+        progressDialog = LoadingDialog.newInstance(getString(R.string.sending_answers))
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -105,16 +108,18 @@ class SurveyActivity : BaseActivity(),
     private fun buildViewText(question: Question) {
         val viewAnswer = layoutInflater.inflate(R.layout.answer_text, rlAnswer, false) as TextInputLayout
         rlAnswer.addView(viewAnswer)
-        viewAnswer.editText?.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {}
-
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                btnNext.isEnabled = s.isNotEmpty()
+        RxTextView.textChangeEvents(viewAnswer.editText!!)
+                .subscribe {
+                    btnNext.isEnabled = it.text().isNotEmpty()
+                }
+        viewAnswer.editText?.setOnEditorActionListener { v, actionId, event ->
+            if (btnNext.isEnabled && (event?.keyCode == KeyEvent.KEYCODE_ENTER || actionId == EditorInfo.IME_ACTION_DONE)) {
+                btnNext.performClick()
+                true
+            } else {
+                false
             }
-
-        })
+        }
         btnNext.setOnClickListener {
             presenter.answer(question.id, viewAnswer.editText?.text.toString())
         }
@@ -192,16 +197,17 @@ class SurveyActivity : BaseActivity(),
     }
 
     override fun showLoading() {
-        // TODO
+        progressDialog.show(supportFragmentManager)
     }
 
     override fun hideLoading() {
-        // TODO
+        progressDialog.dismiss()
     }
 
     override fun showError(error: Throwable) {
         hideLoading()
-        // TODO
+        btnStart.setText(R.string.send_again)
+        Toast.makeText(this, "Falha ao enviar respostas. Tente novamente", Toast.LENGTH_LONG).show()
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

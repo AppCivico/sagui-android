@@ -1,26 +1,65 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.design.widget.CoordinatorLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/bg_screen"
-    android:padding="16dp">
+    android:background="@drawable/bg_screen">
 
-    <android.support.design.widget.TextInputLayout
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="Minhas observações">
+        android:layout_height="?attr/actionBarSize"/>
 
-        <android.support.design.widget.TextInputEditText
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="22dp"
+        android:paddingBottom="16dp">
+
+        <TextView
+            android:id="@+id/tvTitle"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"/>
-    </android.support.design.widget.TextInputLayout>
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginBottom="8dp"
+            android:gravity="center_horizontal"
+            android:text="@string/title_activity_notes"
+            android:textSize="28sp"/>
 
-    <android.support.v7.widget.AppCompatButton
-        android:id="@+id/btnSend"
-        style="@style/Button.Action.Rounded"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="@string/send"/>
-</RelativeLayout>
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:layout_below="@id/tvTitle"
+            android:layout_margin="16dp"
+            android:background="@drawable/text_layout_stroke"
+            android:hint="Minhas observações"
+            android:paddingBottom="16dp"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:paddingTop="16dp">
+
+            <android.support.design.widget.TextInputEditText
+                android:id="@+id/tvNote"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:gravity="top"
+                android:inputType="textMultiLine"
+                android:overScrollMode="always"
+                android:padding="8dp"
+                android:scrollbarStyle="insideInset"
+                android:scrollbars="vertical"/>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.v7.widget.AppCompatButton
+            android:id="@+id/btnSend"
+            style="@style/Button.Action.Rounded"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_marginEnd="16dp"
+            android:layout_marginStart="16dp"
+            android:text="@string/send"/>
+    </RelativeLayout>
+</android.support.design.widget.CoordinatorLayout>

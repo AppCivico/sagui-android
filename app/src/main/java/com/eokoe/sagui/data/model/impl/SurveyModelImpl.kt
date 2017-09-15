@@ -1,6 +1,7 @@
 package com.eokoe.sagui.data.model.impl
 
 import com.eokoe.sagui.data.entities.Category
+import com.eokoe.sagui.data.entities.Comment
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.entities.Submissions
 import com.eokoe.sagui.data.model.SurveyModel
@@ -66,8 +67,21 @@ class SurveyModelImpl : SurveyModel {
     override fun getSurveyList(category: Category) =
             ServiceGenerator.getService(SurveyService::class.java).surveys(category.id)
 
-    override fun sendAnswers(submissions: Submissions) : Observable<Submissions> {
-        // TODO call API
-        return Observable.just(submissions)
+    override fun sendAnswers(submissions: Submissions): Observable<Submissions> {
+        return ServiceGenerator.getService(SurveyService::class.java)
+                .sendAnswers(submissions.surveyId!!, submissions)
+                .map {
+                    submissions.id = it.id
+                    return@map submissions
+                }
+    }
+
+    override fun saveComment(comment: Comment): Observable<Comment> {
+        return ServiceGenerator.getService(SurveyService::class.java)
+                .saveComment(comment.surveyId!!, comment)
+                .map {
+                    comment.id = it.id
+                    return@map comment
+                }
     }
 }

@@ -24,4 +24,7 @@
     <string name="title_activity_notes">Observações</string>
     <string name="send">Enviar</string>
     <string name="title_activity_enterprises_filter">Filtrar</string>
+    <string name="sending_answers">Enviando respostas</string>
+    <string name="send_again">Tentar enviar novamente</string>
+    <string name="sending_note">Enviando observação</string>
 </resources>
