@@ -35,7 +35,7 @@ class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHold
                 ITEM_VIEW_TYPE -> ItemViewHolder(inflate(R.layout.item_enterprise, parent))
                 LOADING_VIEW_TYPE -> SimpleViewHolder(inflate(R.layout.item_progress, parent))
                 ERROR_VIEW_TYPE -> ErrorViewHolder(inflate(R.layout.item_error, parent))
-                EMPTY_LIST_VIEW_TYPE -> SimpleViewHolder(inflate(R.layout.item_empty_enterprises, parent))
+                EMPTY_LIST_VIEW_TYPE -> SimpleViewHolder(inflate(R.layout.item_enterprises_empty, parent))
                 else -> TextViewHolder(inflate(R.layout.item_header, parent), R.id.title, R.string.choose_enterprise)
             }
 
