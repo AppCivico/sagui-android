@@ -32,7 +32,9 @@ open class BasePresenterImpl<View>: BasePresenter<View> {
     }
 
     fun <T> exec(observable: Observable<T>, disposable: DisposableObserver<T>): Observable<T> {
-        observable.subscribeOn(Schedulers.io())
+        observable
+//                .delay(3, TimeUnit.SECONDS)
+                .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(disposable)
         addDisposable(disposable)
