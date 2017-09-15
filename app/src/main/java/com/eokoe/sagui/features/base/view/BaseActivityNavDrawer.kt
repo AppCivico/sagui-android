@@ -9,8 +9,8 @@ import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Enterprise
-import com.eokoe.sagui.features.surveys.categories.CategoriesActivity
 import com.eokoe.sagui.features.enterprises.EnterprisesActivity
+import com.eokoe.sagui.features.surveys.categories.CategoriesActivity
 
 /**
  * @author Pedro Silva
@@ -20,11 +20,11 @@ abstract class BaseActivityNavDrawer : BaseActivity(), NavigationView.OnNavigati
 
     protected var enterprise: Enterprise? = null
     protected val toolbar: Toolbar
-        get() = findViewById(R.id.toolbar) as Toolbar
+        get() = findViewById(R.id.toolbar)
     protected val drawerLayout: DrawerLayout
-        get() = findViewById(R.id.drawerLayout) as DrawerLayout
+        get() = findViewById(R.id.drawerLayout)
     protected val navigationView: NavigationView
-        get() = findViewById(R.id.navigationView) as NavigationView
+        get() = findViewById(R.id.navigationView)
 
     private lateinit var drawerToggle: ActionBarDrawerToggle
 

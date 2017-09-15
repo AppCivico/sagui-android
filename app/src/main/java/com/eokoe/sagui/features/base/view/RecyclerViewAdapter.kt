@@ -75,16 +75,16 @@ abstract class RecyclerViewAdapter<E, VH : RecyclerView.ViewHolder> : RecyclerVi
         private var textView: TextView
 
         constructor(view: View, @IdRes idResText: Int) : super(view) {
-            textView = view.findViewById(idResText) as TextView
+            textView = view.findViewById(idResText)
         }
 
         constructor(view: View, @IdRes idResText: Int, @StringRes text: Int) : super(view) {
-            textView = view.findViewById(idResText) as TextView
+            textView = view.findViewById(idResText)
             bind(text)
         }
 
         constructor(view: View, @IdRes idResText: Int, text: String) : super(view) {
-            textView = view.findViewById(idResText) as TextView
+            textView = view.findViewById(idResText)
             bind(text)
         }
 

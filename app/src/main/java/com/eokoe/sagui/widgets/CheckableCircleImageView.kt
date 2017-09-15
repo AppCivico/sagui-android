@@ -72,7 +72,7 @@ class CheckableCircleImageView : CircleImageView, Checkable, View.OnClickListene
             mChecked = checked
             val checkedId = mRadioGroup?.checkedRadioButtonId
             if (checked && checkedId != null && id != -1 && checkedId != id) {
-                (mRadioGroup?.findViewById(checkedId) as? Checkable)?.isChecked = false
+                (mRadioGroup?.findViewById<View>(checkedId) as? Checkable)?.isChecked = false
                 mRadioGroup?.check(id)
             }
             mOnCheckedChangeListener?.onCheckedChanged(this, checked)

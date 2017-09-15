@@ -186,7 +186,7 @@ class SurveyActivity : BaseActivity(),
         btnNext.disable()
         when (question.type) {
             Question.Type.TEXT -> {
-                val answerText = findViewById(R.id.answerText) as? TextInputLayout
+                val answerText = findViewById<TextInputLayout?>(R.id.answerText)
                 if (answerText == null) {
                     rlAnswer.removeAllViews()
                     buildViewText(question)
@@ -247,7 +247,7 @@ class SurveyActivity : BaseActivity(),
         var answerSelected: Answer? = null
         question.answers?.forEach { answer ->
             val resId = resources.getIdentifier(answer.unit?.name?.toLowerCase(), "id", packageName)
-            val check = viewAnswer.findViewById(resId) as CheckableCircleImageView
+            val check = viewAnswer.findViewById<CheckableCircleImageView>(resId)
             check.setEnableText(false)
             check.setText(answer.value)
             check.setOnCheckedChangeListener(object : CheckableCircleImageView.OnCheckedChangeListener {
