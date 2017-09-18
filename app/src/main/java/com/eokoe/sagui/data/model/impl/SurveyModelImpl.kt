@@ -74,7 +74,7 @@ class SurveyModelImpl : SurveyModel {
                         survey.questions?.forEach { question ->
                             question.answers?.forEach { answer ->
                                 if (answer.image != null) {
-                                    answer.image = ServiceGenerator.BASE_URL + answer.image
+                                    answer.image = ServiceGenerator.BASE_URL + ".." + answer.image
                                 }
                             }
                         }

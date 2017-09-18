@@ -11,9 +11,9 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_margin="4dp"
-        android:background="@drawable/bg_check_traffic_light"
-        android:tint="#e55039"
-        app:backgroundImage="@drawable/ic_circle"
+        android:background="@drawable/bg_check_traffic_light_circle"
+        app:actualImageScaleType="centerCrop"
+        app:backgroundImage="@drawable/ic_circle_red"
         app:cciv_textColor="@color/white"
         app:cciv_textSize="16sp" />
 
@@ -22,9 +22,9 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_margin="4dp"
-        android:background="@drawable/bg_check_traffic_light"
-        android:tint="#f5ca26"
-        app:backgroundImage="@drawable/ic_circle"
+        android:background="@drawable/bg_check_traffic_light_circle"
+        app:actualImageScaleType="centerCrop"
+        app:backgroundImage="@drawable/ic_circle_yellow"
         app:cciv_textColor="@color/white"
         app:cciv_textSize="16sp" />
 
@@ -33,9 +33,9 @@
         android:layout_width="80dp"
         android:layout_height="80dp"
         android:layout_margin="4dp"
-        android:background="@drawable/bg_check_traffic_light"
-        android:tint="#0be46f"
-        app:backgroundImage="@drawable/ic_circle"
+        android:background="@drawable/bg_check_traffic_light_circle"
+        app:actualImageScaleType="centerCrop"
+        app:backgroundImage="@drawable/ic_circle_green"
         app:cciv_textColor="@color/white"
         app:cciv_textSize="16sp" />
 </RadioGroup>
