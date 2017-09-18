@@ -16,6 +16,7 @@ interface SurveyContract {
         fun updateProgress(index: Int, size: Int)
         fun finalize(answers: List<Answer>)
         fun answersSent(submissions: Submissions)
+        var currentProgress: Int
     }
 
     interface Presenter : BasePresenter<View> {

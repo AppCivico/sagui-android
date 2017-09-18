@@ -22,6 +22,7 @@ open class Enterprise(
         open var selected: Boolean = false
 ) : PaperParcelable, RealmObject() {
     companion object {
-        @JvmField val CREATOR = PaperParcelEnterprise.CREATOR
+        @JvmField
+        val CREATOR = PaperParcelEnterprise.CREATOR
     }
 }

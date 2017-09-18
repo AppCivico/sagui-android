@@ -11,6 +11,7 @@ import android.support.v7.widget.AppCompatImageView
 import android.util.AttributeSet
 import android.widget.ImageView
 import com.eokoe.sagui.R
+import com.eokoe.sagui.utils.LogUtil
 
 /**
  * @author Pedro Silva
@@ -80,6 +81,7 @@ open class CircleImageView : AppCompatImageView {
     override fun getScaleType() = SCALE_TYPE
 
     override fun onDraw(canvas: Canvas) {
+        LogUtil.debug(this, "" + disableCircularTransformation)
         if (disableCircularTransformation) {
             super.onDraw(canvas)
             return
@@ -149,7 +151,11 @@ open class CircleImageView : AppCompatImageView {
     }
 
     private fun initializeBitmap() {
-        mBitmap = getBitmapFromDrawable(drawable)
+        mBitmap = if (!disableCircularTransformation) {
+            getBitmapFromDrawable(drawable)
+        } else {
+            null
+        }
         setup()
     }
 

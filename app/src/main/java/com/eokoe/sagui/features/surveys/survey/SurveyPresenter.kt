@@ -24,7 +24,8 @@ class SurveyPresenter constructor(private val surveyModel: SurveyModel)
         surveyId = survey.id
         questions = survey.questions
         total = questions!!.size
-        view?.updateProgress(0, total)
+        currentQuestion = view?.currentProgress ?: 0
+        view?.updateProgress(currentQuestion, total)
     }
 
     override fun start() {

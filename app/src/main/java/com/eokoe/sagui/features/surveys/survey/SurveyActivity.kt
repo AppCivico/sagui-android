@@ -6,6 +6,8 @@ import android.location.Location
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v7.widget.GridLayout
+import android.view.KeyEvent
+import android.view.inputmethod.EditorInfo
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.Toast
@@ -17,7 +19,8 @@ import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.surveys.survey.note.NoteActivity
 import com.eokoe.sagui.utils.LocationHelper
-import com.eokoe.sagui.widgets.CheckableCircleImageView
+import com.eokoe.sagui.utils.LogUtil
+import com.eokoe.sagui.widgets.CheckableImageView
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
 import com.jakewharton.rxbinding2.widget.RxTextView
 import kotlinx.android.synthetic.main.activity_questions.*
@@ -32,13 +35,15 @@ class SurveyActivity : BaseActivity(),
         SurveyContract.View, ViewPresenter<SurveyContract.Presenter>, LocationHelper.OnLocationReceivedListener {
 
     private val REQUEST_CODE_START_QUESTIONS = 1
-    private val REQUEST_GOOGLE_PLAY_RESOLVE_ERROR = 1001
 
     override lateinit var presenter: SurveyContract.Presenter
     private lateinit var progressDialog: LoadingDialog
     private var submissionsId: String? = null
     private val locationHelper = LocationHelper()
     private var location: LatLong? = null
+
+    var questionBoxOpened: Boolean = false
+    override var currentProgress: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,7 +56,6 @@ class SurveyActivity : BaseActivity(),
         showBackButton()
         presenter = SurveyPresenter(SurveyModelImpl())
         progressDialog = LoadingDialog.newInstance(getString(R.string.sending_answers))
-        locationHelper.registerOnConnectionFailed(this, REQUEST_GOOGLE_PLAY_RESOLVE_ERROR)
     }
 
     @Suppress("UNCHECKED_CAST")
@@ -79,6 +83,9 @@ class SurveyActivity : BaseActivity(),
         btnYes.setOnClickListener {
             startActivityForResult(NoteActivity.getIntent(this@SurveyActivity, submissionsId!!), REQUEST_NOTES)
         }
+        if (questionBoxOpened) {
+            btnStart.performClick()
+        }
     }
 
     override fun onStart() {
@@ -100,6 +107,7 @@ class SurveyActivity : BaseActivity(),
     }
 
     override fun showQuestion(question: Question) {
+        questionBoxOpened = true
         if (!rlQuestionsBox.isVisible()) {
             backdrop.showAnimated()
             rlQuestionsBox.showSlidingTop()
@@ -109,6 +117,7 @@ class SurveyActivity : BaseActivity(),
     }
 
     override fun updateProgress(index: Int, size: Int) {
+        currentProgress = index
         circleProgress.max = size
         circleProgress.progress = index.toFloat()
 
@@ -117,6 +126,7 @@ class SurveyActivity : BaseActivity(),
     }
 
     override fun hideQuestions() {
+        questionBoxOpened = false
         hideKeyboard()
         rlQuestionsBox.hideSlidingBottom()
         backdrop.hideAnimated()
@@ -148,7 +158,7 @@ class SurveyActivity : BaseActivity(),
         Toast.makeText(this, "Falha ao enviar respostas. Tente novamente", Toast.LENGTH_LONG).show()
     }
 
-    fun requestLocation() {
+    private fun requestLocation() {
         if (hasLocationPermission()) {
             locationHelper.requestLocation(this, this)
         }
@@ -160,7 +170,7 @@ class SurveyActivity : BaseActivity(),
                 surveyAnswered()
             }
             return
-        } else if (requestCode == REQUEST_GOOGLE_PLAY_RESOLVE_ERROR) {
+        } else if (requestCode == LocationHelper.REQUEST_GOOGLE_PLAY_RESOLVE_ERROR) {
             locationHelper.onActivityResult(resultCode, data)
             return
         }
@@ -211,6 +221,14 @@ class SurveyActivity : BaseActivity(),
                 .subscribe {
                     btnNext.isEnabled = it.text().isNotEmpty()
                 }
+        viewAnswer.editText?.setOnEditorActionListener { v, actionId, event ->
+            if (btnNext.isEnabled && (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE)) {
+                btnNext.performClick()
+                true
+            } else {
+                false
+            }
+        }
         rlAnswer.addView(viewAnswer)
         showKeyboard(viewAnswer.editText!!)
         btnNext.setOnClickListener {
@@ -247,11 +265,15 @@ class SurveyActivity : BaseActivity(),
         var answerSelected: Answer? = null
         question.answers?.forEach { answer ->
             val resId = resources.getIdentifier(answer.unit?.name?.toLowerCase(), "id", packageName)
-            val check = viewAnswer.findViewById<CheckableCircleImageView>(resId)
+            val check = viewAnswer.findViewById<CheckableImageView>(resId)
+            LogUtil.debug(this, answer.image ?: "no image")
+            if (answer.image != null) {
+                check.setImageURI(answer.image)
+            }
             check.setEnableText(false)
             check.setText(answer.value)
-            check.setOnCheckedChangeListener(object : CheckableCircleImageView.OnCheckedChangeListener {
-                override fun onCheckedChanged(view: CheckableCircleImageView, checked: Boolean) {
+            check.setOnCheckedChangeListener(object : CheckableImageView.OnCheckedChangeListener {
+                override fun onCheckedChanged(view: CheckableImageView, checked: Boolean) {
                     view.setEnableText(checked)
                     if (checked) answerSelected = answer
                     btnNext.enable()
@@ -266,6 +288,22 @@ class SurveyActivity : BaseActivity(),
 
     override fun onLocationReceived(location: Location) {
         this.location = LatLong(location.latitude, location.longitude)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
+        if (savedInstanceState != null) {
+            currentProgress = savedInstanceState.getInt("STATE_CURRENT_PROGRESS")
+            questionBoxOpened = savedInstanceState.getBoolean("STATE_QUESTION_BOX_OPENED")
+        }
+    }
+
+    override fun onSaveInstanceState(outState: Bundle?) {
+        super.onSaveInstanceState(outState)
+        if (outState != null) {
+            outState.putInt("STATE_CURRENT_PROGRESS", currentProgress)
+            outState.putBoolean("STATE_QUESTION_BOX_OPENED", questionBoxOpened)
+        }
     }
 
     companion object {

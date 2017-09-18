@@ -4,6 +4,7 @@ import android.app.Application
 import com.eokoe.sagui.data.AnswerListAdapter
 import com.eokoe.sagui.data.net.ServiceGenerator
 import com.eokoe.sagui.extensions.getManifestValue
+import com.facebook.drawee.backends.pipeline.Fresco
 import io.realm.Realm
 import io.realm.RealmConfiguration
 import paperparcel.Adapter
@@ -21,6 +22,7 @@ class SaguiApp : Application() {
         super.onCreate()
         initServiceGenerator()
         initRealm()
+        Fresco.initialize(this)
     }
 
     private fun initServiceGenerator() {

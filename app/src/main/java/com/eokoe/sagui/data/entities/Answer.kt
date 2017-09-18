@@ -11,11 +11,13 @@ import paperparcel.PaperParcelable
 @PaperParcel
 open class Answer(
         @SerializedName("question_id")
-        var questionId: String? = null,
+        open var questionId: String? = null,
         @SerializedName("unit")
-        var unitName: String? = null,
+        open var unitName: String? = null,
         @SerializedName("value", alternate = arrayOf("title"))
-        var value: String = ""
+        open var value: String = "",
+        @SerializedName("image_path")
+        open var image: String? = null
 ) : PaperParcelable, RealmObject() {
 
     var unit: Unit?

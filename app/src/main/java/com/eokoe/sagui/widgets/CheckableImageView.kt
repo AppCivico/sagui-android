@@ -5,6 +5,7 @@ import android.content.res.TypedArray
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
+import android.support.v7.widget.AppCompatImageView
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
@@ -13,6 +14,7 @@ import android.widget.LinearLayout
 import android.widget.RadioGroup
 import com.eokoe.sagui.R
 import com.eokoe.sagui.utils.UnitUtils
+import com.facebook.drawee.view.SimpleDraweeView
 
 /**
  * This is a simple wrapper for [LinearLayout] that implements the [Checkable]
@@ -23,7 +25,7 @@ import com.eokoe.sagui.utils.UnitUtils
  * [android.widget.AbsListView] elements with a
  * [choiceMode][android.widget.AbsListView.setChoiceMode] set.
  */
-class CheckableCircleImageView : CircleImageView, Checkable, View.OnClickListener {
+class CheckableImageView : SimpleDraweeView, Checkable, View.OnClickListener {
 
     private var mChecked = false
     private var mRadioGroup: RadioGroup? = null
@@ -42,14 +44,14 @@ class CheckableCircleImageView : CircleImageView, Checkable, View.OnClickListene
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        val attributes = context.theme.obtainStyledAttributes(attrs, R.styleable.CheckableCircleImageView, defStyleAttr, 0)
+        val attributes = context.theme.obtainStyledAttributes(attrs, R.styleable.CheckableImageView, defStyleAttr, 0)
         init(attributes)
         attributes.recycle()
     }
 
     fun init(attributes: TypedArray) {
-        mTextColor = attributes.getColor(R.styleable.CheckableCircleImageView_cciv_textColor, mTextColor)
-        mTextSize = attributes.getDimension(R.styleable.CheckableCircleImageView_cciv_textSize, UnitUtils.sp2px(resources, 18f))
+        mTextColor = attributes.getColor(R.styleable.CheckableImageView_cciv_textColor, mTextColor)
+        mTextSize = attributes.getDimension(R.styleable.CheckableImageView_cciv_textSize, UnitUtils.sp2px(resources, 18f))
 
         mTextPaint = TextPaint()
         mTextPaint.color = mTextColor
@@ -124,6 +126,6 @@ class CheckableCircleImageView : CircleImageView, Checkable, View.OnClickListene
     }
 
     interface OnCheckedChangeListener {
-        fun onCheckedChanged(view: CheckableCircleImageView, checked: Boolean)
+        fun onCheckedChanged(view: CheckableImageView, checked: Boolean)
     }
 }

@@ -50,7 +50,7 @@ dependencies {
     compile 'com.android.support:multidex:1.0.1'
 
     compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
-        transitive = true;
+        transitive = true
     }
 
     compile "com.android.support:design:$supportLibraryVersion"
@@ -76,6 +76,7 @@ dependencies {
     compile "com.squareup.retrofit2:converter-gson:$retrofitVersion"
     compile "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
     compile "com.squareup.okhttp3:logging-interceptor:$okhttpVersion"
+    compile "com.facebook.fresco:fresco:$frescoVersion"
 
     testCompile "junit:junit:$junitVersion"
     testCompile "junit:junit:$junitVersion"

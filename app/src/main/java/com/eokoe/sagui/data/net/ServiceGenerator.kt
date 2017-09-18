@@ -14,12 +14,13 @@ import retrofit2.converter.gson.GsonConverterFactory
  */
 object ServiceGenerator {
 
-    private lateinit var baseUrl: String
+    lateinit var BASE_URL: String
+        private set
 
     private lateinit var retrofitBuilder: Retrofit.Builder
 
     fun init(context: Context, baseUrl: String) {
-        this.baseUrl = baseUrl
+        this.BASE_URL = baseUrl
 
         val gson = GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")

@@ -36,7 +36,7 @@
         <attr name="civ_disable_circular" format="boolean"/>
     </declare-styleable>
 
-    <declare-styleable name="CheckableCircleImageView">
+    <declare-styleable name="CheckableImageView">
         <attr name="cciv_textColor" format="color"/>
         <attr name="cciv_textSize" format="dimension"/>
     </declare-styleable>

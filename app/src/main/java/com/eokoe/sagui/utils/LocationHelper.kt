@@ -1,7 +1,6 @@
 package com.eokoe.sagui.utils
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.IntentSender
 import android.location.Location
@@ -10,6 +9,9 @@ import com.google.android.gms.common.ConnectionResult
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.LocationSettingsRequest
+import com.google.android.gms.location.LocationSettingsStatusCodes
+
 
 /**
  * @author Pedro Silva
@@ -20,12 +22,12 @@ class LocationHelper : GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnCo
     private var googleApiClient: GoogleApiClient? = null
     private var listener: OnLocationReceivedListener? = null
     private var resolvingGooglePlayError = false
-    private var activity: Activity? = null
-    private var requestCodeGooglePlayResolveError: Int? = null
+    private lateinit var activity: Activity
 
-    fun requestLocation(context: Context, listener: OnLocationReceivedListener) {
+    fun requestLocation(activity: Activity, listener: OnLocationReceivedListener) {
+        this.activity = activity
         if (googleApiClient == null) {
-            googleApiClient = GoogleApiClient.Builder(context)
+            googleApiClient = GoogleApiClient.Builder(activity.applicationContext)
                     .addConnectionCallbacks(this)
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
@@ -49,19 +51,24 @@ class LocationHelper : GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnCo
     }
 
     private fun getLocation(listener: OnLocationReceivedListener) {
-        val location = LocationServices.FusedLocationApi.getLastLocation(googleApiClient)
-        if (location != null) {
-            listener.onLocationReceived(location)
-        } else {
-            val locationRequest = LocationRequest()
-            locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
-            LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, LocationListener(listener))
-        }
-    }
+        val locationRequest = LocationRequest()
+        locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY
+        LocationServices.FusedLocationApi.requestLocationUpdates(googleApiClient, locationRequest, LocationListener(listener))
 
-    fun registerOnConnectionFailed(activity: Activity, requestCode: Int) {
-        this.activity = activity
-        this.requestCodeGooglePlayResolveError = requestCode
+        val builder = LocationSettingsRequest.Builder()
+                .addLocationRequest(locationRequest)
+        val result = LocationServices.SettingsApi.checkLocationSettings(googleApiClient, builder.build())
+        result.setResultCallback { locationSettingsResult ->
+            val status = locationSettingsResult.status
+            when (status.statusCode) {
+                LocationSettingsStatusCodes.RESOLUTION_REQUIRED -> {
+                    try {
+                        status.startResolutionForResult(activity, REQUEST_GOOGLE_PLAY_RESOLVE_ERROR)
+                    } catch (e: IntentSender.SendIntentException) {
+                    }
+                }
+            }
+        }
     }
 
     fun onActivityResult(resultCode: Int, data: Intent?) {
@@ -73,11 +80,11 @@ class LocationHelper : GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnCo
     }
 
     override fun onConnectionFailed(result: ConnectionResult) {
-        if (!resolvingGooglePlayError && activity != null && requestCodeGooglePlayResolveError != null) {
+        if (!resolvingGooglePlayError) {
             if (result.hasResolution()) {
                 try {
                     resolvingGooglePlayError = true
-                    result.startResolutionForResult(activity, requestCodeGooglePlayResolveError!!)
+                    result.startResolutionForResult(activity, REQUEST_GOOGLE_PLAY_RESOLVE_ERROR!!)
                 } catch (error: IntentSender.SendIntentException) {
                     googleApiClient?.connect()
                 }
@@ -90,6 +97,10 @@ class LocationHelper : GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnCo
     }
 
     override fun onConnectionSuspended(i: Int) {
+    }
+
+    companion object {
+        val REQUEST_GOOGLE_PLAY_RESOLVE_ERROR = 1001
     }
 
     inner class LocationListener(private val listener: OnLocationReceivedListener) : com.google.android.gms.location.LocationListener {
