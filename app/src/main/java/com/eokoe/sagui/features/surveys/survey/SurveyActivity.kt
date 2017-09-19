@@ -205,10 +205,12 @@ class SurveyActivity : BaseActivity(),
                 }
             }
             Question.Type.MULTIPLE -> {
+                hideKeyboard()
                 rlAnswer.removeAllViews()
                 buildViewMultiple(question)
             }
             Question.Type.TRAFFIC_LIGHT -> {
+                hideKeyboard()
                 rlAnswer.removeAllViews()
                 buildViewTrafficLight(question)
             }
@@ -293,22 +295,24 @@ class SurveyActivity : BaseActivity(),
     override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
         super.onRestoreInstanceState(savedInstanceState)
         if (savedInstanceState != null) {
-            currentProgress = savedInstanceState.getInt("STATE_CURRENT_PROGRESS")
-            questionBoxOpened = savedInstanceState.getBoolean("STATE_QUESTION_BOX_OPENED")
+            currentProgress = savedInstanceState.getInt(STATE_CURRENT_PROGRESS)
+            questionBoxOpened = savedInstanceState.getBoolean(STATE_QUESTION_BOX_OPENED)
         }
     }
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
         if (outState != null) {
-            outState.putInt("STATE_CURRENT_PROGRESS", currentProgress)
-            outState.putBoolean("STATE_QUESTION_BOX_OPENED", questionBoxOpened)
+            outState.putInt(STATE_CURRENT_PROGRESS, currentProgress)
+            outState.putBoolean(STATE_QUESTION_BOX_OPENED, questionBoxOpened)
         }
     }
 
     companion object {
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
         private val EXTRA_SURVEY = "EXTRA_SURVEY"
+        private val STATE_CURRENT_PROGRESS = "STATE_CURRENT_PROGRESS"
+        private val STATE_QUESTION_BOX_OPENED = "STATE_QUESTION_BOX_OPENED"
         private val REQUEST_NOTES = 1
 
         fun getIntent(context: Context, category: Category, survey: Survey): Intent {
