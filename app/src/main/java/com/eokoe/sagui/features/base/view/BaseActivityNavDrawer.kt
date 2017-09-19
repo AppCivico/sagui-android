@@ -62,25 +62,28 @@ abstract class BaseActivityNavDrawer : BaseActivity(), NavigationView.OnNavigati
     }
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            R.id.nav_home -> {
-                startActivityAndClearStack(CategoriesActivity.getIntent(this, enterprise!!))
+        if (!item.isChecked) {
+            when (item.itemId) {
+                R.id.nav_home -> {
+                    startActivityAndClearStack(CategoriesActivity.getIntent(this, enterprise!!))
+                }
+                R.id.nav_complaints -> {
+                }
+                R.id.nav_notifications -> {
+                }
+                R.id.nav_pending -> {
+                }
+                R.id.nav_change_development -> {
+                    startActivityAndClearStack(EnterprisesActivity.getIntent(this))
+                }
+                R.id.nav_settings -> {
+                }
+                R.id.nav_help -> {
+                }
             }
-            R.id.nav_complaints -> {
-            }
-            R.id.nav_notifications -> {
-            }
-            R.id.nav_pending -> {
-            }
-            R.id.nav_change_development -> {
-                startActivityAndClearStack(EnterprisesActivity.getIntent(this))
-            }
-            R.id.nav_settings -> {
-            }
-            R.id.nav_help -> {
-            }
+            drawerLayout.closeDrawer(GravityCompat.START)
+            return true
         }
-        drawerLayout.closeDrawer(GravityCompat.START)
-        return true
+        return false
     }
 }

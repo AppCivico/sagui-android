@@ -52,7 +52,7 @@ class CategoriesActivity : BaseActivityNavDrawer(),
     }
 
     override fun onResume() {
-        navigationView.setCheckedItem(R.id.nav_none)
+        navigationView.setCheckedItem(R.id.nav_home)
         super.onResume()
     }
 
@@ -66,7 +66,6 @@ class CategoriesActivity : BaseActivityNavDrawer(),
         categoriesAdapter.onItemClickListener = object : CategoriesAdapter.OnItemClickListener {
             override fun onClick(category: Category) {
                 startActivity(SurveyListActivity.getIntent(this@CategoriesActivity, enterprise!!, category))
-//                Toast.makeText(this@CategoriesActivity, "not implemented", Toast.LENGTH_SHORT).show()
             }
         }
     }
