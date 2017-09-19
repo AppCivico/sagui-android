@@ -35,6 +35,15 @@ abstract class RecyclerViewAdapter<E, VH : RecyclerView.ViewHolder> : RecyclerVi
     protected var error: String? = null
     protected var retryClickListener: OnRetryClickListener? = null
 
+
+    var isShowLoading: Boolean = false
+        set(value) {
+            if (field != value) {
+                field = value
+                notifyDataSetChanged()
+            }
+        }
+
     fun inflate(@LayoutRes layout: Int, parent: ViewGroup): View =
             LayoutInflater.from(parent.context).inflate(layout, parent, false)
 

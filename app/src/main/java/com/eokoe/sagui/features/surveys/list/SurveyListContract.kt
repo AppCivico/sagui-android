@@ -1,7 +1,7 @@
-package com.eokoe.sagui.features.surveys.categories
+package com.eokoe.sagui.features.surveys.list
 
 import com.eokoe.sagui.data.entities.Category
-import com.eokoe.sagui.data.entities.Enterprise
+import com.eokoe.sagui.data.entities.Survey
 import com.eokoe.sagui.features.base.presenter.BasePresenter
 import com.eokoe.sagui.features.base.view.ViewError
 import com.eokoe.sagui.features.base.view.ViewLoading
@@ -9,14 +9,14 @@ import io.reactivex.Observable
 
 /**
  * @author Pedro Silva
- * @since 16/08/17
+ * @since 23/08/17
  */
-interface CategoriesContract {
+interface SurveyListContract {
     interface View : ViewLoading, ViewError {
-        fun load(categories: List<Category>)
+        fun load(surveys: List<Survey>)
     }
 
     interface Presenter : BasePresenter<View> {
-        fun list(enterprise: Enterprise): Observable<List<Category>>
+        fun list(category: Category): Observable<List<Survey>>
     }
 }

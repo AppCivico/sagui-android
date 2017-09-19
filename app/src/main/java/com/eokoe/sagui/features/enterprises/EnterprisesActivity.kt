@@ -11,7 +11,7 @@ import com.eokoe.sagui.extensions.friendlyMessage
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import com.eokoe.sagui.features.base.view.ViewPresenter
-import com.eokoe.sagui.features.dashboard.DashboardActivity
+import com.eokoe.sagui.features.categories.CategoriesActivity
 import com.eokoe.sagui.features.enterprises.filter.EnterprisesFilterActivity
 import kotlinx.android.synthetic.main.content_enterprises.*
 
@@ -88,7 +88,7 @@ class EnterprisesActivity : BaseActivityNavDrawer(), ViewPresenter<EnterprisesCo
     }
 
     override fun navigateToDashboard(enterprise: Enterprise) {
-        startActivity(DashboardActivity.getIntent(this, enterprise))
+        startActivity(CategoriesActivity.getIntent(this, enterprise))
     }
 
     companion object {

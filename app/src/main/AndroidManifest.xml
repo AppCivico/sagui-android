@@ -47,12 +47,12 @@
             android:label="@string/title_activity_enterprises_filter" />
 
         <activity
-            android:name="com.eokoe.sagui.features.dashboard.DashboardActivity"
+            android:name="com.eokoe.sagui.features.categories.CategoriesActivity"
             android:label="@string/title_activity_dashboard"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name="com.eokoe.sagui.features.surveys.categories.CategoriesActivity"
+            android:name="com.eokoe.sagui.features.surveys.list.SurveyListActivity"
             android:label="@string/title_activity_categories"
             android:theme="@style/AppTheme.NoActionBar" />
 

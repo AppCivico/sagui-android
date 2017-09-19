@@ -9,8 +9,8 @@ import android.support.v7.widget.Toolbar
 import android.view.MenuItem
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Enterprise
+import com.eokoe.sagui.features.categories.CategoriesActivity
 import com.eokoe.sagui.features.enterprises.EnterprisesActivity
-import com.eokoe.sagui.features.surveys.categories.CategoriesActivity
 
 /**
  * @author Pedro Silva
@@ -63,8 +63,8 @@ abstract class BaseActivityNavDrawer : BaseActivity(), NavigationView.OnNavigati
 
     override fun onNavigationItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
-            R.id.nav_survey -> {
-                startActivity(CategoriesActivity.getIntent(this, enterprise!!))
+            R.id.nav_home -> {
+                startActivityAndClearStack(CategoriesActivity.getIntent(this, enterprise!!))
             }
             R.id.nav_complaints -> {
             }

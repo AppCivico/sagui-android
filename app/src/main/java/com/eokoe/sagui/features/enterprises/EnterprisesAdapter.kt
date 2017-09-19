@@ -16,13 +16,6 @@ import kotlinx.android.synthetic.main.item_error.view.*
 class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHolder> {
 
     var onItemClickListener: OnItemClickListener? = null
-    var isShowLoading: Boolean = false
-        set(value) {
-            if (field != value) {
-                field = value
-                notifyDataSetChanged()
-            }
-        }
 
     constructor() : super()
 

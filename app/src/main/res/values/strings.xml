@@ -27,4 +27,5 @@
     <string name="sending_answers">Enviando respostas</string>
     <string name="send_again">Tentar enviar novamente</string>
     <string name="sending_note">Enviando observação</string>
+    <string name="text_category_header">Sobre o que você quer falar?</string>
 </resources>

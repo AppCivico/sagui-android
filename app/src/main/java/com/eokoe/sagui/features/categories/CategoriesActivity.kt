@@ -1,61 +1,72 @@
-package com.eokoe.sagui.features.surveys.categories
+package com.eokoe.sagui.features.categories
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
+import android.support.v7.widget.GridLayoutManager
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.impl.SurveyModelImpl
 import com.eokoe.sagui.extensions.friendlyMessage
-import com.eokoe.sagui.features.base.view.BaseFragment
+import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import com.eokoe.sagui.features.base.view.ViewPresenter
-import kotlinx.android.synthetic.main.fragment_categories.*
+import com.eokoe.sagui.features.surveys.list.CategoriesContract
+import com.eokoe.sagui.features.surveys.list.CategoriesPresenter
+import com.eokoe.sagui.features.surveys.list.SurveyListActivity
+import kotlinx.android.synthetic.main.content_categories.*
 
 /**
  * @author Pedro Silva
- * @since 23/08/17
+ * @since 16/08/17
  */
-class CategoriesFragment : BaseFragment(),
+class CategoriesActivity : BaseActivityNavDrawer(),
         CategoriesContract.View, ViewPresenter<CategoriesContract.Presenter> {
 
     private lateinit var categoriesAdapter: CategoriesAdapter
     override lateinit var presenter: CategoriesContract.Presenter
-
-    private lateinit var enterprise: Enterprise
     private var categories: ArrayList<Category>? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_categories, container, false)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_categories)
     }
 
-    override fun setUp(view: View?, savedInstanceState: Bundle?) {
-        super.setUp(view, savedInstanceState)
+    override fun setUp(savedInstanceState: Bundle?) {
+        super.setUp(savedInstanceState)
         presenter = CategoriesPresenter(SurveyModelImpl())
         categoriesAdapter = CategoriesAdapter(categories == null)
-        enterprise = arguments.getParcelable(EXTRA_ENTERPRISE)
+        enterprise = intent.extras.getParcelable(EXTRA_ENTERPRISE)
     }
 
-    override fun init(view: View?, savedInstanceState: Bundle?) {
+    override fun init(savedInstanceState: Bundle?) {
+        title = enterprise!!.name
+
         if (categories == null) {
-            presenter.list(enterprise)
+            presenter.list(enterprise!!)
         } else {
             categoriesAdapter.items = categories
         }
         setupRecyclerView()
     }
 
+    override fun onResume() {
+        navigationView.setCheckedItem(R.id.nav_none)
+        super.onResume()
+    }
+
     private fun setupRecyclerView() {
+        val gridLayoutManager = GridLayoutManager(this, 3)
+        gridLayoutManager.spanSizeLookup = categoriesAdapter.SpanSizeLookup()
+        rvCategories.layoutManager = gridLayoutManager
+
         rvCategories.adapter = categoriesAdapter
         rvCategories.setHasFixedSize(true)
         categoriesAdapter.onItemClickListener = object : CategoriesAdapter.OnItemClickListener {
             override fun onClick(category: Category) {
-                if (activity is OnCategoryClickListener) {
-                    (activity as OnCategoryClickListener).onCategoryClick(category)
-                }
+                startActivity(SurveyListActivity.getIntent(this@CategoriesActivity, enterprise!!, category))
+//                Toast.makeText(this@CategoriesActivity, "not implemented", Toast.LENGTH_SHORT).show()
             }
         }
     }
@@ -77,13 +88,13 @@ class CategoriesFragment : BaseFragment(),
         categoriesAdapter.showError(error.friendlyMessage, object : RecyclerViewAdapter.OnRetryClickListener {
             override fun retry() {
                 categoriesAdapter.clearError()
-                presenter.list(enterprise)
+                presenter.list(enterprise!!)
             }
         })
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
         if (savedInstanceState != null) {
             categories = savedInstanceState.getParcelableArrayList(STATE_CATEGORIES)
         }
@@ -100,15 +111,11 @@ class CategoriesFragment : BaseFragment(),
         private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val STATE_CATEGORIES = "STATE_CATEGORIES"
 
-        fun newInstance(enterprise: Enterprise): CategoriesFragment {
-            val fragment = CategoriesFragment()
-            fragment.arguments = Bundle()
-            fragment.arguments.putParcelable("EXTRA_ENTERPRISE", enterprise)
-            return fragment
+        @JvmStatic
+        fun getIntent(context: Context, enterprise: Enterprise): Intent {
+            val intent = Intent(context, CategoriesActivity::class.java)
+            intent.putExtra(EXTRA_ENTERPRISE, enterprise)
+            return intent
         }
-    }
-
-    interface OnCategoryClickListener {
-        fun onCategoryClick(category: Category)
     }
 }

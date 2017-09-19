@@ -8,7 +8,7 @@ import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.impl.SurveyModelImpl
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
-import com.eokoe.sagui.features.dashboard.DashboardActivity
+import com.eokoe.sagui.features.categories.CategoriesActivity
 import com.eokoe.sagui.features.enterprises.EnterprisesActivity
 
 class SplashActivity : BaseActivity(), SplashContract.View, ViewPresenter<SplashContract.Presenter> {
@@ -39,7 +39,7 @@ class SplashActivity : BaseActivity(), SplashContract.View, ViewPresenter<Splash
     }
 
     override fun setEnterprise(enterprise: Enterprise) {
-        startActivityDelayed(DashboardActivity.getIntent(this, enterprise))
+        startActivityDelayed(CategoriesActivity.getIntent(this, enterprise))
     }
 
     override fun onEmptyEnterprise() {

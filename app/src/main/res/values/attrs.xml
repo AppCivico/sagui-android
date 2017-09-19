@@ -40,4 +40,11 @@
         <attr name="cciv_textColor" format="color"/>
         <attr name="cciv_textSize" format="dimension"/>
     </declare-styleable>
+
+    <declare-styleable name="SquareLinearLayout">
+        <attr name="srl_adjustDimension" format="enum">
+            <enum name="height" value="0" />
+            <enum name="width" value="1" />
+        </attr>
+    </declare-styleable>
 </resources>

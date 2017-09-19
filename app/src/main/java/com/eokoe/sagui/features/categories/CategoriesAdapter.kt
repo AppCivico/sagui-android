@@ -1,28 +1,22 @@
-package com.eokoe.sagui.features.surveys.categories.survey_list
+package com.eokoe.sagui.features.categories
 
+import android.support.v7.widget.GridLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import com.eokoe.sagui.R
-import com.eokoe.sagui.data.entities.Survey
+import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
+import kotlinx.android.synthetic.main.item_category_new.view.*
 import kotlinx.android.synthetic.main.item_error.view.*
-import kotlinx.android.synthetic.main.item_survey.view.*
 
 /**
  * @author Pedro Silva
  * @since 16/08/17
  */
-class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder> {
+class CategoriesAdapter : RecyclerViewAdapter<Category, RecyclerView.ViewHolder> {
 
     var onItemClickListener: OnItemClickListener? = null
-    var isShowLoading: Boolean = false
-        set(value) {
-            if (field != value) {
-                field = value
-                notifyDataSetChanged()
-            }
-        }
 
     constructor() : super()
 
@@ -32,11 +26,10 @@ class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder> {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             when (viewType) {
-                ITEM_VIEW_TYPE -> ItemViewHolder(inflate(R.layout.item_survey, parent))
+                ITEM_VIEW_TYPE -> ItemViewHolder(inflate(R.layout.item_category_new, parent))
                 LOADING_VIEW_TYPE -> SimpleViewHolder(inflate(R.layout.item_progress, parent))
                 ERROR_VIEW_TYPE -> ErrorViewHolder(inflate(R.layout.item_error, parent))
-                EMPTY_LIST_VIEW_TYPE -> SimpleViewHolder(inflate(R.layout.item_survey_empty, parent))
-                else -> TextViewHolder(inflate(R.layout.item_header, parent), R.id.title, R.string.choose_survey)
+                else -> SimpleViewHolder(inflate(R.layout.item_category_header, parent))
             }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -54,16 +47,16 @@ class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder> {
             when {
                 hasError() -> ERROR_VIEW_TYPE
                 isShowLoading -> LOADING_VIEW_TYPE
-                itemCount == 1 -> EMPTY_LIST_VIEW_TYPE
                 position > 0 -> ITEM_VIEW_TYPE
                 else -> HEADER_VIEW_TYPE
             }
 
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        fun bind(survey: Survey) {
-            itemView.tvSurveyTitle.text = survey.name
+        fun bind(category: Category) {
+            itemView.tvSymbol.text = "\uf0c9"
+            itemView.tvCategoryName.text = category.name
             itemView.setOnClickListener {
-                onItemClickListener?.onClick(survey)
+                onItemClickListener?.onClick(category)
             }
         }
     }
@@ -77,7 +70,14 @@ class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder> {
         }
     }
 
+    inner class SpanSizeLookup : GridLayoutManager.SpanSizeLookup() {
+        override fun getSpanSize(position: Int): Int {
+            return if (getItemViewType(position) == ITEM_VIEW_TYPE) 1
+            else 3
+        }
+    }
+
     interface OnItemClickListener {
-        fun onClick(survey: Survey)
+        fun onClick(category: Category)
     }
 }

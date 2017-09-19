@@ -1,25 +1,25 @@
-package com.eokoe.sagui.features.surveys.categories.survey_list
+package com.eokoe.sagui.features.surveys.list
 
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
+import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.entities.Survey
 import com.eokoe.sagui.data.model.impl.SurveyModelImpl
 import com.eokoe.sagui.extensions.friendlyMessage
-import com.eokoe.sagui.features.base.view.BaseFragment
+import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.surveys.survey.SurveyActivity
-import kotlinx.android.synthetic.main.fragment_survey_list.*
+import kotlinx.android.synthetic.main.activity_survey_list.*
 
 /**
  * @author Pedro Silva
- * @since 23/08/17
+ * @since 16/08/17
  */
-class SurveyListFragment: BaseFragment(),
+class SurveyListActivity : BaseActivityNavDrawer(),
         SurveyListContract.View, ViewPresenter<SurveyListContract.Presenter> {
 
     private lateinit var surveyListAdapter: SurveyListAdapter
@@ -28,18 +28,23 @@ class SurveyListFragment: BaseFragment(),
     private var category: Category? = null
     private var surveys: ArrayList<Survey>? = null
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
-        return inflater.inflate(R.layout.fragment_survey_list, container, false)
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_survey_list)
     }
 
-    override fun setUp(view: View?, savedInstanceState: Bundle?) {
-        super.setUp(view, savedInstanceState)
+    override fun setUp(savedInstanceState: Bundle?) {
+        super.setUp(savedInstanceState)
+        showBackButton()
+        enterprise = intent.extras.getParcelable(EXTRA_ENTERPRISE)
+        category = intent.extras.getParcelable(EXTRA_CATEGORY)
+
         presenter = SurveyListPresenter(SurveyModelImpl())
         surveyListAdapter = SurveyListAdapter(surveys == null)
     }
 
-    override fun init(view: View?, savedInstanceState: Bundle?) {
-        category = arguments.getParcelable(EXTRA_CATEGORY)
+    override fun init(savedInstanceState: Bundle?) {
+        navigationView.setCheckedItem(R.id.nav_none)
         if (surveys == null) {
             presenter.list(category!!)
         } else {
@@ -53,7 +58,7 @@ class SurveyListFragment: BaseFragment(),
         rvSurveys.setHasFixedSize(true)
         surveyListAdapter.onItemClickListener = object : SurveyListAdapter.OnItemClickListener {
             override fun onClick(survey: Survey) {
-                startActivity(SurveyActivity.getIntent(activity, category!!, survey))
+                startActivity(SurveyActivity.getIntent(this@SurveyListActivity, category!!, survey))
             }
         }
     }
@@ -80,8 +85,8 @@ class SurveyListFragment: BaseFragment(),
         })
     }
 
-    override fun onViewStateRestored(savedInstanceState: Bundle?) {
-        super.onViewStateRestored(savedInstanceState)
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
         if (savedInstanceState != null) {
             surveys = savedInstanceState.getParcelableArrayList(STATE_SURVEYS)
         }
@@ -95,17 +100,15 @@ class SurveyListFragment: BaseFragment(),
     }
 
     companion object {
-        val TAG = "SurveyListFragment"
-
+        private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
         private val STATE_SURVEYS = "STATE_SURVEYS"
 
-        fun newInstance(category: Category): SurveyListFragment {
-            val fragment = SurveyListFragment()
-            fragment.arguments = Bundle()
-            fragment.arguments.putParcelable(EXTRA_CATEGORY, category)
-            return fragment
+        fun getIntent(context: Context, enterprise: Enterprise, category: Category): Intent {
+            val intent = Intent(context, SurveyListActivity::class.java)
+            intent.putExtra(EXTRA_ENTERPRISE, enterprise)
+            intent.putExtra(EXTRA_CATEGORY, category)
+            return intent
         }
-
     }
 }

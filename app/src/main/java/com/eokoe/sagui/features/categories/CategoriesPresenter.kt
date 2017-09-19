@@ -1,4 +1,4 @@
-package com.eokoe.sagui.features.surveys.categories
+package com.eokoe.sagui.features.surveys.list
 
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Enterprise
