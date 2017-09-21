@@ -12,7 +12,6 @@ import android.widget.Checkable
 import android.widget.LinearLayout
 import android.widget.RadioGroup
 import com.eokoe.sagui.R
-import com.eokoe.sagui.utils.LogUtil
 import com.eokoe.sagui.utils.UnitUtils
 import com.facebook.drawee.view.SimpleDraweeView
 
@@ -70,15 +69,12 @@ class CheckableImageView : SimpleDraweeView, Checkable, View.OnClickListener {
     override fun isChecked() = mChecked
 
     override fun setChecked(checked: Boolean) {
-        LogUtil.debug(this, "" + checked)
         if (checked != mChecked) {
             mChecked = checked
             val checkedId = mRadioGroup?.checkedRadioButtonId
             if (checked) {
-                LogUtil.debug(this, "check " + id)
                 mRadioGroup?.check(id)
                 if (checkedId != null && checkedId != -1 && id != -1 && checkedId != id) {
-                    LogUtil.debug(this, "unchecked " + checkedId)
                     (mRadioGroup?.findViewById<View>(checkedId) as? Checkable)?.isChecked = false
                 }
             }

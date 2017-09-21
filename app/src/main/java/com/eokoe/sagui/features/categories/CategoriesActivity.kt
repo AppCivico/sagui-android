@@ -16,7 +16,6 @@ import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.surveys.list.CategoriesContract
 import com.eokoe.sagui.features.surveys.list.CategoriesPresenter
 import com.eokoe.sagui.features.surveys.list.SurveyListActivity
-import com.eokoe.sagui.utils.LogUtil
 import kotlinx.android.synthetic.main.activity_categories.*
 
 
@@ -63,7 +62,6 @@ class CategoriesActivity : BaseActivityNavDrawer(), CategoryActionsDialog.OnActi
 
     override fun onBackPressed() {
         if (categoryActionsDialog?.isShow == true) {
-            LogUtil.debug(this, "opa")
             categoryActionsDialog?.dismiss()
         } else {
             super.onBackPressed()
