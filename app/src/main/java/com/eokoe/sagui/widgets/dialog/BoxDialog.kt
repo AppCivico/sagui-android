@@ -38,7 +38,7 @@ abstract class BoxDialog : DialogFragment() {
         super.onViewCreated(view, savedInstanceState)
         dialog?.setOnKeyListener { _, keyCode, _ ->
             if (keyCode == KeyEvent.KEYCODE_BACK) {
-                dismiss()
+                onBackPressed()
             }
             true
         }
@@ -47,23 +47,28 @@ abstract class BoxDialog : DialogFragment() {
         setStyle(DialogFragment.STYLE_NO_TITLE, 0)
 
         closeButton?.setOnClickListener {
-            dismiss()
+            dismissAnimated()
         }
     }
 
+    open fun onBackPressed() {
+        dismissAnimated()
+    }
+
     override fun onDismiss(dialog: DialogInterface?) {
+        isShow = false
         if (onDismissListener != null) {
             onDismissListener!!.onDismiss()
         }
         super.onDismiss(dialog)
     }
 
-    override fun dismiss() {
+    fun dismissAnimated() {
         isShow = false
         boxView.hideSlidingBottom(object : VisibilityAnimatorListener(boxView, View.GONE) {
             override fun onAnimationEnd(animation: Animator) {
                 super.onAnimationEnd(animation)
-                super@BoxDialog.dismiss()
+                dismiss()
             }
         })
     }

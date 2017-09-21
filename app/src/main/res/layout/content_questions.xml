@@ -64,7 +64,7 @@
                 android:layout_marginRight="16dp"
                 android:gravity="center_horizontal"
                 android:textColor="@color/colorTextPrimary"
-                android:textSize="24sp"/>
+                android:textSize="20sp"/>
 
             <RelativeLayout
                 android:id="@+id/rlAnswer"

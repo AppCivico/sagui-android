@@ -1,26 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginTop="8dp"
-    android:background="#F7F7F7"
+    android:layout_margin="8dp"
+    android:background="@drawable/bg_white_border_r8"
     android:clickable="true"
-    android:foreground="?attr/selectableItemBackground">
+    android:foreground="?attr/selectableItemBackground"
+    android:orientation="vertical"
+    android:paddingTop="12dp">
 
-    <TextView
+    <com.eokoe.sagui.widgets.AwesomeTextView
+        android:id="@+id/tvSymbol"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:gravity="center"
+        android:textColor="@color/colorPrimary"
+        android:textSize="40dp"
+        tools:ignore="SpUsage"
+        tools:text="&#xf17b;"/>
+
+    <android.support.v7.widget.AppCompatTextView
         android:id="@+id/tvCategoryName"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_margin="16dp"/>
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_margin="16dp"
-        app:srcCompat="@drawable/ic_arrow_right"/>
-</RelativeLayout>
+        android:layout_marginBottom="4dp"
+        android:layout_marginEnd="8dp"
+        android:layout_marginStart="8dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:lines="2"
+        tools:text="Name"/>
+</LinearLayout>

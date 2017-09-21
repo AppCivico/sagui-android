@@ -23,7 +23,7 @@
             android:clipToPadding="false"
             android:padding="8dp"
             app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            tools:listitem="@layout/item_category_new"/>
+            tools:listitem="@layout/item_category"/>
     </android.support.design.widget.CoordinatorLayout>
 
     <include layout="@layout/navigation_view"/>

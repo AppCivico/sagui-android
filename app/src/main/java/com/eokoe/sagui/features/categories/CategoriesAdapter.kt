@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
-import kotlinx.android.synthetic.main.item_category_new.view.*
+import kotlinx.android.synthetic.main.item_category.view.*
 import kotlinx.android.synthetic.main.item_error.view.*
 
 /**
@@ -26,7 +26,7 @@ class CategoriesAdapter : RecyclerViewAdapter<Category, RecyclerView.ViewHolder>
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             when (viewType) {
-                ITEM_VIEW_TYPE -> ItemViewHolder(inflate(R.layout.item_category_new, parent))
+                ITEM_VIEW_TYPE -> ItemViewHolder(inflate(R.layout.item_category, parent))
                 LOADING_VIEW_TYPE -> SimpleViewHolder(inflate(R.layout.item_progress, parent))
                 ERROR_VIEW_TYPE -> ErrorViewHolder(inflate(R.layout.item_error, parent))
                 else -> SimpleViewHolder(inflate(R.layout.item_category_header, parent))
@@ -53,7 +53,7 @@ class CategoriesAdapter : RecyclerViewAdapter<Category, RecyclerView.ViewHolder>
 
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(category: Category) {
-            itemView.tvSymbol.text = category.symbol ?: "\uf0c9"
+            itemView.tvSymbol.text = category.symbol ?: "\uf15b"
             itemView.tvCategoryName.text = category.name
             itemView.setOnClickListener {
                 onItemClickListener?.onClick(category)

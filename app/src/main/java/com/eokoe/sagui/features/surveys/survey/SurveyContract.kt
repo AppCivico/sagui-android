@@ -11,12 +11,12 @@ import io.reactivex.Observable
  */
 interface SurveyContract {
     interface View : ViewLoading, ViewError {
+        var currentProgress: Int
         fun showQuestion(question: Question, answer: Answer?)
         fun hideQuestions()
         fun updateProgress(index: Int, size: Int)
         fun finalize(answers: List<Answer>)
         fun answersSent(submissions: Submissions)
-        var currentProgress: Int
     }
 
     interface Presenter : BasePresenter<View> {

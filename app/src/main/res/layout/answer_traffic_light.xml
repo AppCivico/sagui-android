@@ -1,41 +1,84 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RadioGroup xmlns:android="http://schemas.android.com/apk/res/android"
+<RadioGroup
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:gravity="center_horizontal"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingEnd="16dp"
+    android:paddingLeft="16dp"
+    android:paddingRight="16dp"
+    android:paddingStart="16dp">
 
-    <com.eokoe.sagui.widgets.CheckableImageView
-        android:id="@+id/red"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_margin="4dp"
-        android:background="@drawable/bg_check_traffic_light_circle"
-        app:actualImageScaleType="centerCrop"
-        app:backgroundImage="@drawable/ic_circle_red"
-        app:cciv_textColor="@color/white"
-        app:cciv_textSize="16sp" />
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
 
-    <com.eokoe.sagui.widgets.CheckableImageView
-        android:id="@+id/yellow"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_margin="4dp"
-        android:background="@drawable/bg_check_traffic_light_circle"
-        app:actualImageScaleType="centerCrop"
-        app:backgroundImage="@drawable/ic_circle_yellow"
-        app:cciv_textColor="@color/white"
-        app:cciv_textSize="16sp" />
+        <com.eokoe.sagui.widgets.CheckableImageView
+            android:id="@+id/red"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_margin="4dp"
+            android:background="@drawable/bg_check_traffic_light_circle"
+            android:padding="5dp"
+            app:actualImageScaleType="centerCrop"
+            app:backgroundImage="@drawable/ic_circle_red"/>
 
-    <com.eokoe.sagui.widgets.CheckableImageView
-        android:id="@+id/green"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_margin="4dp"
-        android:background="@drawable/bg_check_traffic_light_circle"
-        app:actualImageScaleType="centerCrop"
-        app:backgroundImage="@drawable/ic_circle_green"
-        app:cciv_textColor="@color/white"
-        app:cciv_textSize="16sp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <com.eokoe.sagui.widgets.CheckableImageView
+            android:id="@+id/yellow"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_margin="4dp"
+            android:background="@drawable/bg_check_traffic_light_circle"
+            android:padding="5dp"
+            app:actualImageScaleType="centerCrop"
+            app:backgroundImage="@drawable/ic_circle_yellow"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"/>
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <com.eokoe.sagui.widgets.CheckableImageView
+            android:id="@+id/green"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_margin="4dp"
+            android:background="@drawable/bg_check_traffic_light_circle"
+            android:padding="5dp"
+            app:actualImageScaleType="centerCrop"
+            app:backgroundImage="@drawable/ic_circle_green"/>
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"/>
+    </LinearLayout>
 </RadioGroup>

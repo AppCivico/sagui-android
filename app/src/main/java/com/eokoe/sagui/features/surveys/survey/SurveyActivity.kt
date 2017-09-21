@@ -2,13 +2,17 @@ package com.eokoe.sagui.features.surveys.survey
 
 import android.content.Context
 import android.content.Intent
+import android.graphics.drawable.Animatable
 import android.location.Location
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v7.widget.GridLayout
+import android.util.Log
+import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
 import android.widget.RadioButton
 import android.widget.RadioGroup
+import android.widget.TextView
 import android.widget.Toast
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.*
@@ -20,6 +24,11 @@ import com.eokoe.sagui.features.surveys.survey.note.NoteActivity
 import com.eokoe.sagui.utils.LocationHelper
 import com.eokoe.sagui.widgets.CheckableImageView
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
+import com.facebook.drawee.backends.pipeline.Fresco
+import com.facebook.drawee.controller.BaseControllerListener
+import com.facebook.drawee.view.SimpleDraweeView
+import com.facebook.imagepipeline.image.ImageInfo
+import com.facebook.imagepipeline.request.ImageRequest
 import com.jakewharton.rxbinding2.widget.RxTextView
 import kotlinx.android.synthetic.main.activity_questions.*
 import kotlinx.android.synthetic.main.content_questions.*
@@ -274,13 +283,14 @@ class SurveyActivity : BaseActivity(),
             val resId = resources.getIdentifier(answer.unit?.name?.toLowerCase(), "id", packageName)
             val check = viewAnswer.findViewById<CheckableImageView>(resId)
             if (answer.image != null) {
-                check.setImageURI(answer.image)
+                check.controller = Fresco.newDraweeControllerBuilder()
+                        .setImageRequest(ImageRequest.fromUri(answer.image))
+                        .setControllerListener(MyControllerListener(check))
+                        .build()
             }
-            check.setEnableText(false)
-            check.setText(answer.value)
+            ((check.parent as ViewGroup).getChildAt(1) as TextView).text = answer.value
             check.setOnCheckedChangeListener(object : CheckableImageView.OnCheckedChangeListener {
                 override fun onCheckedChanged(view: CheckableImageView, checked: Boolean) {
-                    view.setEnableText(checked)
                     if (checked) {
                         answerSelected = answer
                         btnNext.enable()
@@ -324,6 +334,16 @@ class SurveyActivity : BaseActivity(),
             intent.putExtra(EXTRA_CATEGORY, category)
             intent.putExtra(EXTRA_SURVEY, survey)
             return intent
+        }
+    }
+
+    inner class MyControllerListener(private val image: SimpleDraweeView) : BaseControllerListener<ImageInfo>() {
+        override fun onFinalImageSet(id: String?, imageInfo: ImageInfo?, animatable: Animatable?) {
+            image.setBackgroundResource(R.drawable.bg_check_traffic_light_square)
+        }
+
+        override fun onFailure(id: String, throwable: Throwable) {
+            Log.i("DraweeUpdate", "Image failed to load: " + throwable.message)
         }
     }
 }

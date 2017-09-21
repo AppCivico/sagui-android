@@ -8,7 +8,8 @@ import com.eokoe.sagui.widgets.typeface.CustomTypefaceView
 
 
 /**
- * Created by pedroabinajm on 12/02/16.
+ * @author Pedro Silva
+ * @since 20/09/17
  */
 class AwesomeTextView : AppCompatTextView, CustomTypefaceView {
     constructor(context: Context) : this(context, null)

@@ -1,18 +1,12 @@
 package com.eokoe.sagui.widgets
 
 import android.content.Context
-import android.content.res.TypedArray
 import android.graphics.Canvas
-import android.graphics.Color
-import android.graphics.Paint
-import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
 import android.widget.Checkable
 import android.widget.LinearLayout
 import android.widget.RadioGroup
-import com.eokoe.sagui.R
-import com.eokoe.sagui.utils.UnitUtils
 import com.facebook.drawee.view.SimpleDraweeView
 
 /**
@@ -29,12 +23,6 @@ class CheckableImageView : SimpleDraweeView, Checkable, View.OnClickListener {
     private var mChecked = false
     private var mRadioGroup: RadioGroup? = null
 
-    private var mEnableText = true
-    private var mText: String? = null
-    private lateinit var mTextPaint: Paint
-    private var mTextColor: Int = Color.rgb(66, 145, 241)
-    private var mTextSize: Float = 0.toFloat()
-
     private var mOnClickListener: OnClickListener? = null
     private var mOnCheckedChangeListener: OnCheckedChangeListener? = null
 
@@ -42,28 +30,10 @@ class CheckableImageView : SimpleDraweeView, Checkable, View.OnClickListener {
 
     constructor(context: Context, attrs: AttributeSet?) : this(context, attrs, 0)
 
-    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr) {
-        val attributes = context.theme.obtainStyledAttributes(attrs, R.styleable.CheckableImageView, defStyleAttr, 0)
-        init(attributes)
-        attributes.recycle()
-    }
-
-    fun init(attributes: TypedArray) {
-        mTextColor = attributes.getColor(R.styleable.CheckableImageView_cciv_textColor, mTextColor)
-        mTextSize = attributes.getDimension(R.styleable.CheckableImageView_cciv_textSize, UnitUtils.sp2px(resources, 18f))
-
-        mTextPaint = TextPaint()
-        mTextPaint.color = mTextColor
-        mTextPaint.textSize = mTextSize
-        mTextPaint.isAntiAlias = true
-    }
+    constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        if (mEnableText) {
-            val textHeight = mTextPaint.descent() + mTextPaint.ascent()
-            canvas.drawText(mText, (width - mTextPaint.measureText(mText)) / 2.0f, (width - textHeight) / 2.0f, mTextPaint)
-        }
     }
 
     override fun isChecked() = mChecked
@@ -98,15 +68,12 @@ class CheckableImageView : SimpleDraweeView, Checkable, View.OnClickListener {
     override fun onAttachedToWindow() {
         super.onAttachedToWindow()
         super.setOnClickListener(this)
-        mRadioGroup = parent as? RadioGroup
-    }
-
-    fun setText(text: String) {
-        mText = text
-    }
-
-    fun setEnableText(enable: Boolean) {
-        mEnableText = enable
+        var parent = this.parent
+        mRadioGroup = null
+        while (parent is View && mRadioGroup == null) {
+            mRadioGroup = parent as? RadioGroup
+            parent = (parent as View).parent
+        }
     }
 
     override fun setOnClickListener(l: OnClickListener?) {

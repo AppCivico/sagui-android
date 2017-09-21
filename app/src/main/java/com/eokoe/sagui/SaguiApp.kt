@@ -1,6 +1,8 @@
 package com.eokoe.sagui
 
 import android.app.Application
+import android.content.Context
+import android.support.multidex.MultiDex
 import com.eokoe.sagui.data.AnswerListAdapter
 import com.eokoe.sagui.data.net.ServiceGenerator
 import com.eokoe.sagui.extensions.getManifestValue
@@ -23,6 +25,11 @@ class SaguiApp : Application() {
         initServiceGenerator()
         initRealm()
         Fresco.initialize(this)
+    }
+
+    override fun attachBaseContext(base: Context) {
+        super.attachBaseContext(base)
+        MultiDex.install(this)
     }
 
     private fun initServiceGenerator() {
