@@ -5,7 +5,6 @@ import android.content.res.TypedArray
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
-import android.support.v7.widget.AppCompatImageView
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.View
@@ -13,6 +12,7 @@ import android.widget.Checkable
 import android.widget.LinearLayout
 import android.widget.RadioGroup
 import com.eokoe.sagui.R
+import com.eokoe.sagui.utils.LogUtil
 import com.eokoe.sagui.utils.UnitUtils
 import com.facebook.drawee.view.SimpleDraweeView
 
@@ -70,12 +70,17 @@ class CheckableImageView : SimpleDraweeView, Checkable, View.OnClickListener {
     override fun isChecked() = mChecked
 
     override fun setChecked(checked: Boolean) {
+        LogUtil.debug(this, "" + checked)
         if (checked != mChecked) {
             mChecked = checked
             val checkedId = mRadioGroup?.checkedRadioButtonId
-            if (checked && checkedId != null && id != -1 && checkedId != id) {
-                (mRadioGroup?.findViewById<View>(checkedId) as? Checkable)?.isChecked = false
+            if (checked) {
+                LogUtil.debug(this, "check " + id)
                 mRadioGroup?.check(id)
+                if (checkedId != null && checkedId != -1 && id != -1 && checkedId != id) {
+                    LogUtil.debug(this, "unchecked " + checkedId)
+                    (mRadioGroup?.findViewById<View>(checkedId) as? Checkable)?.isChecked = false
+                }
             }
             mOnCheckedChangeListener?.onCheckedChanged(this, checked)
             refreshDrawableState()

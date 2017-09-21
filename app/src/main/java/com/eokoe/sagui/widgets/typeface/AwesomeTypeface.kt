@@ -1,4 +1,4 @@
-package com.eokoe.sagui.widgets
+package com.eokoe.sagui.widgets.typeface
 
 import android.content.Context
 import android.graphics.Typeface

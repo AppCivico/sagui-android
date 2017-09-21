@@ -33,7 +33,7 @@ class SurveyPresenter constructor(private val surveyModel: SurveyModel)
             view?.finalize(answers)
             return
         }
-        view?.showQuestion(questions!![currentQuestion])
+        view?.showQuestion(questions!![currentQuestion], getAnswer(currentQuestion))
     }
 
     private fun next() {
@@ -44,17 +44,38 @@ class SurveyPresenter constructor(private val surveyModel: SurveyModel)
             view?.finalize(answers)
             return
         }
-        view?.showQuestion(questions!![currentQuestion])
+        view?.showQuestion(questions!![currentQuestion], getAnswer(currentQuestion))
+    }
+
+    override fun back() {
+        if (currentQuestion > 0) {
+            view?.updateProgress(--currentQuestion, total)
+            view?.showQuestion(questions!![currentQuestion], getAnswer(currentQuestion))
+        } else {
+            view?.hideQuestions()
+            answers.clear()
+        }
     }
 
     override fun answer(questionId: String, answer: Answer) {
-        answers.add(Answer(questionId, answer.unitName, answer.value))
+        if (answers.size <= currentQuestion) {
+            answers.add(Answer(questionId, answer.unitName, answer.value))
+        } else {
+            answers[currentQuestion] = Answer(questionId, answer.unitName, answer.value)
+        }
         next()
     }
 
     override fun answer(questionId: String, answer: String) {
-        answers.add(Answer(questionId = questionId, value = answer))
-        next()
+        answer(questionId, Answer(value = answer))
+    }
+
+    private fun getAnswer(index: Int): Answer? {
+        return if (answers.size > index) {
+            answers[index]
+        } else {
+            null
+        }
     }
 
     override fun sendAnswers(answers: List<Answer>, location: LatLong?): Observable<Submissions> {

@@ -6,7 +6,6 @@ import android.location.Location
 import android.os.Bundle
 import android.support.design.widget.TextInputLayout
 import android.support.v7.widget.GridLayout
-import android.view.KeyEvent
 import android.view.inputmethod.EditorInfo
 import android.widget.RadioButton
 import android.widget.RadioGroup
@@ -19,7 +18,6 @@ import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.surveys.survey.note.NoteActivity
 import com.eokoe.sagui.utils.LocationHelper
-import com.eokoe.sagui.utils.LogUtil
 import com.eokoe.sagui.widgets.CheckableImageView
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
 import com.jakewharton.rxbinding2.widget.RxTextView
@@ -102,18 +100,18 @@ class SurveyActivity : BaseActivity(),
         if (!rlQuestionsBox.isVisible()) {
             super.onBackPressed()
         } else {
-            hideQuestions()
+            presenter.back()
         }
     }
 
-    override fun showQuestion(question: Question) {
+    override fun showQuestion(question: Question, answer: Answer?) {
         questionBoxOpened = true
         if (!rlQuestionsBox.isVisible()) {
             backdrop.showAnimated()
             rlQuestionsBox.showSlidingTop()
             window.statusBarOverlay()
         }
-        loadQuestion(question)
+        loadQuestion(question, answer)
     }
 
     override fun updateProgress(index: Int, size: Int) {
@@ -123,6 +121,12 @@ class SurveyActivity : BaseActivity(),
 
         horizontalProgress.max = size
         horizontalProgress.progress = index
+
+        if (index < size - 1) {
+            btnNext.text = getString(R.string.next)
+        } else {
+            btnNext.text = getString(R.string.send)
+        }
     }
 
     override fun hideQuestions() {
@@ -191,69 +195,69 @@ class SurveyActivity : BaseActivity(),
         finish()
     }
 
-    private fun loadQuestion(question: Question) {
+    private fun loadQuestion(question: Question, answer: Answer?) {
         tvSurveyTitle.text = question.name
         btnNext.disable()
+        if (question.type != Question.Type.TEXT) {
+            hideKeyboard()
+            rlAnswer.removeAllViews()
+        }
         when (question.type) {
             Question.Type.TEXT -> {
-                val answerText = findViewById<TextInputLayout?>(R.id.answerText)
-                if (answerText == null) {
-                    rlAnswer.removeAllViews()
-                    buildViewText(question)
-                } else {
-                    answerText.editText!!.text = null
-                }
+                buildViewText(question, answer)
             }
             Question.Type.MULTIPLE -> {
-                hideKeyboard()
-                rlAnswer.removeAllViews()
-                buildViewMultiple(question)
+                buildViewMultiple(question, answer)
             }
             Question.Type.TRAFFIC_LIGHT -> {
-                hideKeyboard()
-                rlAnswer.removeAllViews()
-                buildViewTrafficLight(question)
+                buildViewTrafficLight(question, answer)
             }
         }
     }
 
-    private fun buildViewText(question: Question) {
-        val viewAnswer = layoutInflater.inflate(R.layout.answer_text, rlAnswer, false) as TextInputLayout
-        RxTextView.textChangeEvents(viewAnswer.editText!!)
-                .subscribe {
-                    btnNext.isEnabled = it.text().isNotEmpty()
+    private fun buildViewText(question: Question, answer: Answer?) {
+        var viewAnswer = findViewById<TextInputLayout?>(R.id.answerText)
+        if (viewAnswer == null) {
+            rlAnswer.removeAllViews()
+            viewAnswer = layoutInflater.inflate(R.layout.answer_text, rlAnswer, false) as TextInputLayout
+            RxTextView.textChangeEvents(viewAnswer.editText!!)
+                    .subscribe {
+                        btnNext.isEnabled = it.text().isNotEmpty()
+                    }
+            viewAnswer.editText?.setOnEditorActionListener { v, actionId, event ->
+                if (btnNext.isEnabled && (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE)) {
+                    btnNext.performClick()
+                    true
+                } else {
+                    false
                 }
-        viewAnswer.editText?.setOnEditorActionListener { v, actionId, event ->
-            if (btnNext.isEnabled && (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE)) {
-                btnNext.performClick()
-                true
-            } else {
-                false
             }
+            rlAnswer.addView(viewAnswer)
         }
-        rlAnswer.addView(viewAnswer)
+        viewAnswer.editText!!.setText(answer?.value)
+        viewAnswer.editText!!.setSelection(answer?.value?.length ?: 0)
         showKeyboard(viewAnswer.editText!!)
         btnNext.setOnClickListener {
-            presenter.answer(question.id, viewAnswer.editText?.text.toString())
+            presenter.answer(question.id, viewAnswer!!.editText?.text.toString())
         }
     }
 
-    private fun buildViewMultiple(question: Question) {
+    private fun buildViewMultiple(question: Question, answered: Answer?) {
         val viewAnswer = layoutInflater.inflate(R.layout.answer_multiple, rlAnswer, false) as GridLayout
         var answerSelected: Answer? = null
         var answerSelectedView: RadioButton? = null
         question.answers?.forEach { answer ->
             val view = layoutInflater.inflate(R.layout.answer_multiple_radio, viewAnswer, false) as RadioButton
             view.text = answer.value
-            view.setOnClickListener {
-                if (it != answerSelectedView) {
-                    if (answerSelectedView != null)
-                        answerSelectedView!!.isChecked = false
+            view.setOnCheckedChangeListener { button, checked ->
+                if (checked && button != answerSelectedView) {
+                    answerSelectedView?.isChecked = false
+                    answerSelectedView = button as RadioButton
                     answerSelected = answer
-                    answerSelectedView = it as RadioButton
                     btnNext.enable()
                 }
             }
+            view.isChecked = answer.value == answered?.value
             viewAnswer.addView(view)
         }
         rlAnswer.addView(viewAnswer)
@@ -262,13 +266,13 @@ class SurveyActivity : BaseActivity(),
         }
     }
 
-    private fun buildViewTrafficLight(question: Question) {
+    private fun buildViewTrafficLight(question: Question, answered: Answer?) {
         val viewAnswer = layoutInflater.inflate(R.layout.answer_traffic_light, rlAnswer, false) as RadioGroup
         var answerSelected: Answer? = null
+        rlAnswer.addView(viewAnswer)
         question.answers?.forEach { answer ->
             val resId = resources.getIdentifier(answer.unit?.name?.toLowerCase(), "id", packageName)
             val check = viewAnswer.findViewById<CheckableImageView>(resId)
-            LogUtil.debug(this, answer.image ?: "no image")
             if (answer.image != null) {
                 check.setImageURI(answer.image)
             }
@@ -277,12 +281,14 @@ class SurveyActivity : BaseActivity(),
             check.setOnCheckedChangeListener(object : CheckableImageView.OnCheckedChangeListener {
                 override fun onCheckedChanged(view: CheckableImageView, checked: Boolean) {
                     view.setEnableText(checked)
-                    if (checked) answerSelected = answer
-                    btnNext.enable()
+                    if (checked) {
+                        answerSelected = answer
+                        btnNext.enable()
+                    }
                 }
             })
+            check.isChecked = answer.unit == answered?.unit
         }
-        rlAnswer.addView(viewAnswer)
         btnNext.setOnClickListener {
             presenter.answer(question.id, answerSelected!!)
         }
@@ -302,10 +308,8 @@ class SurveyActivity : BaseActivity(),
 
     override fun onSaveInstanceState(outState: Bundle?) {
         super.onSaveInstanceState(outState)
-        if (outState != null) {
-            outState.putInt(STATE_CURRENT_PROGRESS, currentProgress)
-            outState.putBoolean(STATE_QUESTION_BOX_OPENED, questionBoxOpened)
-        }
+        outState?.putInt(STATE_CURRENT_PROGRESS, currentProgress)
+        outState?.putBoolean(STATE_QUESTION_BOX_OPENED, questionBoxOpened)
     }
 
     companion object {

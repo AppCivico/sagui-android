@@ -3,6 +3,8 @@ package com.eokoe.sagui.widgets
 import android.content.Context
 import android.support.v7.widget.AppCompatTextView
 import android.util.AttributeSet
+import com.eokoe.sagui.widgets.typeface.AwesomeTypeface
+import com.eokoe.sagui.widgets.typeface.CustomTypefaceView
 
 
 /**

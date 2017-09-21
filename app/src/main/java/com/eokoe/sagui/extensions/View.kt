@@ -104,7 +104,7 @@ fun View.changeVisibilityAnimated(
 
 @RequiresApi(Build.VERSION_CODES.HONEYCOMB_MR1)
 fun View.changeVisibilitySliding(
-        duration: Long = resources.getInteger(android.R.integer.config_mediumAnimTime).toLong(),
+        duration: Long = resources.getInteger(android.R.integer.config_shortAnimTime).toLong(),
         fromAlpha: Float? = null, toAlpha: Float, fromY: Float, toY: Float,
         listener: Animator.AnimatorListener) {
     if (fromAlpha != null) {

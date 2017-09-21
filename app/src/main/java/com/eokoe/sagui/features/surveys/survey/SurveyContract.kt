@@ -11,7 +11,7 @@ import io.reactivex.Observable
  */
 interface SurveyContract {
     interface View : ViewLoading, ViewError {
-        fun showQuestion(question: Question)
+        fun showQuestion(question: Question, answer: Answer?)
         fun hideQuestions()
         fun updateProgress(index: Int, size: Int)
         fun finalize(answers: List<Answer>)
@@ -22,6 +22,7 @@ interface SurveyContract {
     interface Presenter : BasePresenter<View> {
         fun setSurvey(survey: Survey)
         fun start()
+        fun back()
         fun answer(questionId: String, answer: Answer)
         fun answer(questionId: String, answer: String)
         fun sendAnswers(answers: List<Answer>, location: LatLong? = null): Observable<Submissions>

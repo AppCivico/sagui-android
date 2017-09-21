@@ -8,7 +8,7 @@
     android:layout_height="match_parent"
     android:elevation="8dp"
     android:orientation="vertical"
-    tools:ignore="KeyboardInaccessibleWidget,UnusedAttribute">
+    tools:ignore="UnusedAttribute">
 
     <RelativeLayout
         android:id="@+id/backdrop"
@@ -60,6 +60,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
                 android:gravity="center_horizontal"
                 android:textColor="@color/colorTextPrimary"
                 android:textSize="24sp"/>

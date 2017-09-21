@@ -10,8 +10,8 @@ import android.view.View
  * Created by pedro on 04/08/14.
  */
 @RequiresApi(api = Build.VERSION_CODES.HONEYCOMB_MR1)
-class VisibilityAnimatorListener
-private constructor(private val view: View, private val visibilityState: Int)
+open class VisibilityAnimatorListener
+public constructor(private val view: View, private val visibilityState: Int)
     : Animator.AnimatorListener {
 
     override fun onAnimationStart(animation: Animator) {

@@ -1,6 +1,7 @@
 package com.eokoe.sagui.extensions
 
 import android.graphics.Color
+import android.graphics.Point
 import android.os.Build
 import android.support.v4.content.ContextCompat
 import android.support.v4.graphics.ColorUtils
@@ -11,6 +12,14 @@ import com.eokoe.sagui.R
  * @author Pedro Silva
  * @since 12/09/17
  */
+
+val Window.height: Int
+    get() {
+        val size = Point()
+        windowManager.defaultDisplay.getSize(size)
+        return size.y
+    }
+
 fun Window.statusBarOverlay() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
         /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
