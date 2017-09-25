@@ -29,4 +29,7 @@
     <string name="sending_note">Enviando observação</string>
     <string name="text_category_header">Sobre o que você quer falar?</string>
     <string name="close">Fechar</string>
+
+    <string name="title_request_location_permission">Permissão de localização necessária</string>
+    <string name="message_request_location_permission">Este aplicativo precisa acessar sua localização, por favor aceite o uso dessa funcionalidade.</string>
 </resources>

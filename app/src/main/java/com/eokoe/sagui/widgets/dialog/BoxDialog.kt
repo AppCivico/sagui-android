@@ -16,9 +16,10 @@ import com.eokoe.sagui.widgets.listeners.VisibilityAnimatorListener
 
 abstract class BoxDialog : DialogFragment() {
 
+    val TAG = BoxDialog::class.simpleName
+
     abstract val closeButton: View?
     abstract val boxView: View
-    private var onDismissListener: OnDismissListener? = null
 
     var isShow = false
         private set
@@ -57,9 +58,6 @@ abstract class BoxDialog : DialogFragment() {
 
     override fun onDismiss(dialog: DialogInterface?) {
         isShow = false
-        if (onDismissListener != null) {
-            onDismissListener!!.onDismiss()
-        }
         super.onDismiss(dialog)
     }
 
@@ -73,16 +71,7 @@ abstract class BoxDialog : DialogFragment() {
         })
     }
 
-    fun setOnDismissListener(onDismissListener: OnDismissListener): BoxDialog {
-        this.onDismissListener = onDismissListener
-        return this
-    }
-
     fun show(fragmentManager: FragmentManager) {
-        show(fragmentManager, this::class.simpleName)
-    }
-
-    interface OnDismissListener {
-        fun onDismiss()
+        show(fragmentManager, TAG)
     }
 }

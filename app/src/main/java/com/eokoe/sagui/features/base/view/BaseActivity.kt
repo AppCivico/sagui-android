@@ -5,6 +5,7 @@ import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
+import android.support.annotation.StringRes
 import android.support.v4.app.ActivityCompat
 import android.support.v4.content.IntentCompat
 import android.support.v7.app.AppCompatActivity
@@ -13,6 +14,7 @@ import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.eokoe.sagui.features.base.presenter.BasePresenter
 import com.eokoe.sagui.utils.LogUtil
+import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 
 
 /**
@@ -65,14 +67,26 @@ abstract class BaseActivity : AppCompatActivity() {
 
     abstract fun init(savedInstanceState: Bundle?)
 
-    fun hasLocationPermission() =
-            ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) ==
-                    PackageManager.PERMISSION_GRANTED
+    fun hasLocationPermission() = hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
 
-    fun requestLocationPermission(requestCode: Int) {
-        ActivityCompat.requestPermissions(this, arrayOf(Manifest.permission.ACCESS_COARSE_LOCATION,
-                Manifest.permission.ACCESS_FINE_LOCATION),
-                requestCode)
+    fun requestLocationPermission(@StringRes title: Int, @StringRes message: Int, requestCode: Int) {
+        requestPermission(title, message, requestCode,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+    }
+
+    fun hasPermission(permission: String) =
+            ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+
+    fun requestPermission(@StringRes title: Int, @StringRes message: Int, requestCode: Int,
+                          vararg permissions: String) {
+        val alertDialog = AlertDialogFragment.newInstance(title, message)
+        alertDialog.onDismissListener = object : AlertDialogFragment.OnDismissListener {
+            override fun onDismiss() {
+                ActivityCompat.requestPermissions(this@BaseActivity, permissions, requestCode)
+            }
+        }
+        alertDialog.show(supportFragmentManager)
     }
 
     fun showKeyboard(view: View) {

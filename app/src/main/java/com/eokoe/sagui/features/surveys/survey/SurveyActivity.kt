@@ -82,7 +82,8 @@ class SurveyActivity : BaseActivity(),
                 requestLocation()
                 presenter.start()
             } else {
-                requestLocationPermission(REQUEST_PERMISSION_LOCATION)
+                requestLocationPermission(R.string.title_request_location_permission,
+                        R.string.message_request_location_permission, REQUEST_PERMISSION_LOCATION)
             }
         }
         btnNo.setOnClickListener {

@@ -15,8 +15,6 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.BitmapDescriptorFactory
-import com.google.android.gms.maps.model.MarkerOptions
 
 
 
@@ -61,10 +59,9 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback, Location
     @SuppressLint("MissingPermission")
     override fun onMapReady(map: GoogleMap) {
         this.map = map
-        if (hasLocationPermission()) {
-            requestLocation()
-        } else {
-            requestLocationPermission(REQUEST_PERMISSION_LOCATION)
+        if (!requestLocation()) {
+            requestLocationPermission(R.string.title_request_location_permission,
+                    R.string.message_request_location_permission, REQUEST_PERMISSION_LOCATION)
         }
     }
 
@@ -73,16 +70,19 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback, Location
     }
 
     @SuppressLint("MissingPermission")
-    fun requestLocation() {
-        map!!.isMyLocationEnabled = true
-        locationHelper.requestLocation(this, this)
+    fun requestLocation(): Boolean {
+        if (hasLocationPermission()) {
+            map!!.isMyLocationEnabled = true
+            locationHelper.requestLocation(this, this)
+            return true
+        }
+        return false
     }
 
     private fun cameraToCurrentLocation(map: GoogleMap, location: Location) {
         val latLng = LatLng(location.latitude, location.longitude)
         map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
     }
-
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         if (requestCode == REQUEST_PERMISSION_LOCATION) {
