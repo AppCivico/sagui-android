@@ -53,7 +53,10 @@ class CategoriesAdapter : RecyclerViewAdapter<Category, RecyclerView.ViewHolder>
 
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(category: Category) {
-            itemView.tvSymbol.text = category.symbol ?: "\uf15b"
+            if (category.symbol != null) {
+                val symbol = Character.toChars(Integer.parseInt(category.symbol, 16))
+                itemView.tvSymbol.text = String(symbol)
+            }
             itemView.tvCategoryName.text = category.name
             itemView.setOnClickListener {
                 onItemClickListener?.onClick(category)

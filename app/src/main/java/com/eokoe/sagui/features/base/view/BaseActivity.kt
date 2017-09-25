@@ -61,9 +61,7 @@ abstract class BaseActivity : AppCompatActivity() {
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 
-    open fun setUp(savedInstanceState: Bundle?) {
-
-    }
+    open fun setUp(savedInstanceState: Bundle?) {}
 
     abstract fun init(savedInstanceState: Bundle?)
 

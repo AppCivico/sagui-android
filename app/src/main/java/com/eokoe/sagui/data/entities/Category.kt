@@ -1,5 +1,6 @@
 package com.eokoe.sagui.data.entities
 
+import com.google.gson.annotations.SerializedName
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
 
@@ -11,6 +12,7 @@ import paperparcel.PaperParcelable
 data class Category(
         var id: String,
         var name: String,
+        @SerializedName("icon_code")
         var symbol: String? = null
 ) : PaperParcelable {
     companion object {
