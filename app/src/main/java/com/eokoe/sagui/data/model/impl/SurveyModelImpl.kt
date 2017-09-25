@@ -3,7 +3,7 @@ package com.eokoe.sagui.data.model.impl
 import com.eokoe.sagui.data.entities.*
 import com.eokoe.sagui.data.model.SurveyModel
 import com.eokoe.sagui.data.net.ServiceGenerator
-import com.eokoe.sagui.data.net.services.SurveyService
+import com.eokoe.sagui.data.net.services.SaguiService
 import io.reactivex.Observable
 import io.realm.Realm
 
@@ -56,13 +56,13 @@ class SurveyModelImpl : SurveyModel {
     }
 
     override fun getEnterprises() =
-            ServiceGenerator.getService(SurveyService::class.java).enterprises()
+            ServiceGenerator.getService(SaguiService::class.java).enterprises()
 
     override fun getCategories(enterprise: Enterprise) =
-            ServiceGenerator.getService(SurveyService::class.java).categories(enterprise.id)
+            ServiceGenerator.getService(SaguiService::class.java).categories(enterprise.id)
 
     override fun getSurveyList(category: Category): Observable<List<Survey>> =
-            ServiceGenerator.getService(SurveyService::class.java)
+            ServiceGenerator.getService(SaguiService::class.java)
                     .surveys(category.id)
                     .flatMapIterable {
                         return@flatMapIterable it
@@ -84,7 +84,7 @@ class SurveyModelImpl : SurveyModel {
                     .toObservable()
 
     override fun sendAnswers(submissions: Submissions): Observable<Submissions> {
-        return ServiceGenerator.getService(SurveyService::class.java)
+        return ServiceGenerator.getService(SaguiService::class.java)
                 .sendAnswers(submissions.surveyId!!, submissions)
                 .map {
                     submissions.id = it.id
@@ -93,7 +93,7 @@ class SurveyModelImpl : SurveyModel {
     }
 
     override fun saveComment(comment: Comment): Observable<Comment> {
-        return ServiceGenerator.getService(SurveyService::class.java)
+        return ServiceGenerator.getService(SaguiService::class.java)
                 .saveComment(comment.submissionsId!!, comment)
                 .map {
                     comment.id = it.id

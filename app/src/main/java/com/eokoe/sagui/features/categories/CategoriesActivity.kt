@@ -13,6 +13,7 @@ import com.eokoe.sagui.extensions.friendlyMessage
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import com.eokoe.sagui.features.base.view.ViewPresenter
+import com.eokoe.sagui.features.complaints.ComplaintsActivity
 import com.eokoe.sagui.features.surveys.list.CategoriesContract
 import com.eokoe.sagui.features.surveys.list.CategoriesPresenter
 import com.eokoe.sagui.features.surveys.list.SurveyListActivity
@@ -93,7 +94,7 @@ class CategoriesActivity : BaseActivityNavDrawer(), CategoryActionsDialog.OnActi
     }
 
     override fun onSeeComplaintsClick(category: Category) {
-        Toast.makeText(this, "not implemented", Toast.LENGTH_SHORT).show()
+        startActivity(ComplaintsActivity.getIntent(this@CategoriesActivity, enterprise!!, category))
     }
 
     override fun showLoading() {

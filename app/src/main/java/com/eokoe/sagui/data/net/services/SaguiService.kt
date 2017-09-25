@@ -7,7 +7,7 @@ import retrofit2.http.*
 /**
  * @author Pedro Silva
  */
-interface SurveyService {
+interface SaguiService {
     @GET("enterprises")
     fun enterprises(): Observable<List<Enterprise>>
 

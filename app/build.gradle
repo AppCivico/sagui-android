@@ -25,6 +25,7 @@ android {
         manifestPlaceholders = [
                 apiBaseUrl: System.getenv("SAGUI_API_BASE_URL") ?: API_BASE_URL,
                 fabricApiKey: System.getenv("FABRIC_API_KEY") ?: FABRIC_API_KEY,
+                mapsApiKey: System.getenv("SAGUI_MAPS_API_KEY") ?: MAPS_API_KEY,
         ]
         multiDexEnabled true
     }
@@ -61,6 +62,7 @@ dependencies {
     compile "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
 
     compile "com.google.android.gms:play-services-location:$playServicesVersion"
+    compile "com.google.android.gms:play-services-maps:$playServicesVersion"
 
     compile "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
     compile "io.reactivex.rxjava2:rxkotlin:$rxKotlinVersion"

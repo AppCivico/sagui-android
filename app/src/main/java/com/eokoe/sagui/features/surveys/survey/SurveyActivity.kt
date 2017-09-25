@@ -42,6 +42,7 @@ class SurveyActivity : BaseActivity(),
         SurveyContract.View, ViewPresenter<SurveyContract.Presenter>, LocationHelper.OnLocationReceivedListener {
 
     private val REQUEST_CODE_START_QUESTIONS = 1
+    private val REQUEST_PERMISSION_LOCATION = 2
 
     override lateinit var presenter: SurveyContract.Presenter
     private lateinit var progressDialog: LoadingDialog
@@ -81,7 +82,7 @@ class SurveyActivity : BaseActivity(),
                 requestLocation()
                 presenter.start()
             } else {
-                requestLocationPermission(REQUEST_CODE_START_QUESTIONS)
+                requestLocationPermission(REQUEST_PERMISSION_LOCATION)
             }
         }
         btnNo.setOnClickListener {
@@ -191,7 +192,7 @@ class SurveyActivity : BaseActivity(),
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode == REQUEST_CODE_START_QUESTIONS) {
+        if (requestCode == REQUEST_PERMISSION_LOCATION) {
             requestLocation()
             presenter.start()
             return
