@@ -9,13 +9,14 @@ import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
+import com.eokoe.sagui.features.complaints.report.ReportActivity
 import com.eokoe.sagui.utils.LocationHelper
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
-
+import kotlinx.android.synthetic.main.activity_complaints.*
 
 
 /**
@@ -54,6 +55,9 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback, Location
     }
 
     override fun init(savedInstanceState: Bundle?) {
+        fabAdd.setOnClickListener {
+            startActivity(ReportActivity.getIntent(this))
+        }
     }
 
     @SuppressLint("MissingPermission")

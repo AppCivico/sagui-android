@@ -69,13 +69,10 @@
             <RelativeLayout
                 android:id="@+id/rlAnswer"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"/>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:layout_marginTop="16dp"
-                android:background="#EEEEEE"/>
+            <include layout="@layout/divider_light"/>
 
             <Button
                 android:id="@+id/btnNext"

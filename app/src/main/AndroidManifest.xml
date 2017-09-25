@@ -77,9 +77,9 @@
             android:label=""
             android:theme="@style/AppTheme.NoActionBar"/>
 
-        <!--<activity
+        <activity
             android:name="com.eokoe.sagui.features.complaints.report.ReportActivity"
-            android:label="@string/title_activity_report"/>-->
+            android:label="@string/title_activity_report"/>
     </application>
 
 </manifest>

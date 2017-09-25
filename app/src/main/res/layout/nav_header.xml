@@ -26,5 +26,5 @@
         android:textColor="@color/white"
         android:textSize="@dimen/nav_header_title"/>
 
-    <include layout="@layout/divider" />
+    <include layout="@layout/divider_dark" />
 </LinearLayout>

@@ -19,35 +19,30 @@
         android:contentDescription="@string/close"
         app:srcCompat="@drawable/ic_close"/>
 
-    <RelativeLayout
+    <LinearLayout
         android:id="@+id/rlActions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:background="@android:color/white"
+        android:orientation="vertical"
         android:visibility="gone">
 
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/tvCategoryName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
             android:gravity="center_horizontal"
             android:padding="16dp"
             android:textColor="@color/colorTextPrimary"
             android:textSize="22sp"/>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@id/tvCategoryName"
-            android:background="#EEEEEE"/>
+        <include layout="@layout/divider_light"/>
 
         <LinearLayout
             android:id="@+id/llAnswerSurvey"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tvCategoryName"
             android:clickable="true"
             android:foreground="?attr/selectableItemBackground"
             android:orientation="horizontal"
@@ -71,17 +66,12 @@
                 android:textSize="18sp"/>
         </LinearLayout>
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_below="@id/llAnswerSurvey"
-            android:background="#EEEEEE"/>
+        <include layout="@layout/divider_light"/>
 
         <LinearLayout
             android:id="@+id/llSeeComplaints"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/llAnswerSurvey"
             android:clickable="true"
             android:foreground="?attr/selectableItemBackground"
             android:orientation="horizontal"
@@ -104,5 +94,5 @@
                 android:text="Apontar um problema"
                 android:textSize="18sp"/>
         </LinearLayout>
-    </RelativeLayout>
+    </LinearLayout>
 </RelativeLayout>

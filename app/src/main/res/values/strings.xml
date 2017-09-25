@@ -32,4 +32,11 @@
 
     <string name="title_request_location_permission">Permissão de localização necessária</string>
     <string name="message_request_location_permission">Este aplicativo precisa acessar sua localização, por favor aceite o uso dessa funcionalidade.</string>
+    <string name="title_activity_report">Reportar</string>
+    <string name="action_save">Salvar</string>
+    <string name="title">Título</string>
+    <string name="occurrence_place">Local do ocorrido</string>
+    <string name="insert_photo">Inserir foto</string>
+    <string name="insert_video">Inserir vídeo</string>
+    <string name="insert_audio">Inserir áudio</string>
 </resources>
