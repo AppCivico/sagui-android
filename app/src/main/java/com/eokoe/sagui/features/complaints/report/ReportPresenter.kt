@@ -13,6 +13,6 @@ class ReportPresenter constructor(private val saguiModel: SaguiModel)
 
     override fun saveComplaint(complaint: Complaint) {
         // TODO
-//        view?.onSaveSuccess(complaint)
+        view?.onSaveSuccess(complaint)
     }
 }

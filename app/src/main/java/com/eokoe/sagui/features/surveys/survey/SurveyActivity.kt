@@ -1,5 +1,6 @@
 package com.eokoe.sagui.features.surveys.survey
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
 import android.graphics.drawable.Animatable
@@ -19,6 +20,7 @@ import com.eokoe.sagui.data.entities.*
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.*
 import com.eokoe.sagui.features.base.view.BaseActivity
+import com.eokoe.sagui.features.base.view.ViewLocation
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.surveys.survey.note.NoteActivity
 import com.eokoe.sagui.utils.LocationHelper
@@ -39,16 +41,14 @@ import kotlinx.android.synthetic.main.content_questions.*
  * @since 16/08/17
  */
 class SurveyActivity : BaseActivity(),
-        SurveyContract.View, ViewPresenter<SurveyContract.Presenter>, LocationHelper.OnLocationReceivedListener {
-
-    private val REQUEST_CODE_START_QUESTIONS = 1
-    private val REQUEST_PERMISSION_LOCATION = 2
+        SurveyContract.View, ViewPresenter<SurveyContract.Presenter>,
+        ViewLocation, LocationHelper.OnLocationReceivedListener {
 
     override lateinit var presenter: SurveyContract.Presenter
     private lateinit var progressDialog: LoadingDialog
     private var submissionsId: String? = null
-    private val locationHelper = LocationHelper()
     private var location: LatLong? = null
+    override var locationHelper = LocationHelper()
 
     var questionBoxOpened: Boolean = false
     override var currentProgress: Int = 0
@@ -78,8 +78,7 @@ class SurveyActivity : BaseActivity(),
             hideQuestions()
         }
         btnStart.setOnClickListener {
-            if (hasLocationPermission()) {
-                requestLocation()
+            if (requestLocation()) {
                 presenter.start()
             } else {
                 requestLocationPermission(R.string.title_request_location_permission,
@@ -90,21 +89,11 @@ class SurveyActivity : BaseActivity(),
             surveyAnswered()
         }
         btnYes.setOnClickListener {
-            startActivityForResult(NoteActivity.getIntent(this@SurveyActivity, submissionsId!!), REQUEST_NOTES)
+            startActivityForResult(NoteActivity.getIntent(this@SurveyActivity, submissionsId!!), REQUEST_CODE_NOTES)
         }
         if (questionBoxOpened) {
             btnStart.performClick()
         }
-    }
-
-    override fun onStart() {
-        super.onStart()
-        locationHelper.start()
-    }
-
-    override fun onStop() {
-        locationHelper.stop()
-        super.onStop()
     }
 
     override fun onBackPressed() {
@@ -173,20 +162,20 @@ class SurveyActivity : BaseActivity(),
         Toast.makeText(this, "Falha ao enviar respostas. Tente novamente", Toast.LENGTH_LONG).show()
     }
 
-    private fun requestLocation() {
+    @SuppressLint("MissingPermission")
+    private fun requestLocation(): Boolean {
         if (hasLocationPermission()) {
             locationHelper.requestLocation(this, this)
+            return true
         }
+        return false
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_NOTES) {
+        if (requestCode == REQUEST_CODE_NOTES) {
             if (resultCode == RESULT_OK) {
                 surveyAnswered()
             }
-            return
-        } else if (requestCode == LocationHelper.REQUEST_GOOGLE_PLAY_RESOLVE_ERROR) {
-            locationHelper.onActivityResult(resultCode, data)
             return
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -329,7 +318,8 @@ class SurveyActivity : BaseActivity(),
         private val EXTRA_SURVEY = "EXTRA_SURVEY"
         private val STATE_CURRENT_PROGRESS = "STATE_CURRENT_PROGRESS"
         private val STATE_QUESTION_BOX_OPENED = "STATE_QUESTION_BOX_OPENED"
-        private val REQUEST_NOTES = 1
+        private val REQUEST_CODE_NOTES = 1
+        private val REQUEST_PERMISSION_LOCATION = 2
 
         fun getIntent(context: Context, category: Category, survey: Survey): Intent {
             val intent = Intent(context, SurveyActivity::class.java)

@@ -39,4 +39,8 @@
     <string name="insert_photo">Inserir foto</string>
     <string name="insert_video">Inserir vídeo</string>
     <string name="insert_audio">Inserir áudio</string>
+
+    <string name="congratulations">Parabéns!</string>
+    <string name="successful_contribution">Sua contribuição foi feita com sucesso!</string>
+    <string name="title_activity_pin">Localização</string>
 </resources>

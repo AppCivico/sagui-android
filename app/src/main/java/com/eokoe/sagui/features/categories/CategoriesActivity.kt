@@ -56,8 +56,8 @@ class CategoriesActivity : BaseActivityNavDrawer(), CategoryActionsDialog.OnActi
     }
 
     override fun onResume() {
-        navigationView.setCheckedItem(R.id.nav_home)
         super.onResume()
+        navigationView.setCheckedItem(R.id.nav_home)
     }
 
     override fun onBackPressed() {

@@ -3,7 +3,7 @@
     <item>
         <bitmap
             android:antialias="true"
-            android:gravity="center"
+            android:gravity="fill|center"
             android:src="@drawable/img_launch"/>
     </item>
     <item

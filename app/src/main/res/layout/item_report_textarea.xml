@@ -25,16 +25,4 @@
         android:scrollbarStyle="insideInset"
         android:scrollbars="vertical"
         android:textSize="18sp"/>
-
-    <Button
-        android:id="@+id/btnTextDefault"
-        style="@style/Button.Transparent"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_below="@id/tvDescription"
-        android:padding="16dp"
-        android:text="Ver texto padrão"
-        android:textSize="12sp"/>
 </RelativeLayout>

@@ -1,5 +1,6 @@
 package com.eokoe.sagui.features.complaints.report
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -10,6 +11,8 @@ import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
+import com.eokoe.sagui.features.complaints.report.ReportAdapter.ItemType
+import com.eokoe.sagui.features.complaints.report.pin.PinActivity
 import kotlinx.android.synthetic.main.activity_report.*
 
 /**
@@ -37,9 +40,17 @@ class ReportActivity : BaseActivity(),
     }
 
     private fun setupRecyclerView() {
-        rvReport.setHasFixedSize(true)
+        rvReport.setHasFixedSize(false)
         reportAdapter = ReportAdapter()
         rvReport.adapter = reportAdapter
+        reportAdapter.onItemClickListener = object : ReportAdapter.OnItemClickListener {
+            override fun onItemClick(itemType: ItemType) {
+                when(itemType) {
+                    ItemType.LOCATION ->
+                        startActivityForResult(PinActivity.getIntent(this@ReportActivity), REQUEST_CODE_LOCATION)
+                }
+            }
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -61,7 +72,8 @@ class ReportActivity : BaseActivity(),
     }
 
     override fun onSaveSuccess(complaint: Complaint) {
-        // TODO
+        hideKeyboard()
+        setResult(Activity.RESULT_OK)
         finish()
     }
 
@@ -74,6 +86,8 @@ class ReportActivity : BaseActivity(),
     }
 
     companion object {
+        private val REQUEST_CODE_LOCATION = 1
+
         fun getIntent(context: Context) = Intent(context, ReportActivity::class.java)
     }
 }

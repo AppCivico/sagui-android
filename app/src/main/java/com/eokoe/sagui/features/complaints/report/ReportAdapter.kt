@@ -7,8 +7,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.eokoe.sagui.R
 import com.eokoe.sagui.extensions.hide
-import com.eokoe.sagui.extensions.invisible
-import com.eokoe.sagui.extensions.show
 import com.eokoe.sagui.extensions.showAnimated
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import com.jakewharton.rxbinding2.widget.RxTextView
@@ -30,15 +28,15 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
         val items = ArrayList<Item>()
         items.add(Item(ItemType.DESCRIPTION))
         items.add(Item(ItemType.DIVIDER))
-        items.add(Item(ItemType.TITLE, R.drawable.ic_title, R.string.title))
+        items.add(Item(ItemType.TITLE))
         items.add(Item(ItemType.DIVIDER))
-        items.add(Item(ItemType.LOCATION, R.drawable.ic_location, R.string.occurrence_place, true))
+        items.add(Item(ItemType.LOCATION, R.drawable.ic_location, R.string.occurrence_place))
         items.add(Item(ItemType.DIVIDER))
-        items.add(Item(ItemType.INSERT_IMAGE, R.drawable.ic_photo_camera, R.string.insert_photo, true))
+        items.add(Item(ItemType.INSERT_IMAGE, R.drawable.ic_photo_camera, R.string.insert_photo))
         items.add(Item(ItemType.DIVIDER))
-        items.add(Item(ItemType.INSERT_VIDEO, R.drawable.ic_video, R.string.insert_video, true))
+        items.add(Item(ItemType.INSERT_VIDEO, R.drawable.ic_video, R.string.insert_video))
         items.add(Item(ItemType.DIVIDER))
-        items.add(Item(ItemType.INSERT_AUDIO, R.drawable.ic_audio, R.string.insert_audio, true))
+        items.add(Item(ItemType.INSERT_AUDIO, R.drawable.ic_audio, R.string.insert_audio))
         items.add(Item(ItemType.DIVIDER))
         this.items = items
     }
@@ -47,6 +45,7 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
             when (ItemType.fromPosition(viewType)) {
                 ItemType.DIVIDER -> SimpleViewHolder(inflate(R.layout.divider_dark, parent))
                 ItemType.DESCRIPTION -> TextViewHolder(inflate(R.layout.item_report_textarea, parent))
+                ItemType.TITLE -> SimpleViewHolder(inflate(R.layout.item_report_title, parent))
                 else -> ActionViewHolder(inflate(R.layout.item_report_action, parent))
             }
 
@@ -60,9 +59,6 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
 
     inner class TextViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         init {
-            itemView.btnTextDefault.setOnClickListener {
-                onItemClickListener?.onItemClick(ItemType.DESCRIPTION)
-            }
             RxTextView.textChangeEvents(itemView.tvDescription)
                     .subscribe {
                         description = it.text().toString()
@@ -87,11 +83,6 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
         fun bind(item: Item) {
             itemView.ivActionIcon.setImageResource(item.icon!!)
             itemView.tvActionName.setText(item.actionName!!)
-            if (item.showArrow) {
-                itemView.ivArrow.show()
-            } else {
-                itemView.ivArrow.invisible()
-            }
         }
     }
 
@@ -100,8 +91,7 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
             @DrawableRes
             val icon: Int? = null,
             @StringRes
-            val actionName: Int? = null,
-            val showArrow: Boolean = false
+            val actionName: Int? = null
     )
 
     enum class ItemType {

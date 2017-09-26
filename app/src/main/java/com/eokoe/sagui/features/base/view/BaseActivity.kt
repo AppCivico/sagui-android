@@ -13,6 +13,7 @@ import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
 import com.eokoe.sagui.features.base.presenter.BasePresenter
+import com.eokoe.sagui.utils.LocationHelper
 import com.eokoe.sagui.utils.LogUtil
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 
@@ -37,11 +38,29 @@ abstract class BaseActivity : AppCompatActivity() {
         init(savedInstanceState)
     }
 
+    override fun onStart() {
+        super.onStart()
+        (this as? ViewLocation)?.locationHelper?.start()
+    }
+
+    override fun onStop() {
+        (this as? ViewLocation)?.locationHelper?.stop()
+        super.onStop()
+    }
+
     override fun onDestroy() {
         if (this is ViewPresenter<*>) {
             presenter.detach()
         }
         super.onDestroy()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == LocationHelper.REQUEST_GOOGLE_PLAY_RESOLVE_ERROR && this is ViewLocation) {
+            locationHelper.onActivityResult(resultCode, data)
+            return
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -76,9 +95,9 @@ abstract class BaseActivity : AppCompatActivity() {
     fun hasPermission(permission: String) =
             ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
 
-    fun requestPermission(@StringRes title: Int, @StringRes message: Int, requestCode: Int,
-                          vararg permissions: String) {
-        val alertDialog = AlertDialogFragment.newInstance(title, message)
+    fun requestPermission(@StringRes title: Int, @StringRes message: Int,
+                          requestCode: Int, vararg permissions: String) {
+        val alertDialog = AlertDialogFragment.newInstance(this, title, message)
         alertDialog.onDismissListener = object : AlertDialogFragment.OnDismissListener {
             override fun onDismiss() {
                 ActivityCompat.requestPermissions(this@BaseActivity, permissions, requestCode)

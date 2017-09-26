@@ -10,6 +10,7 @@ import android.view.MenuItem
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.features.categories.CategoriesActivity
+import com.eokoe.sagui.features.complaints.ComplaintsActivity
 import com.eokoe.sagui.features.enterprises.EnterprisesActivity
 
 /**
@@ -68,6 +69,7 @@ abstract class BaseActivityNavDrawer : BaseActivity(), NavigationView.OnNavigati
                     startActivityAndClearStack(CategoriesActivity.getIntent(this, enterprise!!))
                 }
                 R.id.nav_complaints -> {
+                    startActivity(ComplaintsActivity.getIntent(this, enterprise!!))
                 }
                 R.id.nav_notifications -> {
                 }

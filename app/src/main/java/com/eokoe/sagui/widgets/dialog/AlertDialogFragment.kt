@@ -1,12 +1,12 @@
 package com.eokoe.sagui.widgets.dialog
 
 import android.app.Dialog
+import android.content.Context
 import android.content.DialogInterface
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AlertDialog
-import android.view.View
 
 /**
  * @author Pedro Silva
@@ -23,17 +23,13 @@ class AlertDialogFragment : DialogLoadFragment<Any>() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         return AlertDialog.Builder(context)
-                .setTitle(arguments.getInt(EXTRA_TITLE))
-                .setMessage(arguments.getInt(EXTRA_MESSAGE))
+                .setTitle(arguments.getString(EXTRA_TITLE))
+                .setMessage(arguments.getString(EXTRA_MESSAGE))
                 .setPositiveButton(android.R.string.ok, { dialog, which ->
                     dialog.dismiss()
                 })
                 .setCancelable(isCancelable)
                 .create()
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
     }
 
     override fun onDismiss(dialog: DialogInterface?) {
@@ -47,12 +43,15 @@ class AlertDialogFragment : DialogLoadFragment<Any>() {
         private val EXTRA_TITLE = "EXTRA_TITLE"
         private val EXTRA_MESSAGE = "EXTRA_MESSAGE"
 
-        fun newInstance(@StringRes title: Int, @StringRes message: Int,
-                        cancelable: Boolean = false): AlertDialogFragment {
+        fun newInstance(context: Context, @StringRes title: Int, @StringRes message: Int,
+                        cancelable: Boolean = false) =
+                newInstance(context.getString(title), context.getString(message), cancelable)
+
+        fun newInstance(title: String, message: String, cancelable: Boolean = false): AlertDialogFragment {
             val frag = AlertDialogFragment()
             val args = Bundle()
-            args.putInt(EXTRA_TITLE, title)
-            args.putInt(EXTRA_MESSAGE, message)
+            args.putString(EXTRA_TITLE, title)
+            args.putString(EXTRA_MESSAGE, message)
             frag.arguments = args
             frag.isCancelable = cancelable
             return frag
