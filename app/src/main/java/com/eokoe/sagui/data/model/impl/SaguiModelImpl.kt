@@ -1,7 +1,7 @@
 package com.eokoe.sagui.data.model.impl
 
 import com.eokoe.sagui.data.entities.*
-import com.eokoe.sagui.data.model.SurveyModel
+import com.eokoe.sagui.data.model.SaguiModel
 import com.eokoe.sagui.data.net.ServiceGenerator
 import com.eokoe.sagui.data.net.services.SaguiService
 import io.reactivex.Observable
@@ -10,8 +10,7 @@ import io.realm.Realm
 /**
  * @author Pedro Silva
  */
-class SurveyModelImpl : SurveyModel {
-
+class SaguiModelImpl : SaguiModel {
     override fun selectEnterprise(enterprise: Enterprise): Observable<Enterprise> {
         return Observable.create { emitter ->
             Realm.getDefaultInstance().use { realm ->
@@ -98,6 +97,15 @@ class SurveyModelImpl : SurveyModel {
                 .map {
                     comment.id = it.id
                     return@map comment
+                }
+    }
+
+    override fun saveComplaint(complaint: Complaint): Observable<Complaint> {
+        return ServiceGenerator.getService(SaguiService::class.java)
+                .saveComplaint(complaint)
+                .map {
+                    complaint.id = it.id
+                    return@map complaint
                 }
     }
 }

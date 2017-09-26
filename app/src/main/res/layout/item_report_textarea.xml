@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:orientation="vertical">
+    android:layout_height="wrap_content">
 
-    <android.support.design.widget.TextInputLayout
-        android:id="@+id/textNote"
+    <android.support.v7.widget.AppCompatTextView
+        android:id="@+id/tvPlaceholder"
         android:layout_width="match_parent"
-        android:layout_height="150dp"
-        android:background="@null"
-        android:paddingLeft="8dp"
-        android:paddingRight="8dp"
-        android:paddingTop="16dp"
-        app:errorEnabled="true">
+        android:layout_height="wrap_content"
+        android:padding="16dp"
+        android:text="Faça o relato do problema que acontece neste empreendimento"
+        android:textColor="@color/colorTextPrimary"
+        android:textSize="18sp"/>
 
-        <android.support.design.widget.TextInputEditText
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:background="@null"
-            android:gravity="top"
-            android:hint="Faça o relato do problema que acontece neste empreendimento"
-            android:inputType="textMultiLine|textLongMessage"
-            android:overScrollMode="always"
-            android:padding="8dp"
-            android:scrollbarStyle="insideInset"
-            android:scrollbars="vertical"/>
-    </android.support.design.widget.TextInputLayout>
+    <android.support.v7.widget.AppCompatEditText
+        android:id="@+id/tvDescription"
+        android:layout_width="match_parent"
+        android:layout_height="140dp"
+        android:background="@null"
+        android:gravity="top"
+        android:inputType="textMultiLine|textLongMessage"
+        android:overScrollMode="always"
+        android:padding="16dp"
+        android:scrollbarStyle="insideInset"
+        android:scrollbars="vertical"
+        android:textSize="18sp"/>
 
     <Button
+        android:id="@+id/btnTextDefault"
         style="@style/Button.Transparent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentRight="true"
+        android:layout_below="@id/tvDescription"
         android:padding="16dp"
-        android:text="VER TEXTO PADRÃO"
+        android:text="Ver texto padrão"
         android:textSize="12sp"/>
-</LinearLayout>
+</RelativeLayout>

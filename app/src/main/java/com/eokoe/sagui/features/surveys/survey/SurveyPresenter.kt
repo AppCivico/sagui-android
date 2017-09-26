@@ -1,7 +1,7 @@
 package com.eokoe.sagui.features.surveys.survey
 
 import com.eokoe.sagui.data.entities.*
-import com.eokoe.sagui.data.model.SurveyModel
+import com.eokoe.sagui.data.model.SaguiModel
 import com.eokoe.sagui.features.base.presenter.BasePresenterImpl
 import io.reactivex.Observable
 import io.reactivex.observers.DisposableObserver
@@ -10,7 +10,7 @@ import io.realm.RealmList
 /**
  * @author Pedro Silva
  */
-class SurveyPresenter constructor(private val surveyModel: SurveyModel)
+class SurveyPresenter constructor(private val saguiModel: SaguiModel)
     : SurveyContract.Presenter, BasePresenterImpl<SurveyContract.View>() {
 
     private var questions: List<Question>? = null
@@ -85,7 +85,7 @@ class SurveyPresenter constructor(private val surveyModel: SurveyModel)
                 location = location,
                 answers = RealmList(*answers.toTypedArray())
         )
-        return exec(surveyModel.sendAnswers(submissions), SendAnswersObserver())
+        return exec(saguiModel.sendAnswers(submissions), SendAnswersObserver())
     }
 
     inner class SendAnswersObserver : DisposableObserver<Submissions>() {

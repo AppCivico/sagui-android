@@ -6,7 +6,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Enterprise
-import com.eokoe.sagui.data.model.impl.SurveyModelImpl
+import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.friendlyMessage
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
@@ -48,7 +48,7 @@ class EnterprisesActivity : BaseActivityNavDrawer(), ViewPresenter<EnterprisesCo
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
         enterprisesAdapter = EnterprisesAdapter(true)
-        presenter = EnterprisesPresenter(SurveyModelImpl())
+        presenter = EnterprisesPresenter(SaguiModelImpl())
     }
 
     override fun init(savedInstanceState: Bundle?) {

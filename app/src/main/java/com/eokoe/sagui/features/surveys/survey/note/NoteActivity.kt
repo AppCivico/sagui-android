@@ -7,7 +7,7 @@ import android.os.Bundle
 import android.widget.Toast
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Comment
-import com.eokoe.sagui.data.model.impl.SurveyModelImpl
+import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
@@ -31,7 +31,7 @@ class NoteActivity : BaseActivity(), NoteContract.View, ViewPresenter<NoteContra
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
         showBackButton()
-        presenter = NotePresenter(SurveyModelImpl())
+        presenter = NotePresenter(SaguiModelImpl())
         progressDialog = LoadingDialog.newInstance(getString(R.string.sending_note))
     }
 

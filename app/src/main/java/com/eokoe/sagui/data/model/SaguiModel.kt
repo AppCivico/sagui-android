@@ -6,7 +6,7 @@ import io.reactivex.Observable
 /**
  * @author Pedro Silva
  */
-interface SurveyModel {
+interface SaguiModel {
     fun selectEnterprise(enterprise: Enterprise): Observable<Enterprise>
 
     fun getSelectedEnterprise(): Observable<Enterprise>
@@ -20,4 +20,6 @@ interface SurveyModel {
     fun sendAnswers(submissions: Submissions): Observable<Submissions>
 
     fun saveComment(comment: Comment): Observable<Comment>
+
+    fun saveComplaint(complaint: Complaint): Observable<Complaint>
 }

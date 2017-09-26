@@ -6,16 +6,25 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import com.eokoe.sagui.R
+import com.eokoe.sagui.extensions.hide
 import com.eokoe.sagui.extensions.invisible
 import com.eokoe.sagui.extensions.show
+import com.eokoe.sagui.extensions.showAnimated
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
+import com.jakewharton.rxbinding2.widget.RxTextView
 import kotlinx.android.synthetic.main.item_report_action.view.*
+import kotlinx.android.synthetic.main.item_report_textarea.view.*
 
 /**
  * @author Pedro Silva
  * @since 25/09/17
  */
 class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewHolder>() {
+
+    var onItemClickListener: OnItemClickListener? = null
+
+    var description: String = ""
+        private set
 
     init {
         val items = ArrayList<Item>()
@@ -37,7 +46,7 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             when (ItemType.fromPosition(viewType)) {
                 ItemType.DIVIDER -> SimpleViewHolder(inflate(R.layout.divider_dark, parent))
-                ItemType.DESCRIPTION -> SimpleViewHolder(inflate(R.layout.item_report_textarea, parent))
+                ItemType.DESCRIPTION -> TextViewHolder(inflate(R.layout.item_report_textarea, parent))
                 else -> ActionViewHolder(inflate(R.layout.item_report_action, parent))
             }
 
@@ -49,7 +58,32 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
 
     override fun getItemViewType(position: Int) = getItem(position).type.ordinal
 
+    inner class TextViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        init {
+            itemView.btnTextDefault.setOnClickListener {
+                onItemClickListener?.onItemClick(ItemType.DESCRIPTION)
+            }
+            RxTextView.textChangeEvents(itemView.tvDescription)
+                    .subscribe {
+                        description = it.text().toString()
+                        if (description.isNotEmpty()) {
+                            itemView.tvPlaceholder.hide()
+                        } else {
+                            itemView.tvPlaceholder.showAnimated()
+                        }
+                    }
+        }
+    }
+
     inner class ActionViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        init {
+            itemView.setOnClickListener {
+                if (adapterPosition > -1) {
+                    onItemClickListener?.onItemClick(getItem(adapterPosition).type)
+                }
+            }
+        }
+
         fun bind(item: Item) {
             itemView.ivActionIcon.setImageResource(item.icon!!)
             itemView.tvActionName.setText(item.actionName!!)
@@ -76,5 +110,9 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
         companion object {
             fun fromPosition(position: Int) = ItemType.values()[position]
         }
+    }
+
+    interface OnItemClickListener {
+        fun onItemClick(itemType: ItemType)
     }
 }

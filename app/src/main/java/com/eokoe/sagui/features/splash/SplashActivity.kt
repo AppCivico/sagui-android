@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.os.Handler
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Enterprise
-import com.eokoe.sagui.data.model.impl.SurveyModelImpl
+import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.categories.CategoriesActivity
@@ -31,7 +31,7 @@ class SplashActivity : BaseActivity(), SplashContract.View, ViewPresenter<Splash
 
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
-        presenter = SplashPresenter(SurveyModelImpl())
+        presenter = SplashPresenter(SaguiModelImpl())
     }
 
     override fun init(savedInstanceState: Bundle?) {

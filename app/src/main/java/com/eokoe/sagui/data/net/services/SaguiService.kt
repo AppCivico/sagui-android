@@ -22,4 +22,7 @@ interface SaguiService {
 
     @POST("submissions/{submissions_id}/comments")
     fun saveComment(@Path("submissions_id") submissionsId: String, @Body comment: Comment): Observable<Comment>
+
+    @POST("complaints")
+    fun saveComplaint(@Body complaint: Complaint): Observable<Complaint>
 }

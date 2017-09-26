@@ -7,7 +7,7 @@ import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.entities.Survey
-import com.eokoe.sagui.data.model.impl.SurveyModelImpl
+import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.friendlyMessage
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
@@ -39,7 +39,7 @@ class SurveyListActivity : BaseActivityNavDrawer(),
         enterprise = intent.extras.getParcelable(EXTRA_ENTERPRISE)
         category = intent.extras.getParcelable(EXTRA_CATEGORY)
 
-        presenter = SurveyListPresenter(SurveyModelImpl())
+        presenter = SurveyListPresenter(SaguiModelImpl())
         surveyListAdapter = SurveyListAdapter(surveys == null)
     }
 

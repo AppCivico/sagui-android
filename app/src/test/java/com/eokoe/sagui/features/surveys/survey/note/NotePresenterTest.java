@@ -2,7 +2,7 @@ package com.eokoe.sagui.features.surveys.survey.note;
 
 import com.eokoe.sagui.TrampolineSchedulerRule;
 import com.eokoe.sagui.data.entities.Comment;
-import com.eokoe.sagui.data.model.SurveyModel;
+import com.eokoe.sagui.data.model.SaguiModel;
 
 import org.junit.Before;
 import org.junit.Rule;
@@ -31,7 +31,7 @@ public class NotePresenterTest {
     @Mock
     private NoteContract.View mView;
     @Mock
-    private SurveyModel mModel;
+    private SaguiModel mModel;
 
     @Before
     public void setUp() {

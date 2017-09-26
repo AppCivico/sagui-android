@@ -1,5 +1,6 @@
 package com.eokoe.sagui.data.entities
 
+import com.google.gson.annotations.SerializedName
 import io.realm.RealmObject
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
@@ -10,7 +11,9 @@ import paperparcel.PaperParcelable
  */
 @PaperParcel
 open class LatLong(
+        @SerializedName("lat")
         open var latitude: Double = 0.0,
+        @SerializedName("long")
         open var longitude: Double = 0.0
 ) : PaperParcelable, RealmObject() {
     companion object {

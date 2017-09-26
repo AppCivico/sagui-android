@@ -4,11 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.support.v7.widget.GridLayoutManager
-import android.widget.Toast
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Enterprise
-import com.eokoe.sagui.data.model.impl.SurveyModelImpl
+import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.friendlyMessage
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
@@ -40,7 +39,7 @@ class CategoriesActivity : BaseActivityNavDrawer(), CategoryActionsDialog.OnActi
 
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
-        presenter = CategoriesPresenter(SurveyModelImpl())
+        presenter = CategoriesPresenter(SaguiModelImpl())
         categoriesAdapter = CategoriesAdapter(categories == null)
         enterprise = intent.extras.getParcelable(EXTRA_ENTERPRISE)
     }

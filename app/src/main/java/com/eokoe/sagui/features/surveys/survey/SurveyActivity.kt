@@ -16,7 +16,7 @@ import android.widget.TextView
 import android.widget.Toast
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.*
-import com.eokoe.sagui.data.model.impl.SurveyModelImpl
+import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.*
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
@@ -62,7 +62,7 @@ class SurveyActivity : BaseActivity(),
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
         showBackButton()
-        presenter = SurveyPresenter(SurveyModelImpl())
+        presenter = SurveyPresenter(SaguiModelImpl())
         progressDialog = LoadingDialog.newInstance(getString(R.string.sending_answers))
     }
 

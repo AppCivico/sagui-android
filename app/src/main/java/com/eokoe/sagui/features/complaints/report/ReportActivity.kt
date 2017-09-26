@@ -4,15 +4,23 @@ import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
+import android.view.MenuItem
 import com.eokoe.sagui.R
+import com.eokoe.sagui.data.entities.Complaint
+import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.features.base.view.BaseActivity
+import com.eokoe.sagui.features.base.view.ViewPresenter
 import kotlinx.android.synthetic.main.activity_report.*
 
 /**
  * @author Pedro Silva
  * @since 25/09/17
  */
-class ReportActivity : BaseActivity() {
+class ReportActivity : BaseActivity(),
+        ReportContract.View, ViewPresenter<ReportContract.Presenter> {
+
+    override lateinit var presenter: ReportContract.Presenter
+    lateinit var reportAdapter: ReportAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -21,6 +29,7 @@ class ReportActivity : BaseActivity() {
 
     override fun setUp(savedInstanceState: Bundle?) {
         showBackButton()
+        presenter = ReportPresenter(SaguiModelImpl())
     }
 
     override fun init(savedInstanceState: Bundle?) {
@@ -29,12 +38,39 @@ class ReportActivity : BaseActivity() {
 
     private fun setupRecyclerView() {
         rvReport.setHasFixedSize(true)
-        rvReport.adapter = ReportAdapter()
+        reportAdapter = ReportAdapter()
+        rvReport.adapter = reportAdapter
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.save_check, menu)
         return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_ok) {
+            val complaint = Complaint(description = reportAdapter.description)
+            presenter.saveComplaint(complaint)
+            return true
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    override fun showError(error: Throwable) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun onSaveSuccess(complaint: Complaint) {
+        // TODO
+        finish()
+    }
+
+    override fun showLoading() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun hideLoading() {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 
     companion object {
