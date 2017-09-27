@@ -4,6 +4,7 @@ import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.features.base.presenter.BasePresenter
 import com.eokoe.sagui.features.base.view.ViewError
 import com.eokoe.sagui.features.base.view.ViewLoading
+import io.reactivex.Observable
 
 /**
  * @author Pedro Silva
@@ -15,6 +16,6 @@ interface ReportContract {
     }
 
     interface Presenter : BasePresenter<View> {
-        fun saveComplaint(complaint: Complaint)
+        fun saveComplaint(complaint: Complaint): Observable<Complaint>
     }
 }

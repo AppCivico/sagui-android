@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-          package="com.eokoe.sagui">
+    package="com.eokoe.sagui">
 
-    <uses-permission android:name="android.permission.INTERNET"/>
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CAMERA" />
 
     <application
         android:name=".SaguiApp"
@@ -18,15 +18,15 @@
 
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="${fabricApiKey}"/>
+            android:value="${fabricApiKey}" />
 
         <meta-data
             android:name="apiBaseUrl"
-            android:value="${apiBaseUrl}"/>
+            android:value="${apiBaseUrl}" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="${mapsApiKey}"/>
+            android:value="${mapsApiKey}" />
 
         <activity
             android:name="com.eokoe.sagui.features.splash.SplashActivity"
@@ -35,56 +35,60 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.SplashScreen">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
+                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER"/>
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
 
         <activity
             android:name="com.eokoe.sagui.features.enterprises.EnterprisesActivity"
             android:label="@string/title_activity_enterprises"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name=".features.enterprises.filter.EnterprisesFilterActivity"
-            android:label="@string/title_activity_enterprises_filter"/>
+            android:label="@string/title_activity_enterprises_filter" />
 
         <activity
             android:name="com.eokoe.sagui.features.categories.CategoriesActivity"
             android:label="@string/title_activity_dashboard"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name="com.eokoe.sagui.features.surveys.list.SurveyListActivity"
             android:label="@string/title_activity_categories"
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name="com.eokoe.sagui.features.surveys.survey.SurveyActivity"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name="com.eokoe.sagui.features.surveys.survey.note.NoteActivity"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize"/>
+            android:windowSoftInputMode="adjustResize" />
 
         <activity
             android:name="com.eokoe.sagui.features.complaints.ComplaintsActivity"
             android:label=""
-            android:theme="@style/AppTheme.NoActionBar"/>
+            android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
             android:name="com.eokoe.sagui.features.complaints.report.ReportActivity"
             android:label="@string/title_activity_report"
-            android:windowSoftInputMode="adjustPan"/>
+            android:windowSoftInputMode="adjustPan" />
 
         <activity
             android:name="com.eokoe.sagui.features.complaints.report.pin.PinActivity"
-            android:label="@string/title_activity_pin"/>
+            android:label="@string/title_activity_pin" />
+
+        <service
+            android:name=".services.FetchAddressIntentService"
+            android:exported="false" />
     </application>
 
 </manifest>

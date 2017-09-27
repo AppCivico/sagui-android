@@ -36,8 +36,8 @@
     <string name="action_save">Salvar</string>
     <string name="title">Título</string>
     <string name="occurrence_place">Local do ocorrido</string>
-    <string name="insert_photo">Inserir foto</string>
-    <string name="insert_video">Inserir vídeo</string>
+    <string name="camera">Camera</string>
+    <string name="insert_photo_video">Inserir foto/vídeo</string>
     <string name="insert_audio">Inserir áudio</string>
 
     <string name="congratulations">Parabéns!</string>

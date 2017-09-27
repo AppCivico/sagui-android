@@ -6,24 +6,30 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.widget.Toast
 import com.eokoe.sagui.R
+import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Complaint
+import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.report.ReportAdapter.ItemType
 import com.eokoe.sagui.features.complaints.report.pin.PinActivity
+import com.eokoe.sagui.widgets.dialog.LoadingDialog
 import kotlinx.android.synthetic.main.activity_report.*
 
 /**
  * @author Pedro Silva
  * @since 25/09/17
  */
-class ReportActivity : BaseActivity(),
+class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         ReportContract.View, ViewPresenter<ReportContract.Presenter> {
 
     override lateinit var presenter: ReportContract.Presenter
-    lateinit var reportAdapter: ReportAdapter
+    private lateinit var reportAdapter: ReportAdapter
+    private lateinit var progressDialog: LoadingDialog
+    private val complaint = Complaint()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -33,6 +39,10 @@ class ReportActivity : BaseActivity(),
     override fun setUp(savedInstanceState: Bundle?) {
         showBackButton()
         presenter = ReportPresenter(SaguiModelImpl())
+        progressDialog = LoadingDialog.newInstance("Reportando problema")
+
+        complaint.enterpriseId = intent.extras?.getParcelable<Enterprise>(EXTRA_ENTERPRISE)?.id
+        complaint.categoryId = intent.extras?.getParcelable<Category>(EXTRA_CATEGORY)?.id
     }
 
     override fun init(savedInstanceState: Bundle?) {
@@ -43,12 +53,26 @@ class ReportActivity : BaseActivity(),
         rvReport.setHasFixedSize(false)
         reportAdapter = ReportAdapter()
         rvReport.adapter = reportAdapter
-        reportAdapter.onItemClickListener = object : ReportAdapter.OnItemClickListener {
-            override fun onItemClick(itemType: ItemType) {
-                when(itemType) {
-                    ItemType.LOCATION ->
-                        startActivityForResult(PinActivity.getIntent(this@ReportActivity), REQUEST_CODE_LOCATION)
-                }
+        reportAdapter.onItemClickListener = this
+        reportAdapter.titleChangeSubject.subscribe {
+            complaint.title = it
+        }
+        reportAdapter.descriptionChangeSubject.subscribe {
+            complaint.description = it
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        reportAdapter.setComplaint(complaint)
+    }
+
+    override fun onItemClick(itemType: ItemType) {
+        when (itemType) {
+            ItemType.LOCATION -> {
+                val intent = PinActivity.getIntent(this@ReportActivity,
+                        complaint.location, complaint.address)
+                startActivityForResult(intent, REQUEST_CODE_LOCATION)
             }
         }
     }
@@ -60,7 +84,6 @@ class ReportActivity : BaseActivity(),
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_ok) {
-            val complaint = Complaint(description = reportAdapter.description)
             presenter.saveComplaint(complaint)
             return true
         }
@@ -68,7 +91,9 @@ class ReportActivity : BaseActivity(),
     }
 
     override fun showError(error: Throwable) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        hideLoading()
+        Toast.makeText(this, "Falha ao reportar problema. Tente novamente",
+                Toast.LENGTH_LONG).show()
     }
 
     override fun onSaveSuccess(complaint: Complaint) {
@@ -78,16 +103,33 @@ class ReportActivity : BaseActivity(),
     }
 
     override fun showLoading() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        progressDialog.show(supportFragmentManager)
     }
 
     override fun hideLoading() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        progressDialog.dismiss()
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_CODE_LOCATION) {
+            if (resultCode == Activity.RESULT_OK) {
+                complaint.location = data?.getParcelableExtra(PinActivity.RESULT_LOCATION)
+                complaint.address = data?.getStringExtra(PinActivity.RESULT_ADDRESS)
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
     }
 
     companion object {
         private val REQUEST_CODE_LOCATION = 1
+        private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
+        private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
 
-        fun getIntent(context: Context) = Intent(context, ReportActivity::class.java)
+        fun getIntent(context: Context, enterprise: Enterprise, category: Category?): Intent {
+            val intent = Intent(context, ReportActivity::class.java)
+            intent.putExtra(EXTRA_ENTERPRISE, enterprise)
+            intent.putExtra(EXTRA_CATEGORY, category)
+            return intent
+        }
     }
 }

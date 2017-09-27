@@ -49,7 +49,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
 
     override fun init(savedInstanceState: Bundle?) {
         fabAdd.setOnClickListener {
-            startActivityForResult(ReportActivity.getIntent(this), REQUEST_CREATE_REPORT)
+            startActivityForResult(ReportActivity.getIntent(this, enterprise!!, category), REQUEST_CREATE_REPORT)
         }
     }
 
@@ -114,14 +114,9 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         private val REQUEST_PERMISSION_LOCATION = 1
         private val REQUEST_CREATE_REPORT = 2
 
-        fun getIntent(context: Context, enterprise: Enterprise): Intent {
+        fun getIntent(context: Context, enterprise: Enterprise, category: Category? = null): Intent {
             val intent = Intent(context, ComplaintsActivity::class.java)
             intent.putExtra(EXTRA_ENTERPRISE, enterprise)
-            return intent
-        }
-
-        fun getIntent(context: Context, enterprise: Enterprise, category: Category): Intent {
-            val intent = getIntent(context, enterprise)
             intent.putExtra(EXTRA_CATEGORY, category)
             return intent
         }
