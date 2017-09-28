@@ -13,6 +13,7 @@ import io.reactivex.Observable
 interface ComplaintsContract {
     interface View {
         fun loadComplaints(complaints: List<Complaint>)
+        fun viewDetails()
     }
 
     interface Presenter : BasePresenter<View> {

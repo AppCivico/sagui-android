@@ -45,4 +45,8 @@
     <string name="title_activity_pin">Localização</string>
     <string name="confirm">Confirmar</string>
     <string name="occurrence_already">Ocorrência já gerada</string>
+    <string name="title_activity_complaint_details">Ver apontamento</string>
+    <string name="whats_complaint">O QUE É APONTAMENTO?</string>
+    <string name="explain_complaint">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ultrices ante nec tristique placerat. Mauris lacus elit, sagittis sit amet neque vel, malesuada ultrices elit.</string>
+    <string name="description">Descrição</string>
 </resources>

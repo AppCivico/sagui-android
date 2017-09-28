@@ -19,6 +19,7 @@ import com.eokoe.sagui.extensions.showSlidingTop
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.base.view.ViewLocation
 import com.eokoe.sagui.features.base.view.ViewPresenter
+import com.eokoe.sagui.features.complaints.details.ComplaintDetailsActivity
 import com.eokoe.sagui.features.complaints.report.ReportActivity
 import com.eokoe.sagui.utils.BitmapMarker
 import com.eokoe.sagui.utils.LocationHelper
@@ -49,6 +50,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
     lateinit var mapFragment: SupportMapFragment
     private val markers = ArrayList<Marker>()
     private var complaints: List<Complaint>? = null
+    private var complaintSelected: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,6 +75,9 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
             rlBoxComplaint.translationY = rlBoxComplaint.height.toFloat()
         }
         fabAdd.show()
+        btnConfirm.setOnClickListener {
+            viewDetails()
+        }
     }
 
     override fun onResume() {
@@ -86,6 +91,12 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         }
     }
 
+    override fun onBackPressed() {
+        if (!hideBoxDetails()) {
+            super.onBackPressed()
+        }
+    }
+
     @SuppressLint("MissingPermission")
     override fun onMapReady(map: GoogleMap) {
         this.map = map
@@ -96,32 +107,46 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
                     R.string.message_request_location_permission, REQUEST_PERMISSION_LOCATION)
         }
         map.setOnMarkerClickListener { marker ->
-            val index = markers.indexOf(marker)
-            if (index >= 0 && complaints!!.size > index) {
-                val complaint = complaints!![index]
-                tvTitle.text = complaint.title
-                tvLocation.text = complaint.address
-                tvDescription.text = complaint.description
-                tvCategoryName.text = complaint.category?.name
-                tvQtyComplaints.text = resources.getQuantityString(
-                        R.plurals.qty_confirmations, complaint.confirmations, complaint.confirmations)
-                val remain = MAX_COUNT_CONFIRMATION - complaint.confirmations
-                if (remain > 0) {
-                    tvQtyRemain.text = resources.getQuantityString(R.plurals.qty_remain, remain, remain)
-                } else {
-                    tvQtyRemain.setText(R.string.occurrence_already)
-                }
-                if (!rlBoxComplaint.isVisible) {
-                    rlBoxComplaint.showSlidingTop()
-                }
-                map.animateCamera(CameraUpdateFactory.newLatLng(marker.position))
+            complaintSelected = markers.indexOf(marker)
+            if (complaintSelected >= 0 && complaints!!.size > complaintSelected) {
+                showBoxDetails(complaintSelected, map, marker)
+                true
+            } else {
+                complaintSelected = -1
+                false
             }
-            true
         }
         map.setOnMapClickListener {
-            if (rlBoxComplaint.isVisible) {
-                rlBoxComplaint.invisibleSlidingBottom()
-            }
+            hideBoxDetails()
+        }
+    }
+
+    private fun hideBoxDetails(): Boolean {
+        complaintSelected = -1
+        if (rlBoxComplaint.isVisible) {
+            rlBoxComplaint.invisibleSlidingBottom()
+            return true
+        }
+        return false
+    }
+
+    private fun showBoxDetails(index: Int, map: GoogleMap, marker: Marker) {
+        map.animateCamera(CameraUpdateFactory.newLatLng(marker.position))
+        val complaint = complaints!![index]
+        tvTitle.text = complaint.title
+        tvLocation.text = complaint.address
+        tvDescription.text = complaint.description
+        tvCategoryName.text = complaint.category?.name
+        tvQtyComplaints.text = resources.getQuantityString(
+                R.plurals.qty_confirmations, complaint.confirmations, complaint.confirmations)
+        val remain = MAX_COUNT_CONFIRMATION - complaint.confirmations
+        if (remain > 0) {
+            tvQtyRemain.text = resources.getQuantityString(R.plurals.qty_remain, remain, remain)
+        } else {
+            tvQtyRemain.setText(R.string.occurrence_already)
+        }
+        if (!rlBoxComplaint.isVisible) {
+            rlBoxComplaint.showSlidingTop()
         }
     }
 
@@ -150,6 +175,12 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
                     .position(latLng)
                     .anchor(bm.anchorPoints[0], bm.anchorPoints[1])
             markers.add(map!!.addMarker(marker))
+        }
+    }
+
+    override fun viewDetails() {
+        if (complaintSelected > -1) {
+            startActivity(ComplaintDetailsActivity.getIntent(this, complaints!![complaintSelected]))
         }
     }
 
