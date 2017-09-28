@@ -49,4 +49,6 @@
     <string name="whats_complaint">O QUE É APONTAMENTO?</string>
     <string name="explain_complaint">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ultrices ante nec tristique placerat. Mauris lacus elit, sagittis sit amet neque vel, malesuada ultrices elit.</string>
     <string name="description">Descrição</string>
+    <string name="confirm_complaint">Confirmar apontamento</string>
+    <string name="confirm_complaint_question">Você confirma o problema relatado?</string>
 </resources>

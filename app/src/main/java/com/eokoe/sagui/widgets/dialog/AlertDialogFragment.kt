@@ -33,9 +33,7 @@ class AlertDialogFragment : DialogLoadFragment<Any>() {
     }
 
     override fun onDismiss(dialog: DialogInterface?) {
-        if (onDismissListener != null) {
-            onDismissListener?.onDismiss()
-        }
+        onDismissListener?.onDismiss()
         super.onDismiss(dialog)
     }
 
