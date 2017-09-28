@@ -46,7 +46,9 @@ abstract class BoxDialog : DialogFragment() {
         dialog.window?.setGravity(Gravity.BOTTOM)
         dialog.window?.requestFeature(Window.FEATURE_NO_TITLE)
         setStyle(DialogFragment.STYLE_NO_TITLE, 0)
-
+        view?.setOnClickListener {
+            dismissAnimated()
+        }
         closeButton?.setOnClickListener {
             dismissAnimated()
         }

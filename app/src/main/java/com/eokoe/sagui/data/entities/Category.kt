@@ -1,6 +1,7 @@
 package com.eokoe.sagui.data.entities
 
 import com.google.gson.annotations.SerializedName
+import io.realm.RealmObject
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
 
@@ -9,12 +10,12 @@ import paperparcel.PaperParcelable
  * @since 16/08/17
  */
 @PaperParcel
-data class Category(
-        var id: String,
-        var name: String,
+open class Category(
+        var id: String = "",
+        var name: String = "",
         @SerializedName("icon_code")
         var iconCode: String? = null
-) : PaperParcelable {
+) : PaperParcelable, RealmObject() {
     val symbol: String?
         get() {
             if (iconCode != null) {
@@ -24,6 +25,7 @@ data class Category(
         }
 
     companion object {
-        @JvmField val CREATOR = PaperParcelCategory.CREATOR
+        @JvmField
+        val CREATOR = PaperParcelCategory.CREATOR
     }
 }

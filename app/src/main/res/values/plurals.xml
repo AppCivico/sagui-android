@@ -5,6 +5,16 @@
         <item quantity="other">%d apontamentos</item>
     </plurals>
 
+    <plurals name="qty_confirmations">
+        <item quantity="one">%d confirmação</item>
+        <item quantity="other">%d confirmações</item>
+    </plurals>
+
+    <plurals name="qty_remain">
+        <item quantity="one">Faltam %d confirmação</item>
+        <item quantity="other">Faltam %d confirmações</item>
+    </plurals>
+
     <plurals name="qty_causes">
         <item quantity="one">%d ocorrência</item>
         <item quantity="other">%d ocorrências</item>

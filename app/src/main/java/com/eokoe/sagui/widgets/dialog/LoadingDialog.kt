@@ -4,7 +4,6 @@ import android.app.Dialog
 import android.app.ProgressDialog
 import android.os.Bundle
 import android.support.v4.app.FragmentManager
-import android.view.View
 
 
 /**
@@ -20,13 +19,9 @@ class LoadingDialog : DialogLoadFragment<Any>() {
 
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = ProgressDialog(activity)
-        dialog.setCancelable(false)
+        dialog.setCancelable(isCancelable)
         dialog.setMessage(arguments.getString(EXTRA_LOADING_MESSAGE))
         return dialog
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
     }
 
     companion object {

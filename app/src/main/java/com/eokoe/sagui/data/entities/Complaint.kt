@@ -16,6 +16,8 @@ open class Complaint(
         var description: String = "",
         @SerializedName("axis_id")
         var categoryId: String? = null,
+        @SerializedName("axis")
+        var category: Category? = null,
         var location: LatLong? = null,
         @SerializedName("human_address")
         var address: String? = null,

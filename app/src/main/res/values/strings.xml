@@ -43,4 +43,6 @@
     <string name="congratulations">Parabéns!</string>
     <string name="successful_contribution">Sua contribuição foi feita com sucesso!</string>
     <string name="title_activity_pin">Localização</string>
+    <string name="confirm">Confirmar</string>
+    <string name="occurrence_already">Ocorrência já gerada</string>
 </resources>

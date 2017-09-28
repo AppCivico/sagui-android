@@ -31,6 +31,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.activity_complaints.*
+import kotlinx.android.synthetic.main.content_box_complaint_details.*
 
 
 /**
@@ -68,8 +69,8 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         fabAdd.setOnClickListener {
             startActivityForResult(ReportActivity.getIntent(this, enterprise!!, category), REQUEST_CREATE_REPORT)
         }
-        llBoxComplaint.post {
-            llBoxComplaint.translationY = llBoxComplaint.height.toFloat()
+        rlBoxComplaint.post {
+            rlBoxComplaint.translationY = rlBoxComplaint.height.toFloat()
         }
         fabAdd.show()
     }
@@ -98,16 +99,28 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
             val index = markers.indexOf(marker)
             if (index >= 0 && complaints!!.size > index) {
                 val complaint = complaints!![index]
-                tvInfo.text = complaint.description
-                if (!llBoxComplaint.isVisible) {
-                    llBoxComplaint.showSlidingTop()
+                tvTitle.text = complaint.title
+                tvLocation.text = complaint.address
+                tvDescription.text = complaint.description
+                tvCategoryName.text = complaint.category?.name
+                tvQtyComplaints.text = resources.getQuantityString(
+                        R.plurals.qty_confirmations, complaint.confirmations, complaint.confirmations)
+                val remain = MAX_COUNT_CONFIRMATION - complaint.confirmations
+                if (remain > 0) {
+                    tvQtyRemain.text = resources.getQuantityString(R.plurals.qty_remain, remain, remain)
+                } else {
+                    tvQtyRemain.setText(R.string.occurrence_already)
                 }
+                if (!rlBoxComplaint.isVisible) {
+                    rlBoxComplaint.showSlidingTop()
+                }
+                map.animateCamera(CameraUpdateFactory.newLatLng(marker.position))
             }
             true
         }
         map.setOnMapClickListener {
-            if (llBoxComplaint.isVisible) {
-                llBoxComplaint.invisibleSlidingBottom()
+            if (rlBoxComplaint.isVisible) {
+                rlBoxComplaint.invisibleSlidingBottom()
             }
         }
     }
@@ -126,10 +139,10 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
                 color = Color.parseColor("#D22F33")
                 textColor = Color.WHITE
                 radiusDP = 5f
-                text = if (it.confirmations < MAX_COUNT_CONFIRMATION) {
+                text = if (it.confirmations < 100) {
                     "${it.confirmations}"
                 } else {
-                    "$MAX_COUNT_CONFIRMATION+"
+                    "99+"
                 }
             }
             val marker = MarkerOptions()
