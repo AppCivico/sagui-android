@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
@@ -16,10 +17,12 @@ import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.LatLong
 import com.eokoe.sagui.extensions.hideSlidingBottom
 import com.eokoe.sagui.extensions.isVisible
+import com.eokoe.sagui.extensions.setup
 import com.eokoe.sagui.extensions.showSlidingTop
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewLocation
 import com.eokoe.sagui.services.FetchAddressIntentService
+import com.eokoe.sagui.utils.BitmapMarker
 import com.eokoe.sagui.utils.LocationHelper
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -46,9 +49,9 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
     private lateinit var receiver: ResultReceiver
     private var address: String? = null
 
-    private val locationChangeSubject: PublishSubject<LatLng> = PublishSubject.create()
-    private val addressChangeSubject: PublishSubject<String> = PublishSubject.create()
-    private val queueCountSubject: PublishSubject<Int> = PublishSubject.create()
+    private val locationChangeSubject = PublishSubject.create<LatLng>()
+    private val addressChangeSubject = PublishSubject.create<String>()
+    private val queueCountSubject = PublishSubject.create<Int>()
     private var queueCount = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -107,6 +110,7 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
 
     override fun onMapReady(map: GoogleMap) {
         this.map = map
+        map.setup(this)
         if (latLong != null) {
             setupMarker(latLong!!.latitude, latLong!!.longitude)
         }
@@ -133,10 +137,9 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
     }
 
     private fun setupMarker(latitude: Double, longitude: Double) {
-        val markerOptions = MarkerOptions()
         val latLng = LatLng(latitude, longitude)
-        markerOptions.position(latLng)
-//        markerOptions.zIndex(0f)
+        val markerOptions = MarkerOptions()
+                .position(latLng)
         val marker = map!!.addMarker(markerOptions)
         if (address == null) {
             locationChangeSubject.onNext(latLng)

@@ -4,14 +4,20 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
+import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Enterprise
+import com.eokoe.sagui.data.model.impl.SaguiModelImpl
+import com.eokoe.sagui.extensions.setup
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.base.view.ViewLocation
+import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.report.ReportActivity
+import com.eokoe.sagui.utils.BitmapMarker
 import com.eokoe.sagui.utils.LocationHelper
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -19,6 +25,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.activity_complaints.*
 
 
@@ -26,17 +33,20 @@ import kotlinx.android.synthetic.main.activity_complaints.*
  * @author Pedro Silva
  */
 class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
+        ComplaintsContract.View, ViewPresenter<ComplaintsContract.Presenter>,
         ViewLocation, LocationHelper.OnLocationReceivedListener {
 
+    override lateinit var presenter: ComplaintsContract.Presenter
     private var category: Category? = null
     private var map: GoogleMap? = null
     private var showAlertCongratulations = false
     override var locationHelper = LocationHelper()
+    lateinit var mapFragment: SupportMapFragment
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_complaints)
-        val mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
         mapFragment.getMapAsync(this)
     }
 
@@ -45,6 +55,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         enterprise = intent.extras?.getParcelable(EXTRA_ENTERPRISE)
         category = intent.extras?.getParcelable(EXTRA_CATEGORY)
         title = enterprise?.name
+        presenter = ComplaintsPresenter(SaguiModelImpl())
     }
 
     override fun init(savedInstanceState: Bundle?) {
@@ -60,12 +71,15 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
             showAlertCongratulations = false
             AlertDialogFragment.newInstance(this, R.string.congratulations, R.string.successful_contribution)
                     .show(supportFragmentManager)
+            mapFragment.getMapAsync(this)
         }
     }
 
     @SuppressLint("MissingPermission")
     override fun onMapReady(map: GoogleMap) {
         this.map = map
+        map.setup(this)
+        presenter.list(enterprise!!, category)
         if (!requestLocation()) {
             requestLocationPermission(R.string.title_request_location_permission,
                     R.string.message_request_location_permission, REQUEST_PERMISSION_LOCATION)
@@ -74,6 +88,28 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
 
     override fun onLocationReceived(location: Location) {
         cameraToCurrentLocation(map!!, location)
+    }
+
+    override fun loadComplaints(complaints: List<Complaint>) {
+        map!!.clear()
+        complaints.forEach {
+            val latLng = LatLng(it.location!!.latitude, it.location!!.longitude)
+            val bm = BitmapMarker.build(this) {
+                color = Color.parseColor("#D22F33")
+                textColor = Color.WHITE
+                radiusDP = 5f
+                text = if (it.confirmations < MAX_COUNT_CONFIRMATION) {
+                    "${it.confirmations}"
+                } else {
+                    "$MAX_COUNT_CONFIRMATION+"
+                }
+            }
+            val marker = MarkerOptions()
+                    .icon(bm.icon)
+                    .position(latLng)
+                    .anchor(bm.anchorPoints[0], bm.anchorPoints[1])
+            map!!.addMarker(marker)
+        }
     }
 
     @SuppressLint("MissingPermission")
@@ -113,6 +149,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
         private val REQUEST_PERMISSION_LOCATION = 1
         private val REQUEST_CREATE_REPORT = 2
+        private val MAX_COUNT_CONFIRMATION = 30
 
         fun getIntent(context: Context, enterprise: Enterprise, category: Category? = null): Intent {
             val intent = Intent(context, ComplaintsActivity::class.java)

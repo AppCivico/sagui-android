@@ -25,4 +25,7 @@ interface SaguiService {
 
     @POST("complaints")
     fun saveComplaint(@Body complaint: Complaint): Observable<Complaint>
+
+    @GET("enterprises/{enterprise}/complaints")
+    fun getComplaints(@Path("enterprise") enterpriseId: String, @Query("axis_id") category: String?): Observable<List<Complaint>>
 }

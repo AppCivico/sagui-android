@@ -108,4 +108,9 @@ class SaguiModelImpl : SaguiModel {
                     return@map complaint
                 }
     }
+
+    override fun listComplaints(enterprise: Enterprise, category: Category?): Observable<List<Complaint>> {
+        return ServiceGenerator.getService(SaguiService::class.java)
+                .getComplaints(enterprise.id, category?.id)
+    }
 }

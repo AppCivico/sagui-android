@@ -20,7 +20,8 @@ open class Complaint(
         @SerializedName("human_address")
         var address: String? = null,
         @SerializedName("enterprise_id")
-        var enterpriseId: String? = null
+        var enterpriseId: String? = null,
+        var confirmations: Int = 0
 ) : PaperParcelable, RealmObject() {
     companion object {
         @JvmField

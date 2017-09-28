@@ -22,4 +22,6 @@ interface SaguiModel {
     fun saveComment(comment: Comment): Observable<Comment>
 
     fun saveComplaint(complaint: Complaint): Observable<Complaint>
+
+    fun listComplaints(enterprise: Enterprise, category: Category?): Observable<List<Complaint>>
 }
