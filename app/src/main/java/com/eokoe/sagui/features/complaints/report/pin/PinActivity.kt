@@ -148,7 +148,7 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
         }
         map!!.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
         map!!.setOnCameraMoveStartedListener {
-            if (llBoxAddress.isVisible()) {
+            if (llBoxAddress.isVisible) {
                 llBoxAddress.hideSlidingBottom()
             }
         }

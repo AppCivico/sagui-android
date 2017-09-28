@@ -12,7 +12,10 @@ import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
+import com.eokoe.sagui.extensions.invisibleSlidingBottom
+import com.eokoe.sagui.extensions.isVisible
 import com.eokoe.sagui.extensions.setup
+import com.eokoe.sagui.extensions.showSlidingTop
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.base.view.ViewLocation
 import com.eokoe.sagui.features.base.view.ViewPresenter
@@ -25,6 +28,7 @@ import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
 import kotlinx.android.synthetic.main.activity_complaints.*
 
@@ -42,12 +46,12 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
     private var showAlertCongratulations = false
     override var locationHelper = LocationHelper()
     lateinit var mapFragment: SupportMapFragment
+    private val markers = ArrayList<Marker>()
+    private var complaints: List<Complaint>? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_complaints)
-        mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        mapFragment.getMapAsync(this)
     }
 
     override fun setUp(savedInstanceState: Bundle?) {
@@ -56,12 +60,18 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         category = intent.extras?.getParcelable(EXTRA_CATEGORY)
         title = enterprise?.name
         presenter = ComplaintsPresenter(SaguiModelImpl())
+        mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
     }
 
     override fun init(savedInstanceState: Bundle?) {
+        mapFragment.getMapAsync(this)
         fabAdd.setOnClickListener {
             startActivityForResult(ReportActivity.getIntent(this, enterprise!!, category), REQUEST_CREATE_REPORT)
         }
+        llBoxComplaint.post {
+            llBoxComplaint.translationY = llBoxComplaint.height.toFloat()
+        }
+        fabAdd.show()
     }
 
     override fun onResume() {
@@ -84,6 +94,22 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
             requestLocationPermission(R.string.title_request_location_permission,
                     R.string.message_request_location_permission, REQUEST_PERMISSION_LOCATION)
         }
+        map.setOnMarkerClickListener { marker ->
+            val index = markers.indexOf(marker)
+            if (index >= 0 && complaints!!.size > index) {
+                val complaint = complaints!![index]
+                tvInfo.text = complaint.description
+                if (!llBoxComplaint.isVisible) {
+                    llBoxComplaint.showSlidingTop()
+                }
+            }
+            true
+        }
+        map.setOnMapClickListener {
+            if (llBoxComplaint.isVisible) {
+                llBoxComplaint.invisibleSlidingBottom()
+            }
+        }
     }
 
     override fun onLocationReceived(location: Location) {
@@ -91,7 +117,9 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
     }
 
     override fun loadComplaints(complaints: List<Complaint>) {
-        map!!.clear()
+        this.complaints = complaints
+        markers.forEach { it.remove() }
+        markers.clear()
         complaints.forEach {
             val latLng = LatLng(it.location!!.latitude, it.location!!.longitude)
             val bm = BitmapMarker.build(this) {
@@ -108,7 +136,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
                     .icon(bm.icon)
                     .position(latLng)
                     .anchor(bm.anchorPoints[0], bm.anchorPoints[1])
-            map!!.addMarker(marker)
+            markers.add(map!!.addMarker(marker))
         }
     }
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.v4.widget.DrawerLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.v4.widget.DrawerLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/drawerLayout"
@@ -12,9 +13,9 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <include layout="@layout/appbar" />
+        <include layout="@layout/appbar"/>
 
-        <include layout="@layout/content_complaints" />
+        <include layout="@layout/content_complaints"/>
 
         <android.support.design.widget.FloatingActionButton
             android:id="@+id/fabAdd"
@@ -22,8 +23,52 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
-            app:srcCompat="@drawable/ic_add" />
+            android:visibility="invisible"
+            app:layout_anchor="@+id/llBoxComplaint"
+            app:layout_anchorGravity="top|right|end"
+            app:srcCompat="@drawable/ic_add"/>
+
+        <LinearLayout
+            android:id="@id/llBoxComplaint"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|center"
+            android:orientation="vertical"
+            android:visibility="invisible">
+
+            <android.support.v4.widget.Space
+                android:layout_width="match_parent"
+                android:layout_height="64dp"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:background="@drawable/bg_white_border_r8"
+                android:clickable="true"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tvInfo"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="16dp"/>
+
+                <include layout="@layout/divider_dark"/>
+
+                <Button
+                    android:id="@+id/btnConfirm"
+                    style="@style/Button.Transparent"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="end"
+                    android:padding="16dp"
+                    android:text="Confirmar"/>
+            </LinearLayout>
+        </LinearLayout>
     </android.support.design.widget.CoordinatorLayout>
 
-    <include layout="@layout/navigation_view" />
+    <include layout="@layout/navigation_view"/>
 </android.support.v4.widget.DrawerLayout>

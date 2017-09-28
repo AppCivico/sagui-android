@@ -24,7 +24,8 @@ fun View.invisible() {
     visibility = View.INVISIBLE
 }
 
-fun View.isVisible() = visibility == View.VISIBLE
+val View.isVisible: Boolean
+    get() = visibility == View.VISIBLE
 
 fun View.showAnimated() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
@@ -75,6 +76,14 @@ fun View.hideAnimated(listener: Animator.AnimatorListener) {
 fun View.hideSlidingBottom() {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
         hideSlidingBottom(VisibilityAnimatorListener.hide(this))
+    } else {
+        hide()
+    }
+}
+
+fun View.invisibleSlidingBottom() {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
+        hideSlidingBottom(VisibilityAnimatorListener.invisible(this))
     } else {
         hide()
     }
