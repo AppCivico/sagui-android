@@ -1,5 +1,6 @@
 package com.eokoe.sagui.extensions
 
+import com.eokoe.sagui.data.exceptions.SaguiException
 import retrofit2.HttpException
 import java.io.IOException
 
@@ -7,22 +8,40 @@ import java.io.IOException
  * @author Pedro Silva
  * @since 13/09/17
  */
-val Throwable.friendlyMessage: String
+val Throwable.errorType: ErrorType
     get() {
-        var err = message ?: "Erro inesperado"
-        when {
+        return when {
             this is HttpException -> {
                 if (code() == 400) {
-                    TODO("not implemented")
+                    ErrorType.BAD_REQUEST
                 } else if (code() == 401 || code() == 403) {
-                    TODO("not implemented")
+                    ErrorType.UNAUTHORIZED
                 } else {
-                    err = "Erro inesperado"
+                    ErrorType.UNEXPECTED
                 }
             }
             this is IOException -> {
-                err = "Erro de conexão"
+                ErrorType.CONNECTION
             }
+            this is SaguiException -> {
+                ErrorType.CUSTOM
+            }
+            else -> ErrorType.UNEXPECTED
         }
-        return err
     }
+
+val Throwable.friendlyMessage: String
+    get() {
+        return when(errorType) {
+            ErrorType.CONNECTION -> "Erro de conexão"
+//            ErrorType.BAD_REQUEST -> TODO("not implemented")
+//            ErrorType.UNAUTHORIZED -> TODO("not implemented")
+            ErrorType.CUSTOM -> message!!
+            ErrorType.UNEXPECTED -> "Erro inesperado"
+            else -> message ?: "Erro inesperado"
+        }
+    }
+
+enum class ErrorType {
+    CONNECTION, BAD_REQUEST, UNAUTHORIZED, UNEXPECTED, CUSTOM
+}

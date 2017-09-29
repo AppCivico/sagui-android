@@ -1,6 +1,7 @@
 package com.eokoe.sagui.data.model.impl
 
 import com.eokoe.sagui.data.entities.*
+import com.eokoe.sagui.data.exceptions.SaguiException
 import com.eokoe.sagui.data.model.SaguiModel
 import com.eokoe.sagui.data.net.ServiceGenerator
 import com.eokoe.sagui.data.net.services.SaguiService
@@ -112,5 +113,46 @@ class SaguiModelImpl : SaguiModel {
     override fun listComplaints(enterprise: Enterprise, category: Category?): Observable<List<Complaint>> {
         return ServiceGenerator.getService(SaguiService::class.java)
                 .getComplaints(enterprise.id, category?.id)
+    }
+
+    override fun confirmComplaint(complaint: Complaint): Observable<Confirmation> {
+        val confirmation = Confirmation(complaintId = complaint.id!!)
+        return Observable
+                .create<Confirmation> { emitter ->
+                    Realm.getDefaultInstance().use { realm ->
+                        val result = realm.where(Confirmation::class.java)
+                                .equalTo("complaintId", complaint.id!!)
+                                .findFirst()
+                        if (result == null) {
+                            emitter.onNext(confirmation)
+                            emitter.onComplete()
+                        } else {
+                            emitter.onError(SaguiException("Você já enviou uma confirmação"))
+                        }
+                    }
+                }
+                .flatMap {
+                    ServiceGenerator.getService(SaguiService::class.java)
+                            .confirmComplaint(confirmation)
+                }
+                .map {
+                    confirmation.id = it.id
+                    return@map confirmation
+                }
+                .flatMap { confirm ->
+                    Observable.create<Confirmation> { emitter ->
+                        Realm.getDefaultInstance().use { realm ->
+                            try {
+                                realm.beginTransaction()
+                                realm.insert(confirm)
+                                realm.commitTransaction()
+                                emitter.onNext(confirm)
+                                emitter.onComplete()
+                            } catch (error: Exception) {
+                                emitter.onError(error)
+                            }
+                        }
+                    }
+                }
     }
 }

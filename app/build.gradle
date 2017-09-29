@@ -63,6 +63,7 @@ dependencies {
 
     compile "com.google.android.gms:play-services-location:$playServicesVersion"
     compile "com.google.android.gms:play-services-maps:$playServicesVersion"
+    compile 'com.google.maps.android:android-maps-utils:0.5+'
 
     compile "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
     compile "io.reactivex.rxjava2:rxkotlin:$rxKotlinVersion"

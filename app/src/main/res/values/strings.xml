@@ -51,4 +51,11 @@
     <string name="description">Descrição</string>
     <string name="confirm_complaint">Confirmar apontamento</string>
     <string name="confirm_complaint_question">Você confirma o problema relatado?</string>
+    <string name="loading_confirm_complaint">Confirmando reclamação</string>
+    <string name="confirmed">Confirmado!</string>
+    <string name="msg_contribute">Sua confirmação foi registrada.\nDeseja contribuir com foto, vídeo ou áudio?</string>
+    <string name="contribute">Contribuir</string>
+    <string name="cancel">Cancelar</string>
+    <string name="ok">Ok</string>
+    <string name="error">Erro</string>
 </resources>

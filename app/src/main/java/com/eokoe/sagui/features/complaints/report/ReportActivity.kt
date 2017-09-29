@@ -6,16 +6,18 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Toast
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
+import com.eokoe.sagui.extensions.ErrorType
+import com.eokoe.sagui.extensions.errorType
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.report.ReportAdapter.ItemType
 import com.eokoe.sagui.features.complaints.report.pin.PinActivity
+import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
 import kotlinx.android.synthetic.main.activity_report.*
 
@@ -30,6 +32,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     private lateinit var reportAdapter: ReportAdapter
     private lateinit var progressDialog: LoadingDialog
     private val complaint = Complaint()
+    private var enterprise: Enterprise? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,7 +44,8 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         presenter = ReportPresenter(SaguiModelImpl())
         progressDialog = LoadingDialog.newInstance("Reportando problema")
 
-        complaint.enterpriseId = intent.extras?.getParcelable<Enterprise>(EXTRA_ENTERPRISE)?.id
+        enterprise = intent.extras?.getParcelable(EXTRA_ENTERPRISE)
+        complaint.enterpriseId = enterprise?.id
         complaint.categoryId = intent.extras?.getParcelable<Category>(EXTRA_CATEGORY)?.id
     }
 
@@ -70,9 +74,12 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     override fun onItemClick(itemType: ItemType) {
         when (itemType) {
             ItemType.LOCATION -> {
-                val intent = PinActivity.getIntent(this@ReportActivity,
+                val intent = PinActivity.getIntent(this@ReportActivity, enterprise!!,
                         complaint.location, complaint.address)
                 startActivityForResult(intent, REQUEST_CODE_LOCATION)
+            }
+            ItemType.CAMERA -> {
+
             }
         }
     }
@@ -92,8 +99,14 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
 
     override fun showError(error: Throwable) {
         hideLoading()
-        Toast.makeText(this, "Falha ao reportar problema. Tente novamente",
-                Toast.LENGTH_LONG).show()
+        AlertDialogFragment
+                .create(this) {
+                    title = "Falha ao reportar problema"
+                    message = if (error.errorType == ErrorType.CONNECTION)
+                        "Por favor verifique sua internet e tente novamente"
+                    else "Ocorreu um erro inexperado.\nTente novamente mais tarde"
+                }
+                .show(supportFragmentManager)
     }
 
     override fun onSaveSuccess(complaint: Complaint) {

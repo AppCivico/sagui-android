@@ -8,8 +8,11 @@ import android.widget.Toast
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Comment
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
+import com.eokoe.sagui.extensions.ErrorType
+import com.eokoe.sagui.extensions.errorType
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
+import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
 import kotlinx.android.synthetic.main.activity_note.*
 
@@ -42,7 +45,13 @@ class NoteActivity : BaseActivity(), NoteContract.View, ViewPresenter<NoteContra
                 hideKeyboard(textNote.editText!!)
                 presenter.sendNote(Comment(submissionsId = surveyId, content = textNote.editText!!.text.toString()))
             } else {
-                Toast.makeText(this, "Informe as observações", Toast.LENGTH_SHORT).show()
+//                Toast.makeText(this, "Informe as observações", Toast.LENGTH_SHORT).show()
+                AlertDialogFragment
+                        .create(this) {
+                            title = "Atenção"
+                            message = "Informe as observações"
+                        }
+                        .show(supportFragmentManager)
             }
         }
     }
@@ -62,7 +71,14 @@ class NoteActivity : BaseActivity(), NoteContract.View, ViewPresenter<NoteContra
 
     override fun showError(error: Throwable) {
         hideLoading()
-        Toast.makeText(this, "Falha ao enviar observações. Tente novamente", Toast.LENGTH_LONG).show()
+        AlertDialogFragment
+                .create(this) {
+                    title = "Falha ao enviar observações"
+                    message = if (error.errorType == ErrorType.CONNECTION)
+                        "Por favor verifique sua internet e tente novamente"
+                    else "Ocorreu um erro inexperado.\nTente novamente mais tarde"
+                }
+                .show(supportFragmentManager)
     }
 
     companion object {

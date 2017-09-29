@@ -15,4 +15,6 @@
 
     <color name="white">#FFFFFF</color>
     <color name="divider">#1E000000</color>
+    <color name="strokePolygonMap">#FF0000</color>
+    <color name="mapFillColor">#19FF0000</color>
 </resources>

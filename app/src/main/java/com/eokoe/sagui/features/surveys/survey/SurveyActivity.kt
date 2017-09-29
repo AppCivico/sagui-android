@@ -14,7 +14,6 @@ import android.view.inputmethod.EditorInfo
 import android.widget.RadioButton
 import android.widget.RadioGroup
 import android.widget.TextView
-import android.widget.Toast
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.*
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
@@ -25,6 +24,7 @@ import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.surveys.survey.note.NoteActivity
 import com.eokoe.sagui.utils.LocationHelper
 import com.eokoe.sagui.widgets.CheckableImageView
+import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.BaseControllerListener
@@ -159,7 +159,14 @@ class SurveyActivity : BaseActivity(),
     override fun showError(error: Throwable) {
         hideLoading()
         btnStart.setText(R.string.send_again)
-        Toast.makeText(this, "Falha ao enviar respostas. Tente novamente", Toast.LENGTH_LONG).show()
+        AlertDialogFragment
+                .create(this) {
+                    title = "Falha ao enviar respostas"
+                    message = if (error.errorType == ErrorType.CONNECTION)
+                        "Por favor verifique sua internet e tente novamente"
+                    else "Ocorreu um erro inexperado.\nTente novamente mais tarde"
+                }
+                .show(supportFragmentManager)
     }
 
     @SuppressLint("MissingPermission")
@@ -191,7 +198,7 @@ class SurveyActivity : BaseActivity(),
     }
 
     private fun surveyAnswered() {
-        Toast.makeText(this, "Enquete respondida", Toast.LENGTH_SHORT).show()
+        setResult(RESULT_OK)
         finish()
     }
 

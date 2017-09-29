@@ -1,5 +1,6 @@
 package com.eokoe.sagui.features.surveys.list
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -13,6 +14,7 @@ import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.surveys.survey.SurveyActivity
+import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import kotlinx.android.synthetic.main.activity_survey_list.*
 
 /**
@@ -28,9 +30,24 @@ class SurveyListActivity : BaseActivityNavDrawer(),
     private var category: Category? = null
     private var surveys: ArrayList<Survey>? = null
 
+    private var showAlertCongratulations = false
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_survey_list)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        if (showAlertCongratulations) {
+            showAlertCongratulations = false
+            AlertDialogFragment
+                    .create(this) {
+                        title = "Enquete respondida"
+                        message = "Obrigado pela contribuição!"
+                    }
+                    .show(supportFragmentManager)
+        }
     }
 
     override fun setUp(savedInstanceState: Bundle?) {
@@ -58,7 +75,7 @@ class SurveyListActivity : BaseActivityNavDrawer(),
         rvSurveys.setHasFixedSize(true)
         surveyListAdapter.onItemClickListener = object : SurveyListAdapter.OnItemClickListener {
             override fun onClick(survey: Survey) {
-                startActivity(SurveyActivity.getIntent(this@SurveyListActivity, category!!, survey))
+                startActivityForResult(SurveyActivity.getIntent(this@SurveyListActivity, category!!, survey), REQUEST_SURVEY_ANSWER)
             }
         }
     }
@@ -99,10 +116,20 @@ class SurveyListActivity : BaseActivityNavDrawer(),
         }
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        if (requestCode == REQUEST_SURVEY_ANSWER) {
+            if (resultCode == Activity.RESULT_OK) {
+                showAlertCongratulations = true
+            }
+        }
+        super.onActivityResult(requestCode, resultCode, data)
+    }
+
     companion object {
         private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
         private val STATE_SURVEYS = "STATE_SURVEYS"
+        private val REQUEST_SURVEY_ANSWER = 1
 
         fun getIntent(context: Context, enterprise: Enterprise, category: Category): Intent {
             val intent = Intent(context, SurveyListActivity::class.java)

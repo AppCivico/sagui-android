@@ -7,6 +7,7 @@ import android.content.Intent
 import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
+import android.support.v4.content.ContextCompat
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Complaint
@@ -31,6 +32,7 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolygonOptions
 import kotlinx.android.synthetic.main.activity_complaints.*
 import kotlinx.android.synthetic.main.content_box_complaint_details.*
 
@@ -85,7 +87,12 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         navigationView.setCheckedItem(R.id.nav_complaints)
         if (showAlertCongratulations) {
             showAlertCongratulations = false
-            AlertDialogFragment.newInstance(this, R.string.congratulations, R.string.successful_contribution)
+            AlertDialogFragment
+                    .create(this) {
+                        titleRes = R.string.congratulations
+                        messageRes = R.string.successful_contribution
+                        multiChoiceItems = arrayOf("Desejo receber notificações sobre a reclamação")
+                    }
                     .show(supportFragmentManager)
             mapFragment.getMapAsync(this)
         }
@@ -101,18 +108,18 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
     override fun onMapReady(map: GoogleMap) {
         this.map = map
         map.setup(this)
+        markEnterpriseLocation(map, enterprise!!)
         presenter.list(enterprise!!, category)
         if (!requestLocation()) {
             requestLocationPermission(R.string.title_request_location_permission,
                     R.string.message_request_location_permission, REQUEST_PERMISSION_LOCATION)
         }
         map.setOnMarkerClickListener { marker ->
-            complaintSelected = markers.indexOf(marker)
-            if (complaintSelected >= 0 && complaints!!.size > complaintSelected) {
-                showBoxDetails(complaintSelected, map, marker)
+            val index = markers.indexOf(marker)
+            if (index >= 0 && complaints!!.size > index) {
+                showBoxDetails(index, map, marker)
                 true
             } else {
-                complaintSelected = -1
                 false
             }
         }
@@ -132,21 +139,24 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
 
     private fun showBoxDetails(index: Int, map: GoogleMap, marker: Marker) {
         map.animateCamera(CameraUpdateFactory.newLatLng(marker.position))
-        val complaint = complaints!![index]
-        tvTitle.text = complaint.title
-        tvLocation.text = complaint.address
-        tvDescription.text = complaint.description
-        tvCategoryName.text = complaint.category?.name
-        tvQtyComplaints.text = resources.getQuantityString(
-                R.plurals.qty_confirmations, complaint.confirmations, complaint.confirmations)
-        val remain = MAX_COUNT_CONFIRMATION - complaint.confirmations
-        if (remain > 0) {
-            tvQtyRemain.text = resources.getQuantityString(R.plurals.qty_remain, remain, remain)
-        } else {
-            tvQtyRemain.setText(R.string.occurrence_already)
-        }
-        if (!rlBoxComplaint.isVisible) {
-            rlBoxComplaint.showSlidingTop()
+        if (index != complaintSelected) {
+            complaintSelected = index
+            val complaint = complaints!![index]
+            tvTitle.text = complaint.title
+            tvLocation.text = complaint.address
+            tvDescription.text = complaint.description
+            tvCategoryName.text = complaint.category?.name
+            tvQtyComplaints.text = resources.getQuantityString(
+                    R.plurals.qty_confirmations, complaint.confirmations, complaint.confirmations)
+            val remain = MAX_COUNT_CONFIRMATION - complaint.confirmations
+            if (remain > 0) {
+                tvQtyRemain.text = resources.getQuantityString(R.plurals.qty_remain, remain, remain)
+            } else {
+                tvQtyRemain.setText(R.string.occurrence_already)
+            }
+            if (!rlBoxComplaint.isVisible) {
+                rlBoxComplaint.showSlidingTop()
+            }
         }
     }
 
@@ -196,7 +206,18 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
 
     private fun cameraToCurrentLocation(map: GoogleMap, location: Location) {
         val latLng = LatLng(location.latitude, location.longitude)
-        map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+    }
+
+    private fun markEnterpriseLocation(map: GoogleMap, enterprise: Enterprise) {
+        if (enterprise.location != null) {
+            val polygonOptions = PolygonOptions()
+                    .addAll(enterprise.location!!)
+                    .strokeColor(ContextCompat.getColor(this, R.color.strokePolygonMap))
+                    .strokeWidth(2f)
+                    .fillColor(ContextCompat.getColor(this, R.color.mapFillColor))
+            map.addPolygon(polygonOptions)
+        }
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {

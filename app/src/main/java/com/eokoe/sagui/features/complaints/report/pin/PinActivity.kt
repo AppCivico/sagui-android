@@ -4,16 +4,15 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.location.Geocoder
 import android.location.Location
 import android.os.Bundle
 import android.os.Handler
 import android.os.ResultReceiver
-import android.view.Menu
-import android.view.MenuItem
+import android.support.v4.content.ContextCompat
 import android.widget.Toast
 import com.eokoe.sagui.R
+import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.entities.LatLong
 import com.eokoe.sagui.extensions.hideSlidingBottom
 import com.eokoe.sagui.extensions.isVisible
@@ -22,7 +21,6 @@ import com.eokoe.sagui.extensions.showSlidingTop
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewLocation
 import com.eokoe.sagui.services.FetchAddressIntentService
-import com.eokoe.sagui.utils.BitmapMarker
 import com.eokoe.sagui.utils.LocationHelper
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -30,6 +28,7 @@ import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
+import com.google.android.gms.maps.model.PolygonOptions
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.PublishSubject
@@ -48,6 +47,7 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
     private var latLong: LatLong? = null
     private lateinit var receiver: ResultReceiver
     private var address: String? = null
+    private var enterprise: Enterprise? = null
 
     private val locationChangeSubject = PublishSubject.create<LatLng>()
     private val addressChangeSubject = PublishSubject.create<String>()
@@ -66,6 +66,7 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
         showBackButton()
         latLong = intent?.extras?.getParcelable(EXTRA_LAT_LNG)
         address = intent?.extras?.getString(EXTRA_ADDRESS)
+        enterprise = intent?.extras?.getParcelable(EXTRA_ENTERPRISE)
     }
 
     override fun init(savedInstanceState: Bundle?) {
@@ -111,6 +112,7 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
     override fun onMapReady(map: GoogleMap) {
         this.map = map
         map.setup(this)
+        markEnterpriseLocation(map, enterprise!!)
         if (latLong != null) {
             setupMarker(latLong!!.latitude, latLong!!.longitude)
         }
@@ -161,6 +163,17 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
         }
     }
 
+    private fun markEnterpriseLocation(map: GoogleMap, enterprise: Enterprise) {
+        if (enterprise.location != null) {
+            val polygonOptions = PolygonOptions()
+                    .addAll(enterprise.location!!)
+                    .strokeColor(ContextCompat.getColor(this, R.color.strokePolygonMap))
+                    .strokeWidth(2f)
+                    .fillColor(ContextCompat.getColor(this, R.color.mapFillColor))
+            map.addPolygon(polygonOptions)
+        }
+    }
+
     fun hideBox() {
         queueCountSubject.onNext(1)
     }
@@ -187,13 +200,15 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
 
     companion object {
         private val REQUEST_PERMISSION_LOCATION = 1
+        val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         val EXTRA_LAT_LNG = "EXTRA_LAT_LNG"
         val EXTRA_ADDRESS = "EXTRA_ADDRESS"
         val RESULT_LOCATION = "RESULT_LOCATION"
         val RESULT_ADDRESS = "RESULT_ADDRESS"
 
-        fun getIntent(context: Context, latLong: LatLong? = null, address: String? = null): Intent {
+        fun getIntent(context: Context, enterprise: Enterprise, latLong: LatLong? = null, address: String? = null): Intent {
             val intent = Intent(context, PinActivity::class.java)
+            intent.putExtra(EXTRA_ENTERPRISE, enterprise)
             intent.putExtra(EXTRA_LAT_LNG, latLong)
             intent.putExtra(EXTRA_ADDRESS, address)
             return intent

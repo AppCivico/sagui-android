@@ -7,7 +7,6 @@ import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.v4.app.ActivityCompat
-import android.support.v4.content.IntentCompat
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
@@ -72,7 +71,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     fun startActivityAndClearStack(intent: Intent) {
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or IntentCompat.FLAG_ACTIVITY_CLEAR_TASK)
+        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
         startActivity(intent)
     }
 
@@ -97,9 +96,10 @@ abstract class BaseActivity : AppCompatActivity() {
 
     fun requestPermission(@StringRes title: Int, @StringRes message: Int,
                           requestCode: Int, vararg permissions: String) {
-        val alertDialog = AlertDialogFragment.newInstance(this, title, message)
-        alertDialog.onDismissListener = object : AlertDialogFragment.OnDismissListener {
-            override fun onDismiss() {
+        val alertDialog = AlertDialogFragment.create(this) {
+            titleRes = title
+            messageRes = message
+            onConfirmClickListener { dialog, which ->
                 ActivityCompat.requestPermissions(this@BaseActivity, permissions, requestCode)
             }
         }
