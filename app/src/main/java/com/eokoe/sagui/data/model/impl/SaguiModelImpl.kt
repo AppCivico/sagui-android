@@ -117,14 +117,11 @@ class SaguiModelImpl : SaguiModel {
 
     override fun confirmComplaint(complaint: Complaint): Observable<Confirmation> {
         val confirmation = Confirmation(complaintId = complaint.id!!)
-        return Observable
-                .create<Confirmation> { emitter ->
-                    Realm.getDefaultInstance().use { realm ->
-                        val result = realm.where(Confirmation::class.java)
-                                .equalTo("complaintId", complaint.id!!)
-                                .findFirst()
-                        if (result == null) {
-                            emitter.onNext(confirmation)
+        return complaintConfirmed(complaint)
+                .flatMap { confirmed ->
+                    Observable.create<Complaint> { emitter ->
+                        if (!confirmed) {
+                            emitter.onNext(complaint)
                             emitter.onComplete()
                         } else {
                             emitter.onError(SaguiException("Você já enviou uma confirmação"))
@@ -154,5 +151,17 @@ class SaguiModelImpl : SaguiModel {
                         }
                     }
                 }
+    }
+
+    override fun complaintConfirmed(complaint: Complaint): Observable<Boolean> {
+        return Observable.create { emitter ->
+            Realm.getDefaultInstance().use { realm ->
+                val result = realm.where(Confirmation::class.java)
+                        .equalTo("complaintId", complaint.id!!)
+                        .findFirst()
+                emitter.onNext(result != null)
+                emitter.onComplete()
+            }
+        }
     }
 }

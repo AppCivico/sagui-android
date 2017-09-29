@@ -26,4 +26,6 @@ interface SaguiModel {
     fun listComplaints(enterprise: Enterprise, category: Category?): Observable<List<Complaint>>
 
     fun confirmComplaint(complaint: Complaint): Observable<Confirmation>
+
+    fun complaintConfirmed(complaint: Complaint): Observable<Boolean>
 }
