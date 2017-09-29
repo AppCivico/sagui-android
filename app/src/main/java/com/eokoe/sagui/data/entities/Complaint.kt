@@ -1,7 +1,10 @@
 package com.eokoe.sagui.data.entities
 
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import io.realm.RealmList
 import io.realm.RealmObject
+import io.realm.annotations.Ignore
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
 
@@ -23,8 +26,13 @@ open class Complaint(
         var address: String? = null,
         @SerializedName("enterprise_id")
         var enterpriseId: String? = null,
-        var confirmations: Int = 0
+        @SerializedName("confirmations")
+        var confirmationsList: RealmList<Confirmation>? = null
 ) : PaperParcelable, RealmObject() {
+
+    val confirmations: Int
+        get() = confirmationsList?.size ?: 0
+
     companion object {
         @JvmField
         val CREATOR = PaperParcelComplaint.CREATOR

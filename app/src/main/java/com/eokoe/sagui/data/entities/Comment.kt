@@ -18,6 +18,7 @@ open class Comment(
         open var submissionsId: String? = null,
         open var content: String = ""
 ) : PaperParcelable, RealmObject() {
+
     companion object {
         @JvmField
         val CREATOR = PaperParcelComment.CREATOR

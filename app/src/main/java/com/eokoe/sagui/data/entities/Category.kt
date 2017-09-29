@@ -16,6 +16,7 @@ open class Category(
         @SerializedName("icon_code")
         var iconCode: String? = null
 ) : PaperParcelable, RealmObject() {
+
     val symbol: String?
         get() {
             if (iconCode != null) {

@@ -18,6 +18,7 @@ open class Submissions(
         var location: LatLong? = null,
         var answers: RealmList<Answer> = RealmList()
 ) : PaperParcelable, RealmObject() {
+
     companion object {
         @JvmField
         val CREATOR = PaperParcelSubmissions.CREATOR

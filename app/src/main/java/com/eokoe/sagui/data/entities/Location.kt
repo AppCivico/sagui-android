@@ -17,6 +17,7 @@ open class Location(
         @SerializedName("human_address")
         open var location: String = ""
 ) : PaperParcelable, RealmObject() {
+
     companion object {
         @JvmField
         val CREATOR = PaperParcelLocation.CREATOR

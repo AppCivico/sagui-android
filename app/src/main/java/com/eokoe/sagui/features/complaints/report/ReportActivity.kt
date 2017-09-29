@@ -1,9 +1,17 @@
 package com.eokoe.sagui.features.complaints.report
 
+import android.Manifest
 import android.app.Activity
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
+import android.provider.MediaStore
+import android.support.v4.app.ActivityCompat
+import android.support.v4.content.FileProvider
 import android.view.Menu
 import android.view.MenuItem
 import com.eokoe.sagui.R
@@ -17,9 +25,12 @@ import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.report.ReportAdapter.ItemType
 import com.eokoe.sagui.features.complaints.report.pin.PinActivity
+import com.eokoe.sagui.utils.LogUtil
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
 import kotlinx.android.synthetic.main.activity_report.*
+import java.io.File
+
 
 /**
  * @author Pedro Silva
@@ -33,6 +44,8 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     private lateinit var progressDialog: LoadingDialog
     private val complaint = Complaint()
     private var enterprise: Enterprise? = null
+    private var picture: Uri? = null
+    private var pictureFile: File? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -79,8 +92,29 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 startActivityForResult(intent, REQUEST_CODE_LOCATION)
             }
             ItemType.CAMERA -> {
-
+                if (hasCameraPermission()) {
+                    openCamera()
+                } else {
+                    requestCameraPermission()
+                }
             }
+        }
+    }
+
+    private fun openCamera() {
+        // https://developer.android.com/training/camera/photobasics.html
+        val filename = resources.getString(R.string.app_name)
+        pictureFile = File(
+                getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                filename + "_complaint_" + System.currentTimeMillis() + ".jpg"
+        )
+        val authority = "com.eokoe.sagui.fileprovider"
+        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        val file = FileProvider.getUriForFile(this, authority, pictureFile)
+        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, file)
+//        takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        if (takePictureIntent.resolveActivity(packageManager) != null) {
+            startActivityForResult(takePictureIntent, REQUEST_CODE_CAMERA)
         }
     }
 
@@ -129,14 +163,40 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 complaint.location = data?.getParcelableExtra(PinActivity.RESULT_LOCATION)
                 complaint.address = data?.getStringExtra(PinActivity.RESULT_ADDRESS)
             }
+        } else if (requestCode == REQUEST_CODE_CAMERA) {
+            if (resultCode == Activity.RESULT_OK) {
+                picture = Uri.fromFile(pictureFile)
+            }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode == REQUEST_CAMERA_PERMISSION) {
+            if (hasCameraPermission()) {
+                openCamera()
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    private fun hasCameraPermission(): Boolean {
+        return hasPermission(Manifest.permission.CAMERA)
+    }
+
+    private fun requestCameraPermission() {
+        // TODO handle permission not granted
+        if (!hasCameraPermission()) {
+            requestPermission(R.string.title_request_camera_permission, R.string.message_request_camera_permission, REQUEST_CAMERA_PERMISSION, Manifest.permission.CAMERA)
+        }
+    }
+
     companion object {
         private val REQUEST_CODE_LOCATION = 1
+        private val REQUEST_CODE_CAMERA = 2
         private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
+        private val REQUEST_CAMERA_PERMISSION = 1
 
         fun getIntent(context: Context, enterprise: Enterprise, category: Category?): Intent {
             val intent = Intent(context, ReportActivity::class.java)

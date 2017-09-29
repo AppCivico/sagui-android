@@ -15,6 +15,7 @@ data class Survey(
         val categories: List<String>,
         val questions: List<Question>? = null
 ) : PaperParcelable {
+
     companion object {
         @JvmField
         val CREATOR = PaperParcelSurvey.CREATOR

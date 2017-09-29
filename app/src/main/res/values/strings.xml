@@ -30,8 +30,6 @@
     <string name="text_category_header">Sobre o que você quer falar?</string>
     <string name="close">Fechar</string>
 
-    <string name="title_request_location_permission">Permissão de localização necessária</string>
-    <string name="message_request_location_permission">Este aplicativo precisa acessar sua localização, por favor aceite o uso dessa funcionalidade.</string>
     <string name="title_activity_report">Reportar</string>
     <string name="action_save">Salvar</string>
     <string name="title">Título</string>
@@ -58,4 +56,9 @@
     <string name="cancel">Cancelar</string>
     <string name="ok">Ok</string>
     <string name="error">Erro</string>
+
+    <string name="title_request_location_permission">Permissão de localização necessária</string>
+    <string name="message_request_location_permission">Este aplicativo precisa acessar sua localização, por favor aceite o uso dessa funcionalidade.</string>
+    <string name="title_request_camera_permission">Permissão de acesso à camera necessária</string>
+    <string name="message_request_camera_permission">Este aplicativo precisa acessar a camera do seu dispositivo, por favor aceite o uso dessa funcionalidade.</string>
 </resources>

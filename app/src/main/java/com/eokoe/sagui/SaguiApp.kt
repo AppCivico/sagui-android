@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.support.multidex.MultiDex
 import com.eokoe.sagui.data.AnswerListAdapter
+import com.eokoe.sagui.data.ConfirmationListAdapter
 import com.eokoe.sagui.data.net.ServiceGenerator
 import com.eokoe.sagui.extensions.getManifestValue
 import com.facebook.drawee.backends.pipeline.Fresco
@@ -17,7 +18,10 @@ import paperparcel.ProcessorConfig
  * @since 14/08/17
  */
 @ProcessorConfig(
-        adapters = arrayOf(Adapter(AnswerListAdapter::class))
+        adapters = arrayOf(
+                Adapter(AnswerListAdapter::class),
+                Adapter(ConfirmationListAdapter::class)
+        )
 )
 class SaguiApp : Application() {
     override fun onCreate() {

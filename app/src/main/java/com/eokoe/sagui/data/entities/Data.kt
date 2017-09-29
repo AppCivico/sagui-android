@@ -15,6 +15,7 @@ open class Data(
         open var actions: Int = 0,
         open var surveys: Int = 0
 ) : PaperParcelable, RealmObject() {
+
     companion object {
         @JvmField
         val CREATOR = PaperParcelData.CREATOR

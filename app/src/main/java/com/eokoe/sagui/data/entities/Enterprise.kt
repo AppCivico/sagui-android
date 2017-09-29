@@ -25,6 +25,7 @@ open class Enterprise(
         open var data: Data = Data(),
         open var selected: Boolean = false
 ) : PaperParcelable, RealmObject() {
+
     val location: List<LatLng>?
         get() {
             return if (locationEncoded != null) {

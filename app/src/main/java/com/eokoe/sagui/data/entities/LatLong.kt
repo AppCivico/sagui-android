@@ -16,6 +16,7 @@ open class LatLong(
         @SerializedName("long")
         open var longitude: Double = 0.0
 ) : PaperParcelable, RealmObject() {
+
     companion object {
         @JvmField
         val CREATOR = PaperParcelLatLong.CREATOR

@@ -14,6 +14,7 @@ data class Question(
         val type: Type,
         val answers: List<Answer>? = null
 ) : PaperParcelable {
+
     enum class Type {
         @SerializedName("textarea")
         TEXT,
