@@ -9,7 +9,6 @@ import android.os.Bundle
 import android.os.ResultReceiver
 import android.text.TextUtils
 import com.eokoe.sagui.data.entities.LatLong
-import com.eokoe.sagui.utils.LogUtil
 import java.io.IOException
 import java.util.*
 import kotlin.collections.ArrayList
@@ -35,7 +34,6 @@ class FetchAddressIntentService : IntentService(TAG) {
         } catch (error: IOException) {
             // TODO FIX message
             errorMessage = "service_not_available"
-            LogUtil.debug(this, error.message ?: "")
         } catch (error: IllegalArgumentException) {
             // TODO FIX message
             errorMessage = "invalid_lat_long_used"

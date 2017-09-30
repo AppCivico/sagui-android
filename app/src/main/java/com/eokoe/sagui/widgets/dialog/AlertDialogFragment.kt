@@ -9,7 +9,6 @@ import android.support.v4.app.DialogFragment
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AlertDialog
 import com.eokoe.sagui.R
-import com.eokoe.sagui.utils.LogUtil
 
 /**
  * @author Pedro Silva
@@ -71,23 +70,23 @@ class AlertDialogFragment : DialogFragment() {
         private val EXTRA_MULTICHOICE_ITEMS = "EXTRA_MULTICHOICE_ITEMS"
         private val EXTRA_MULTICHOICE_ITEMS_SELECTED = "EXTRA_MULTICHOICE_ITEMS_SELECTED"
 
-        fun create(context: Context? = null, block: Builder.() -> Unit) = Builder(context).apply(block).build()
+        fun create(context: Context, block: Builder.() -> Unit) = Builder(context).apply(block).build()
     }
 
-    class Builder(val context: Context?) {
+    class Builder(val context: Context) {
         var tag: String? = AlertDialogFragment::class.simpleName
 
         var title: String? = null
-            get() = field ?: context?.getString(titleRes)
+            get() = field ?: context.getString(titleRes)
 
         var message: String? = null
-            get() = field ?: context?.getString(messageRes)
+            get() = field ?: context.getString(messageRes)
 
         var positiveText: String? = null
-            get() = field ?: context?.getString(positiveTextRes)
+            get() = field ?: context.getString(positiveTextRes)
 
         var negativeText: String? = null
-            get() = field ?: if (negativeTextRes != 0) context?.getString(negativeTextRes) else null
+            get() = field ?: if (negativeTextRes != 0) context.getString(negativeTextRes) else null
         var multiChoiceItems: Array<String>? = null
         var multiChoiceItemsSelected: BooleanArray? = null
 

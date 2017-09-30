@@ -29,10 +29,7 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.LatLng
-import com.google.android.gms.maps.model.Marker
-import com.google.android.gms.maps.model.MarkerOptions
-import com.google.android.gms.maps.model.PolygonOptions
+import com.google.android.gms.maps.model.*
 import kotlinx.android.synthetic.main.activity_complaints.*
 import kotlinx.android.synthetic.main.content_box_complaint_details.*
 
@@ -53,6 +50,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
     private val markers = ArrayList<Marker>()
     private var complaints: List<Complaint>? = null
     private var complaintSelected: Int = -1
+    var latLngBounds: LatLngBounds? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -206,17 +204,25 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
 
     private fun cameraToCurrentLocation(map: GoogleMap, location: Location) {
         val latLng = LatLng(location.latitude, location.longitude)
-        map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 16f))
+        if (latLngBounds?.contains(latLng) == true) {
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+        }
     }
 
     private fun markEnterpriseLocation(map: GoogleMap, enterprise: Enterprise) {
         if (enterprise.location != null) {
             val polygonOptions = PolygonOptions()
                     .addAll(enterprise.location!!)
-                    .strokeColor(ContextCompat.getColor(this, R.color.strokePolygonMap))
+                    .strokeColor(ContextCompat.getColor(this, R.color.mapFillColor))
                     .strokeWidth(2f)
-                    .fillColor(ContextCompat.getColor(this, R.color.mapFillColor))
+
             map.addPolygon(polygonOptions)
+            val builder = LatLngBounds.Builder()
+            enterprise.location!!.forEach {
+                builder.include(it)
+            }
+            latLngBounds = builder.build()
+            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLngBounds!!.center, 14f))
         }
     }
 

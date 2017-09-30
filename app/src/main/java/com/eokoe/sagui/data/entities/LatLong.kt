@@ -1,5 +1,6 @@
 package com.eokoe.sagui.data.entities
 
+import com.google.android.gms.maps.model.LatLng
 import com.google.gson.annotations.SerializedName
 import io.realm.RealmObject
 import paperparcel.PaperParcel
@@ -16,6 +17,10 @@ open class LatLong(
         @SerializedName("long")
         open var longitude: Double = 0.0
 ) : PaperParcelable, RealmObject() {
+
+    constructor(latLng: LatLng) : this(latLng.latitude, latLng.longitude)
+
+    fun toLatLng()  = LatLng(latitude, longitude)
 
     companion object {
         @JvmField

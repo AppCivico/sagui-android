@@ -28,4 +28,6 @@ interface SaguiModel {
     fun confirmComplaint(complaint: Complaint): Observable<Confirmation>
 
     fun complaintConfirmed(complaint: Complaint): Observable<Boolean>
+
+    fun getAddressByLatLong(latLong: LatLong): Observable<String>
 }

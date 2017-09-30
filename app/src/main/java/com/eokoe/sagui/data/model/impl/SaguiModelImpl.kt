@@ -1,5 +1,9 @@
 package com.eokoe.sagui.data.model.impl
 
+import android.content.Context
+import android.location.Address
+import android.location.Geocoder
+import android.text.TextUtils
 import com.eokoe.sagui.data.entities.*
 import com.eokoe.sagui.data.exceptions.SaguiException
 import com.eokoe.sagui.data.model.SaguiModel
@@ -7,11 +11,13 @@ import com.eokoe.sagui.data.net.ServiceGenerator
 import com.eokoe.sagui.data.net.services.SaguiService
 import io.reactivex.Observable
 import io.realm.Realm
+import java.io.IOException
+import java.util.*
 
 /**
  * @author Pedro Silva
  */
-class SaguiModelImpl : SaguiModel {
+class SaguiModelImpl(val context: Context? = null) : SaguiModel {
     override fun selectEnterprise(enterprise: Enterprise): Observable<Enterprise> {
         return Observable.create { emitter ->
             Realm.getDefaultInstance().use { realm ->
@@ -161,6 +167,37 @@ class SaguiModelImpl : SaguiModel {
                         .findFirst()
                 emitter.onNext(result != null)
                 emitter.onComplete()
+            }
+        }
+    }
+
+    override fun getAddressByLatLong(latLong: LatLong): Observable<String> {
+        return Observable.create { emitter ->
+            try {
+                if (!Geocoder.isPresent()) {
+                    throw Exception("no_geocoder_available")
+                }
+                val geocoder = Geocoder(context!!, Locale.getDefault())
+                val addresses: List<Address>? = geocoder.getFromLocation(
+                        latLong.latitude, latLong.longitude, 1)
+                if (addresses == null || addresses.isEmpty())
+                    throw Exception("no_address_found")
+
+                val address = addresses[0]
+                val addressFragments = ArrayList<String>()
+                (0..address.maxAddressLineIndex)
+                        .mapTo(addressFragments) {
+                            address.getAddressLine(it)
+                        }
+                val addressText = TextUtils.join(System.getProperty("line.separator"), addressFragments)
+                emitter.onNext(addressText)
+                emitter.onComplete()
+            } catch (error: IOException) {
+                emitter.onError(Exception("service_not_available"))
+            } catch (error: IllegalArgumentException) {
+                emitter.onError(Exception("invalid_lat_long_used"))
+            } catch (error: Exception) {
+                emitter.onError(error)
             }
         }
     }

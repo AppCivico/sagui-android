@@ -40,7 +40,7 @@ open class BasePresenterImpl<View>: BasePresenter<View> {
         return observable
     }
 
-    private fun addDisposable(disposable: Disposable) {
+    protected open fun addDisposable(disposable: Disposable) {
         disposables.add(disposable)
     }
 }
