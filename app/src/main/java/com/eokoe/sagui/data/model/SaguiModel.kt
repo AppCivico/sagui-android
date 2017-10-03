@@ -21,13 +21,17 @@ interface SaguiModel {
 
     fun saveComment(comment: Comment): Observable<Comment>
 
-    fun saveComplaint(complaint: Complaint): Observable<Complaint>
+    fun sendComplaint(complaint: Complaint): Observable<Complaint>
 
     fun listComplaints(enterprise: Enterprise, category: Category?): Observable<List<Complaint>>
 
     fun confirmComplaint(complaint: Complaint): Observable<Confirmation>
 
-    fun complaintConfirmed(complaint: Complaint): Observable<Boolean>
+    fun isComplaintConfirmed(complaint: Complaint): Observable<Boolean>
 
     fun getAddressByLatLong(latLong: LatLong): Observable<String>
+
+    fun sendComplaintAsset(complaintId: String, asset: Asset): Observable<Asset>
+
+    fun getComplaint(complaintId: String): Observable<Complaint>
 }

@@ -2,6 +2,7 @@ package com.eokoe.sagui.data.net.services
 
 import com.eokoe.sagui.data.entities.*
 import io.reactivex.Observable
+import okhttp3.MultipartBody
 import retrofit2.http.*
 
 /**
@@ -31,4 +32,7 @@ interface SaguiService {
 
     @POST("confirmations")
     fun confirmComplaint(@Body confirmation: Confirmation): Observable<Confirmation>
+
+    @POST("complaints/{complaintId}/assets")
+    fun sendAsset(@Path("complaintId") complaintId: String, @Part file: MultipartBody.Part): Observable<Asset>
 }

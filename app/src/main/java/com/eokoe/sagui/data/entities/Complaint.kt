@@ -5,6 +5,7 @@ import com.google.gson.annotations.SerializedName
 import io.realm.RealmList
 import io.realm.RealmObject
 import io.realm.annotations.Ignore
+import io.realm.annotations.PrimaryKey
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
 
@@ -14,6 +15,7 @@ import paperparcel.PaperParcelable
  */
 @PaperParcel
 open class Complaint(
+        @PrimaryKey
         var id: String? = null,
         var title: String = "",
         var description: String = "",
@@ -27,9 +29,10 @@ open class Complaint(
         @SerializedName("enterprise_id")
         var enterpriseId: String? = null,
         @SerializedName("confirmations")
-        var confirmationsList: RealmList<Confirmation>? = null
+        var confirmationsList: RealmList<Confirmation>? = null,
+        @Expose(serialize = false)
+        var files: RealmList<Asset> = RealmList()
 ) : PaperParcelable, RealmObject() {
-
     val confirmations: Int
         get() = confirmationsList?.size ?: 0
 

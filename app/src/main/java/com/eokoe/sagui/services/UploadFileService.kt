@@ -16,14 +16,18 @@ import okhttp3.RequestBody
 class UploadFileService : IntentService(UploadFileService::class.java.name) {
 
     override fun onHandleIntent(intent: Intent) {
-        val key = intent.getStringExtra(EXTRA_KEY_DATA)
+        val formKey = intent.getStringExtra(EXTRA_KEY_DATA)
         val fileUri = intent.getParcelableExtra<Uri>(EXTRA_FILE_DATA)
         val file = fileUri.toFile(this)
-        if (file != null) {
+        if (file != null && file.exists()) {
             val requestFile = RequestBody.create(MediaType.parse(contentResolver.getType(fileUri)), file)
-            val formData = MultipartBody.Part.createFormData(key, file.name, requestFile)
-            // TODO send to server
+            val formData = MultipartBody.Part.createFormData(formKey, file.name, requestFile)
+            send(formData)
         }
+    }
+
+    fun send(body: MultipartBody.Part) {
+
     }
 
     companion object {

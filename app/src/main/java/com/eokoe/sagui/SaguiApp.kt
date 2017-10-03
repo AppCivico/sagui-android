@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.support.multidex.MultiDex
 import com.eokoe.sagui.data.AnswerListAdapter
+import com.eokoe.sagui.data.AssetListAdapter
 import com.eokoe.sagui.data.ConfirmationListAdapter
 import com.eokoe.sagui.data.net.ServiceGenerator
 import com.eokoe.sagui.extensions.getManifestValue
@@ -20,6 +21,7 @@ import paperparcel.ProcessorConfig
 @ProcessorConfig(
         adapters = arrayOf(
                 Adapter(AnswerListAdapter::class),
+                Adapter(AssetListAdapter::class),
                 Adapter(ConfirmationListAdapter::class)
         )
 )

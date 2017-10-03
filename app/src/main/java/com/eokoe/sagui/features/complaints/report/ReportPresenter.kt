@@ -15,7 +15,7 @@ class ReportPresenter constructor(private val saguiModel: SaguiModel)
 
     override fun saveComplaint(complaint: Complaint): Observable<Complaint> {
         view?.showLoading()
-        return exec(saguiModel.saveComplaint(complaint), ComplaintObservable())
+        return exec(saguiModel.sendComplaint(complaint), ComplaintObservable())
     }
 
     inner class ComplaintObservable : DisposableObserver<Complaint>() {

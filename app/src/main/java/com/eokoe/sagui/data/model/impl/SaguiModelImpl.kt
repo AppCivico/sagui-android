@@ -9,8 +9,12 @@ import com.eokoe.sagui.data.exceptions.SaguiException
 import com.eokoe.sagui.data.model.SaguiModel
 import com.eokoe.sagui.data.net.ServiceGenerator
 import com.eokoe.sagui.data.net.services.SaguiService
+import com.eokoe.sagui.extensions.toFile
 import io.reactivex.Observable
 import io.realm.Realm
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import java.io.IOException
 import java.util.*
 
@@ -18,6 +22,7 @@ import java.util.*
  * @author Pedro Silva
  */
 class SaguiModelImpl(val context: Context? = null) : SaguiModel {
+
     override fun selectEnterprise(enterprise: Enterprise): Observable<Enterprise> {
         return Observable.create { emitter ->
             Realm.getDefaultInstance().use { realm ->
@@ -107,12 +112,27 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                 }
     }
 
-    override fun saveComplaint(complaint: Complaint): Observable<Complaint> {
+    override fun sendComplaint(complaint: Complaint): Observable<Complaint> {
         return ServiceGenerator.getService(SaguiService::class.java)
                 .saveComplaint(complaint)
                 .map {
                     complaint.id = it.id
                     return@map complaint
+                }
+                .flatMap {
+                    Observable.create<Complaint> { emitter ->
+                        Realm.getDefaultInstance().use { realm ->
+                            try {
+                                realm.beginTransaction()
+                                realm.insertOrUpdate(it)
+                                realm.commitTransaction()
+                                emitter.onNext(complaint)
+                                emitter.onComplete()
+                            } catch (error: Exception) {
+                                emitter.onError(error)
+                            }
+                        }
+                    }
                 }
     }
 
@@ -123,7 +143,7 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
 
     override fun confirmComplaint(complaint: Complaint): Observable<Confirmation> {
         val confirmation = Confirmation(complaintId = complaint.id!!)
-        return complaintConfirmed(complaint)
+        return isComplaintConfirmed(complaint)
                 .flatMap { confirmed ->
                     Observable.create<Complaint> { emitter ->
                         if (!confirmed) {
@@ -159,7 +179,7 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                 }
     }
 
-    override fun complaintConfirmed(complaint: Complaint): Observable<Boolean> {
+    override fun isComplaintConfirmed(complaint: Complaint): Observable<Boolean> {
         return Observable.create { emitter ->
             Realm.getDefaultInstance().use { realm ->
                 val result = realm.where(Confirmation::class.java)
@@ -200,5 +220,54 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                 emitter.onError(error)
             }
         }
+    }
+
+    override fun sendComplaintAsset(complaintId: String, asset: Asset): Observable<Asset> {
+        return Observable
+                .create<MultipartBody.Part> { emitter ->
+                    val file = asset.uri.toFile(context!!)
+                    if (file != null && file.exists()) {
+                        val requestFile = RequestBody.create(MediaType.parse(context.contentResolver.getType(asset.uri)), file)
+                        val formData = MultipartBody.Part.createFormData("file", file.name, requestFile)
+                        emitter.onNext(formData)
+                    }
+                    emitter.onComplete()
+                }
+                .flatMap {
+                    ServiceGenerator.getService(SaguiService::class.java)
+                            .sendAsset(complaintId, it)
+                }
+                .map {
+                    asset.id = it.id
+                    asset.sent = true
+                    asset.remotePath = it.remotePath
+                    asset.type = it.type
+                    asset
+                }
+                .flatMap {
+                    Observable.create<Asset> { emitter ->
+                        Realm.getDefaultInstance().use { realm ->
+                            try {
+                                realm.beginTransaction()
+                                val result = realm.where(Complaint::class.java)
+                                        .equalTo("id", complaintId)
+                                        .findFirst()
+                                result.files.map {
+                                    return@map if (it.localPath == asset.localPath) asset
+                                    else it
+                                }
+                                realm.commitTransaction()
+                                emitter.onNext(it)
+                                emitter.onComplete()
+                            } catch (error: Exception) {
+                                emitter.onError(error)
+                            }
+                        }
+                    }
+                }
+    }
+
+    override fun getComplaint(complaintId: String): Observable<Complaint> {
+        TODO("not implemented")
     }
 }
