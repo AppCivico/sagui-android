@@ -21,7 +21,7 @@ import com.eokoe.sagui.extensions.setup
 import com.eokoe.sagui.extensions.showSlidingTop
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewLocation
-import com.eokoe.sagui.services.FetchAddressIntentService
+import com.eokoe.sagui.services.FetchAddressService
 import com.eokoe.sagui.utils.LocationHelper
 import com.eokoe.sagui.utils.LogUtil
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
@@ -105,7 +105,7 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
                     latLong = it
                     if (Geocoder.isPresent()) {
                         hideBox()
-                        startService(FetchAddressIntentService.getIntent(this, AddressResultReceiver(Handler()), it))
+                        startService(FetchAddressService.getIntent(this, AddressResultReceiver(Handler()), it))
                     } else {
                         Toast.makeText(this, "no_geocoder_available", Toast.LENGTH_SHORT).show()
                     }
@@ -247,9 +247,9 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
     @SuppressLint("ParcelCreator")
     internal inner class AddressResultReceiver(handler: Handler) : ResultReceiver(handler) {
         override fun onReceiveResult(resultCode: Int, resultData: Bundle) {
-            val result = resultData.getString(FetchAddressIntentService.RESULT_DATA_KEY)
+            val result = resultData.getString(FetchAddressService.RESULT_DATA_KEY)
             LogUtil.debug(this, result)
-            if (resultCode == FetchAddressIntentService.SUCCESS_RESULT) {
+            if (resultCode == FetchAddressService.SUCCESS_RESULT) {
                 addressChangeSubject.onNext(result)
             } else {
                 addressChangeSubject.onError(SaguiException(result))

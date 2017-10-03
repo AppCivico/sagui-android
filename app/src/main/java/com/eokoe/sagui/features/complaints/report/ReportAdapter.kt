@@ -1,6 +1,5 @@
 package com.eokoe.sagui.features.complaints.report
 
-import android.provider.Telephony
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
 import android.support.v7.widget.RecyclerView
@@ -36,8 +35,8 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
         items.add(Item(ItemType.DIVIDER))
 //        items.add(Item(ItemType.INSERT_PHOTO_VIDEO, R.drawable.ic_photo, R.string.insert_photo_video))
 //        items.add(Item(ItemType.DIVIDER))
-//        items.add(Item(ItemType.CAMERA, R.drawable.ic_photo_camera, R.string.camera))
-//        items.add(Item(ItemType.DIVIDER))
+        items.add(Item(ItemType.CAMERA, R.drawable.ic_photo_camera, R.string.camera))
+        items.add(Item(ItemType.DIVIDER))
 //        items.add(Item(ItemType.INSERT_AUDIO, R.drawable.ic_audio, R.string.insert_audio))
 //        items.add(Item(ItemType.DIVIDER))
         this.items = items

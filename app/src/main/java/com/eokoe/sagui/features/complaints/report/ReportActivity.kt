@@ -3,14 +3,10 @@ package com.eokoe.sagui.features.complaints.report
 import android.Manifest
 import android.app.Activity
 import android.content.Context
-import android.content.ContextWrapper
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
-import android.os.Environment
 import android.provider.MediaStore
-import android.support.v4.app.ActivityCompat
 import android.support.v4.content.FileProvider
 import android.view.Menu
 import android.view.MenuItem
@@ -25,7 +21,8 @@ import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.report.ReportAdapter.ItemType
 import com.eokoe.sagui.features.complaints.report.pin.PinActivity
-import com.eokoe.sagui.utils.LogUtil
+import com.eokoe.sagui.utils.AUTHORITY
+import com.eokoe.sagui.utils.IMAGE_PATH
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
 import kotlinx.android.synthetic.main.activity_report.*
@@ -98,17 +95,23 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                     requestCameraPermission()
                 }
             }
+            ReportAdapter.ItemType.DIVIDER -> TODO()
+            ReportAdapter.ItemType.DESCRIPTION -> TODO()
+            ReportAdapter.ItemType.TITLE -> TODO()
+            ReportAdapter.ItemType.INSERT_PHOTO_VIDEO -> TODO()
+            ReportAdapter.ItemType.INSERT_AUDIO -> TODO()
         }
     }
 
     private fun openCamera() {
         // https://developer.android.com/training/camera/photobasics.html
         val filename = resources.getString(R.string.app_name)
+        val imagePath = File(filesDir, IMAGE_PATH)
         pictureFile = File(
-                getExternalFilesDir(Environment.DIRECTORY_PICTURES),
+                imagePath,
                 filename + "_complaint_" + System.currentTimeMillis() + ".jpg"
         )
-        val authority = "com.eokoe.sagui.fileprovider"
+        val authority = AUTHORITY
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         val file = FileProvider.getUriForFile(this, authority, pictureFile)
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, file)
@@ -180,9 +183,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    private fun hasCameraPermission(): Boolean {
-        return hasPermission(Manifest.permission.CAMERA)
-    }
+    private fun hasCameraPermission() = hasPermission(Manifest.permission.CAMERA)
 
     private fun requestCameraPermission() {
         // TODO handle permission not granted

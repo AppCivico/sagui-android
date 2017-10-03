@@ -16,7 +16,7 @@ import kotlin.collections.ArrayList
 /**
  * @author Pedro Silva
  */
-class FetchAddressIntentService : IntentService(TAG) {
+class FetchAddressService : IntentService(TAG) {
     var receiver: ResultReceiver? = null
 
     override fun onHandleIntent(intent: Intent) {
@@ -62,7 +62,7 @@ class FetchAddressIntentService : IntentService(TAG) {
     }
 
     companion object {
-        val TAG = FetchAddressIntentService::class.simpleName
+        val TAG = FetchAddressService::class.simpleName
         val RESULT_DATA_KEY = "RESULT_DATA_KEY"
         private val LOCATION_DATA_EXTRA = "LOCATION_DATA_EXTRA"
         private val RECEIVER = "RECEIVER"
@@ -70,7 +70,7 @@ class FetchAddressIntentService : IntentService(TAG) {
         val FAILURE_RESULT = 1
 
         fun getIntent(context: Context, receiver: ResultReceiver, location: LatLong): Intent {
-            val intent = Intent(context, FetchAddressIntentService::class.java)
+            val intent = Intent(context, FetchAddressService::class.java)
             intent.putExtra(RECEIVER, receiver)
             intent.putExtra(LOCATION_DATA_EXTRA, location)
             intent.addFlags(Intent.FLAG_RECEIVER_REPLACE_PENDING)

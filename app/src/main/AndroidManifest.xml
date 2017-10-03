@@ -91,7 +91,7 @@
             android:label="@string/title_activity_complaint_details" />
 
         <service
-            android:name=".services.FetchAddressIntentService"
+            android:name=".services.FetchAddressService"
             android:exported="false" />
 
         <provider
