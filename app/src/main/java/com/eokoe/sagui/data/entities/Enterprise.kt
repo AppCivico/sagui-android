@@ -1,6 +1,7 @@
 package com.eokoe.sagui.data.entities
 
 import com.google.android.gms.maps.model.LatLng
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import com.google.maps.android.PolyUtil
 import io.realm.RealmObject
@@ -14,15 +15,27 @@ import paperparcel.PaperParcelable
  */
 @PaperParcel
 open class Enterprise(
+        @Expose
         @PrimaryKey
         open var id: String = "",
+
+        @Expose
         open var name: String = "",
+
+        @Expose
         open var description: String? = null,
+
+        @Expose
         @SerializedName("human_address")
         open var address: String = "",
+
+        @Expose
         @SerializedName("location")
         open var locationEncoded: String? = null,
+
+        @Expose
         open var data: Data = Data(),
+
         open var selected: Boolean = false
 ) : PaperParcelable, RealmObject() {
 

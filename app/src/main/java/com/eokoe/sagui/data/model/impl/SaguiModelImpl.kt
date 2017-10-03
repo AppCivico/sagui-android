@@ -3,13 +3,16 @@ package com.eokoe.sagui.data.model.impl
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
+import android.net.Uri
 import android.text.TextUtils
 import com.eokoe.sagui.data.entities.*
 import com.eokoe.sagui.data.exceptions.SaguiException
 import com.eokoe.sagui.data.model.SaguiModel
 import com.eokoe.sagui.data.net.ServiceGenerator
 import com.eokoe.sagui.data.net.services.SaguiService
+import com.eokoe.sagui.extensions.getMimeType
 import com.eokoe.sagui.extensions.toFile
+import com.eokoe.sagui.utils.LogUtil
 import io.reactivex.Observable
 import io.realm.Realm
 import okhttp3.MediaType
@@ -117,7 +120,11 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                 .saveComplaint(complaint)
                 .map {
                     complaint.id = it.id
-                    return@map complaint
+                    complaint.files.map {
+                        it.complaintId = complaint.id!!
+                        it
+                    }
+                    complaint
                 }
                 .flatMap {
                     Observable.create<Complaint> { emitter ->
@@ -160,7 +167,7 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                 }
                 .map {
                     confirmation.id = it.id
-                    return@map confirmation
+                    confirmation
                 }
                 .flatMap { confirm ->
                     Observable.create<Confirmation> { emitter ->
@@ -222,22 +229,38 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
         }
     }
 
-    override fun sendComplaintAsset(complaintId: String, asset: Asset): Observable<Asset> {
+    override fun sendComplaintAsset(asset: Asset): Observable<Asset> {
         return Observable
-                .create<MultipartBody.Part> { emitter ->
-                    val file = asset.uri.toFile(context!!)
-                    if (file != null && file.exists()) {
-                        val requestFile = RequestBody.create(MediaType.parse(context.contentResolver.getType(asset.uri)), file)
-                        val formData = MultipartBody.Part.createFormData("file", file.name, requestFile)
-                        emitter.onNext(formData)
-                    }
+                .create<Uri> { emitter ->
+                    // TODO
+                    /*val options = BitmapFactory.Options()
+                    options.inJustDecodeBounds = true
+                    val bitmap = BitmapFactory.decodeFile(asset.uri.encodedPath, options)
+                    if (options.outWidth != -1 && options.outHeight != -1) {
+                        val bos = ByteArrayOutputStream()
+                        bitmap.compress(Bitmap.CompressFormat.JPEG, 60, bos)
+                        val input = ByteArrayInputStream(bos.toByteArray())
+                    } else {
+
+                    }*/
+                    emitter.onNext(asset.uri)
                     emitter.onComplete()
                 }
+                .map {
+                    val file = asset.uri.toFile(context!!)
+                    if (file != null && file.exists()) {
+                        val mimeType = asset.uri.getMimeType(context)
+                        val requestFile = RequestBody.create(MediaType.parse(mimeType), file)
+                        MultipartBody.Part.createFormData("file", file.name, requestFile)
+                    } else null
+                }
                 .flatMap {
+                    LogUtil.debug(this, "sendComplaintAsset: flatMap -> sendAsset")
                     ServiceGenerator.getService(SaguiService::class.java)
-                            .sendAsset(complaintId, it)
+                            .sendAsset(asset.complaintId, it)
                 }
                 .map {
+                    LogUtil.debug(this, "sendComplaintAsset: map -> sent")
                     asset.id = it.id
                     asset.sent = true
                     asset.remotePath = it.remotePath
@@ -250,10 +273,10 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                             try {
                                 realm.beginTransaction()
                                 val result = realm.where(Complaint::class.java)
-                                        .equalTo("id", complaintId)
+                                        .equalTo("id", it.complaintId)
                                         .findFirst()
                                 result.files.map {
-                                    return@map if (it.localPath == asset.localPath) asset
+                                    if (it.localPath == asset.localPath) asset
                                     else it
                                 }
                                 realm.commitTransaction()
@@ -269,5 +292,29 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
 
     override fun getComplaint(complaintId: String): Observable<Complaint> {
         TODO("not implemented")
+    }
+
+    override fun getAssetsPendingUpload(): Observable<List<Asset>> {
+        return Observable
+                .create<List<Complaint>> { emitter ->
+                    Realm.getDefaultInstance().use { realm ->
+                        val result = realm.where(Complaint::class.java)
+                                .equalTo("files.sent", false)
+                                .findAll()
+                        if (result != null && result.isNotEmpty()) {
+                            emitter.onNext(realm.copyFromRealm(result))
+                        }
+                        emitter.onComplete()
+                    }
+                }
+                .flatMapIterable { it }
+                .flatMapIterable { it.files }
+                .map {
+                    LogUtil.debug(this, "Sent: " + it.sent)
+                    it
+                }
+                .filter { !it.sent }
+                .toList()
+                .toObservable()
     }
 }

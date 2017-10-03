@@ -31,7 +31,9 @@ interface SaguiModel {
 
     fun getAddressByLatLong(latLong: LatLong): Observable<String>
 
-    fun sendComplaintAsset(complaintId: String, asset: Asset): Observable<Asset>
+    fun sendComplaintAsset(asset: Asset): Observable<Asset>
 
     fun getComplaint(complaintId: String): Observable<Complaint>
+
+    fun getAssetsPendingUpload(): Observable<List<Asset>>
 }

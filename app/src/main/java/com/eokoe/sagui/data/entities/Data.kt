@@ -1,5 +1,6 @@
 package com.eokoe.sagui.data.entities
 
+import com.google.gson.annotations.Expose
 import io.realm.RealmObject
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
@@ -10,9 +11,16 @@ import paperparcel.PaperParcelable
  */
 @PaperParcel
 open class Data(
+        @Expose
         open var complaints: Int = 0,
+
+        @Expose
         open var cases: Int = 0,
+
+        @Expose
         open var actions: Int = 0,
+
+        @Expose
         open var surveys: Int = 0
 ) : PaperParcelable, RealmObject() {
 

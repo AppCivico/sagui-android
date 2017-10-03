@@ -1,5 +1,6 @@
 package com.eokoe.sagui.data.entities
 
+import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
 import io.realm.RealmObject
 import paperparcel.PaperParcel
@@ -11,8 +12,13 @@ import paperparcel.PaperParcelable
  */
 @PaperParcel
 open class Category(
+        @Expose
         var id: String = "",
+
+        @Expose
         var name: String = "",
+
+        @Expose
         @SerializedName("icon_code")
         var iconCode: String? = null
 ) : PaperParcelable, RealmObject() {

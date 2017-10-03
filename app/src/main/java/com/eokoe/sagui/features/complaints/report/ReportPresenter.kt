@@ -24,6 +24,7 @@ class ReportPresenter constructor(private val saguiModel: SaguiModel)
         }
 
         override fun onComplete() {
+            view?.uploadAssets()
             view?.hideLoading()
         }
 

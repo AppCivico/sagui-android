@@ -13,6 +13,7 @@ import io.reactivex.Observable
 interface ReportContract {
     interface View : ViewLoading, ViewError {
         fun onSaveSuccess(complaint: Complaint)
+        fun uploadAssets()
     }
 
     interface Presenter : BasePresenter<View> {

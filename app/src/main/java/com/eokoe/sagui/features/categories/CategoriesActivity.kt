@@ -16,6 +16,7 @@ import com.eokoe.sagui.features.complaints.ComplaintsActivity
 import com.eokoe.sagui.features.surveys.list.CategoriesContract
 import com.eokoe.sagui.features.surveys.list.CategoriesPresenter
 import com.eokoe.sagui.features.surveys.list.SurveyListActivity
+import com.eokoe.sagui.services.upload_file.UploadFilesJobIntentService
 import kotlinx.android.synthetic.main.activity_categories.*
 
 
@@ -58,6 +59,7 @@ class CategoriesActivity : BaseActivityNavDrawer(), CategoryActionsDialog.OnActi
     override fun onResume() {
         super.onResume()
         navigationView.setCheckedItem(R.id.nav_home)
+        UploadFilesJobIntentService.enqueueWork(this)
     }
 
     override fun onBackPressed() {

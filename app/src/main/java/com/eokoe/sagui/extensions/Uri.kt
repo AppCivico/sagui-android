@@ -1,5 +1,6 @@
 package com.eokoe.sagui.extensions
 
+import android.content.ContentResolver
 import android.content.ContentUris
 import android.content.Context
 import android.net.Uri
@@ -7,6 +8,7 @@ import android.os.Build
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
+import android.webkit.MimeTypeMap
 import com.eokoe.sagui.utils.AUTHORITY
 import java.io.File
 
@@ -86,4 +88,13 @@ fun Uri.getDataColumn(context: Context, selection: String? = null, vararg select
                 val columnIndex = cursor.getColumnIndexOrThrow(column)
                 cursor.getString(columnIndex)
             }
+}
+
+fun Uri.getMimeType(context: Context): String {
+    return if (scheme == ContentResolver.SCHEME_CONTENT) {
+        context.contentResolver.getType(this)
+    } else {
+        val extension = MimeTypeMap.getFileExtensionFromUrl(this.toString())
+        MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase())
+    }
 }

@@ -6,11 +6,13 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.provider.MediaStore
 import android.support.v4.content.FileProvider
 import android.view.Menu
 import android.view.MenuItem
 import com.eokoe.sagui.R
+import com.eokoe.sagui.data.entities.Asset
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Enterprise
@@ -21,8 +23,11 @@ import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.report.ReportAdapter.ItemType
 import com.eokoe.sagui.features.complaints.report.pin.PinActivity
+import com.eokoe.sagui.services.upload_file.UploadFilesJobIntentService
 import com.eokoe.sagui.utils.AUTHORITY
 import com.eokoe.sagui.utils.IMAGE_PATH
+import com.eokoe.sagui.utils.ImageUtil
+import com.eokoe.sagui.utils.LogUtil
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
 import kotlinx.android.synthetic.main.activity_report.*
@@ -106,9 +111,8 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     private fun openCamera() {
         // https://developer.android.com/training/camera/photobasics.html
         val filename = resources.getString(R.string.app_name)
-        val imagePath = File(filesDir, IMAGE_PATH)
         pictureFile = File(
-                imagePath,
+                getExternalFilesDir(Environment.DIRECTORY_PICTURES),
                 filename + "_complaint_" + System.currentTimeMillis() + ".jpg"
         )
         val authority = AUTHORITY
@@ -128,6 +132,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_ok) {
+            complaint.files.add(Asset(picture))
             presenter.saveComplaint(complaint)
             return true
         }
@@ -167,8 +172,18 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 complaint.address = data?.getStringExtra(PinActivity.RESULT_ADDRESS)
             }
         } else if (requestCode == REQUEST_CODE_CAMERA) {
-            if (resultCode == Activity.RESULT_OK) {
-                picture = Uri.fromFile(pictureFile)
+            if (resultCode == Activity.RESULT_OK && pictureFile?.exists() == true) {
+                val imagePath = File(filesDir, IMAGE_PATH)
+                val privatePicture = File(
+                        imagePath,
+                        pictureFile!!.name
+                )
+                LogUtil.debug(this, "Old size: " + pictureFile?.length())
+                picture = ImageUtil.compressImage(this, Uri.fromFile(pictureFile), privatePicture)
+                pictureFile?.delete()
+                LogUtil.debug(this, "New size: " + privatePicture.length())
+                LogUtil.debug(this, "privatePicture exists: " + privatePicture.exists())
+                LogUtil.debug(this, "pictureFile exists: " + pictureFile?.exists())
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -190,6 +205,10 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         if (!hasCameraPermission()) {
             requestPermission(R.string.title_request_camera_permission, R.string.message_request_camera_permission, REQUEST_CAMERA_PERMISSION, Manifest.permission.CAMERA)
         }
+    }
+
+    override fun uploadAssets() {
+        UploadFilesJobIntentService.enqueueWork(this)
     }
 
     companion object {

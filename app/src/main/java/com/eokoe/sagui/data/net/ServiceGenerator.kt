@@ -24,6 +24,7 @@ object ServiceGenerator {
 
         val gson = GsonBuilder()
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+                .excludeFieldsWithoutExposeAnnotation()
 //                .registerTypeAdapter(LatLong::class.java, LatLongTypeAdapter.INSTANCE)
                 .create()
 
