@@ -11,7 +11,6 @@ import java.io.FileOutputStream
 import java.io.IOException
 
 
-
 /**
  * @author Pedro Silva
  * @since 03/10/17
@@ -20,12 +19,19 @@ object ImageUtil {
     private val MAX_HEIGHT = 1080
     private val MAX_WIDTH = 1980
 
-    fun compressImage(context: Context, inputFile: Uri, outputFile: File) {
-        val bitmap = BitmapFactory.decodeFile(inputFile.getRealPath(context))
-        return compressImage(context, bitmap, outputFile)
+    fun compressImage(inputFilePath: String, outputFile: File) {
+        val bitmap = BitmapFactory.decodeFile(inputFilePath)
+        return compressImage(bitmap, outputFile)
     }
 
-    fun compressImage(context: Context, bitmap: Bitmap, outputFile: File) {
+    fun compressImage(bitmap: Bitmap, outputFile: File) {
+        if (!outputFile.exists()) {
+            val parent = File(outputFile.parent)
+            if (!parent.exists()) {
+                parent.mkdirs()
+            }
+            outputFile.createNewFile()
+        }
         val fos = FileOutputStream(outputFile)
         var scale = 1f
         val scaledBitmap: Bitmap

@@ -20,6 +20,7 @@ import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.ErrorType
 import com.eokoe.sagui.extensions.errorType
+import com.eokoe.sagui.extensions.getRealPath
 import com.eokoe.sagui.extensions.isGooglePhotosUri
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
@@ -190,7 +191,8 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                         pictureFile!!.name
                 )
                 LogUtil.debug(this, "Old size: " + pictureFile?.length())
-                ImageUtil.compressImage(this, Uri.fromFile(pictureFile), privatePicture)
+                val inputFilePath = Uri.fromFile(pictureFile).getRealPath(this)!!
+                ImageUtil.compressImage(inputFilePath, privatePicture)
                 val uriImage = data?.data ?: Uri.fromFile(pictureFile)
                 try {
                     pictureFile?.delete()
@@ -216,10 +218,11 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                     val inputStream = contentResolver.openInputStream(uri)
                     if (inputStream != null) {
                         val bitmap = BitmapFactory.decodeStream(inputStream)
-                        ImageUtil.compressImage(this, bitmap, privatePicture)
+                        ImageUtil.compressImage(bitmap, privatePicture)
                     }
                 } else {
-                    ImageUtil.compressImage(this, uri, privatePicture)
+                    val inputFilePath = uri.getRealPath(this)
+                    ImageUtil.compressImage(inputFilePath!!, privatePicture)
                 }
                 complaint.files.add(Asset(Uri.fromFile(privatePicture)))
             }
