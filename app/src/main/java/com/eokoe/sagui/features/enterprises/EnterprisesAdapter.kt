@@ -56,7 +56,7 @@ class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHold
         fun bind(enterprise: Enterprise) {
             itemView.tvEnterpriseName.text = enterprise.name
             itemView.tvLocation.text = enterprise.address
-            itemView.tvQtyComplaints.text = itemView.resources.getQuantityString(
+            itemView.tvQtyConfirmations.text = itemView.resources.getQuantityString(
                     R.plurals.qty_complaints, enterprise.data.complaints, enterprise.data.complaints)
             itemView.tvQtyCases.text = itemView.resources.getQuantityString(
                     R.plurals.qty_causes, enterprise.data.cases, enterprise.data.cases)

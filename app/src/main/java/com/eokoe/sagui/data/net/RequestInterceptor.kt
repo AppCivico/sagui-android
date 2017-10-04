@@ -2,6 +2,7 @@ package com.eokoe.sagui.data.net
 
 import android.os.Build
 import com.eokoe.sagui.BuildConfig
+import com.eokoe.sagui.data.net.auth.ApiKeyManager
 import okhttp3.Interceptor
 import okhttp3.Response
 import java.io.IOException
@@ -24,8 +25,8 @@ class RequestInterceptor(
                 .header("Charset", "UTF-8")
                 .method(original.method(), original.body())
 
-        if (apiKeyManager.hasApiKey()) {
-            request.header("X-API-KEY", apiKeyManager.getApiKey())
+        if (apiKeyManager.hasApiKey) {
+            request.header("X-API-KEY", apiKeyManager.apiKey)
         }
         return chain.proceed(request.build())
     }

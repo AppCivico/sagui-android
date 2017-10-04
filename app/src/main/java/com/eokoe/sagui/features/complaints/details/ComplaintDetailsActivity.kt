@@ -1,5 +1,6 @@
 package com.eokoe.sagui.features.complaints.details
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -26,10 +27,18 @@ class ComplaintDetailsActivity : BaseActivity(),
     override lateinit var presenter: ConfirmContract.Presenter
     private lateinit var complaint: Complaint
     private lateinit var loadingDialog: LoadingDialog
+    private var isConfirmed: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_complaint_details)
+    }
+
+    override fun onBackPressed() {
+        if (isConfirmed) {
+            setResult(Activity.RESULT_OK)
+        }
+        super.onBackPressed()
     }
 
     override fun setUp(savedInstanceState: Bundle?) {
@@ -48,7 +57,7 @@ class ComplaintDetailsActivity : BaseActivity(),
         tvTitle.text = complaint.title
         tvCategoryName.text = complaint.category?.name
         tvLocation.text = complaint.address
-        tvQtyComplaints.text = resources.getQuantityString(R.plurals.qty_confirmations,
+        tvQtyConfirmations.text = resources.getQuantityString(R.plurals.qty_confirmations,
                 complaint.confirmations, complaint.confirmations)
         val remain = MAX_COUNT_CONFIRMATION - complaint.confirmations
         if (remain > 0) {
@@ -63,6 +72,7 @@ class ComplaintDetailsActivity : BaseActivity(),
     }
 
     override fun onComplaintConfirmed(confirmation: Confirmation) {
+        isConfirmed = true
         getContributeDialog().show(supportFragmentManager)
     }
 
@@ -110,7 +120,7 @@ class ComplaintDetailsActivity : BaseActivity(),
     private fun getErrorDialog(error: Throwable): AlertDialogFragment {
         return AlertDialogFragment.create(this) {
             titleRes = R.string.error
-            message = when(error.errorType) {
+            message = when (error.errorType) {
                 ErrorType.CONNECTION -> "Error de conexão.\nPor favor verifique sua internet e tente novamente"
                 ErrorType.CUSTOM -> error.friendlyMessage
                 else -> "Ocorreu um erro inexperado.\nTente novamente mais tarde"
@@ -122,10 +132,8 @@ class ComplaintDetailsActivity : BaseActivity(),
         private val EXTRA_COMPLAINT = "EXTRA_COMPLAINT"
         private val MAX_COUNT_CONFIRMATION = 30
 
-        fun getIntent(context: Context, complaint: Complaint): Intent {
-            val intent = Intent(context, ComplaintDetailsActivity::class.java)
-            intent.putExtra(EXTRA_COMPLAINT, complaint)
-            return intent
-        }
+        fun getIntent(context: Context, complaint: Complaint): Intent =
+                Intent(context, ComplaintDetailsActivity::class.java)
+                        .putExtra(EXTRA_COMPLAINT, complaint)
     }
 }

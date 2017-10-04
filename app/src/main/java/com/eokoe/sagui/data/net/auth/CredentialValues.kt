@@ -1,4 +1,4 @@
-package com.eokoe.sagui.data.net
+package com.eokoe.sagui.data.net.auth
 
 import android.content.Context
 

@@ -8,7 +8,7 @@ import com.eokoe.sagui.BuildConfig
  */
 val AUTHORITY = BuildConfig.APPLICATION_ID + ".fileprovider"
 
-val IMAGE_PATH = "files/Pictures"
+val IMAGE_PATH = "Pictures"
 
 object Job {
     val UPLOAD_FILES = 1

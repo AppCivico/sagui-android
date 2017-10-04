@@ -19,7 +19,7 @@ import java.io.File
 
 
 fun Uri.toFile(context: Context): File? {
-    val path = getRealPath(context)
+    val path = getRealPath(context) ?: path
     return if (isLocal(path)) {
         return File(path)
     } else null

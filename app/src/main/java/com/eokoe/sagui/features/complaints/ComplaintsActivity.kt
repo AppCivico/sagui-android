@@ -12,6 +12,7 @@ import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Enterprise
+import com.eokoe.sagui.data.entities.LatLong
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.invisibleSlidingBottom
 import com.eokoe.sagui.extensions.isVisible
@@ -46,11 +47,13 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
     private var map: GoogleMap? = null
     private var showAlertCongratulations = false
     override var locationHelper = LocationHelper()
-    lateinit var mapFragment: SupportMapFragment
+    private lateinit var mapFragment: SupportMapFragment
     private val markers = ArrayList<Marker>()
     private var complaints: List<Complaint>? = null
     private var complaintSelected: Int = -1
-    var latLngBounds: LatLngBounds? = null
+    private var latLngBounds: LatLngBounds? = null
+    private var lastLatLong: LatLong? = null
+    private var updateMarkers = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,6 +73,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         mapFragment.getMapAsync(this)
         fabAdd.setOnClickListener {
             startActivityForResult(ReportActivity.getIntent(this, enterprise!!, category), REQUEST_CREATE_REPORT)
+            hideBoxDetails()
         }
         rlBoxComplaint.post {
             rlBoxComplaint.translationY = rlBoxComplaint.height.toFloat()
@@ -83,17 +87,31 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
     override fun onResume() {
         super.onResume()
         navigationView.setCheckedItem(R.id.nav_complaints)
-        if (showAlertCongratulations) {
-            showAlertCongratulations = false
-            AlertDialogFragment
-                    .create(this) {
-                        titleRes = R.string.congratulations
-                        messageRes = R.string.successful_contribution
-                        multiChoiceItems = arrayOf("Desejo receber notificações sobre a reclamação")
-                    }
-                    .show(supportFragmentManager)
-            mapFragment.getMapAsync(this)
+        if (map != null && (lastLatLong != null || updateMarkers)) {
+            updateMap()
         }
+        if (showAlertCongratulations) {
+            showAlertCongratulations()
+        }
+    }
+
+    private fun updateMap() {
+        presenter.list(enterprise!!, category)
+        if (lastLatLong != null) {
+            map!!.moveCamera(CameraUpdateFactory.newLatLng(lastLatLong!!.toLatLng()))
+            lastLatLong = null
+        }
+    }
+
+    private fun showAlertCongratulations() {
+        showAlertCongratulations = false
+        AlertDialogFragment
+                .create(this) {
+                    titleRes = R.string.congratulations
+                    messageRes = R.string.successful_contribution
+                    multiChoiceItems = arrayOf("Desejo receber notificações sobre a reclamação")
+                }
+                .show(supportFragmentManager)
     }
 
     override fun onBackPressed() {
@@ -139,21 +157,27 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         map.animateCamera(CameraUpdateFactory.newLatLng(marker.position))
         if (index != complaintSelected) {
             complaintSelected = index
+            populateDetails(index)
+            if (!rlBoxComplaint.isVisible) {
+                rlBoxComplaint.showSlidingTop()
+            }
+        }
+    }
+
+    private fun populateDetails(index: Int) {
+        if (index > -1 && index < complaints!!.size) {
             val complaint = complaints!![index]
             tvTitle.text = complaint.title
             tvLocation.text = complaint.address
             tvDescription.text = complaint.description
             tvCategoryName.text = complaint.category?.name
-            tvQtyComplaints.text = resources.getQuantityString(
+            tvQtyConfirmations.text = resources.getQuantityString(
                     R.plurals.qty_confirmations, complaint.confirmations, complaint.confirmations)
-            val remain = MAX_COUNT_CONFIRMATION - complaint.confirmations
+            val remain = complaint.numToBecameCause - complaint.confirmations
             if (remain > 0) {
                 tvQtyRemain.text = resources.getQuantityString(R.plurals.qty_remain, remain, remain)
             } else {
                 tvQtyRemain.setText(R.string.occurrence_already)
-            }
-            if (!rlBoxComplaint.isVisible) {
-                rlBoxComplaint.showSlidingTop()
             }
         }
     }
@@ -164,31 +188,38 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
 
     override fun loadComplaints(complaints: List<Complaint>) {
         this.complaints = complaints
-        markers.forEach { it.remove() }
-        markers.clear()
-        complaints.forEach {
-            val latLng = LatLng(it.location!!.latitude, it.location!!.longitude)
-            val bm = BitmapMarker.build(this) {
-                color = Color.parseColor("#D22F33")
-                textColor = Color.WHITE
-                radiusDP = 5f
-                text = if (it.confirmations < 100) {
-                    "${it.confirmations}"
-                } else {
-                    "99+"
+        if (map != null) {
+            markers.forEach { it.remove() }
+            markers.clear()
+            complaints.forEach {
+                val latLng = LatLng(it.location!!.latitude, it.location!!.longitude)
+                val bm = BitmapMarker.build(this) {
+                    color = ContextCompat.getColor(this@ComplaintsActivity,
+                            if (it.isCause) R.color.markerCauseColor
+                            else R.color.markerComplaintColor
+                    )
+                    textColor = Color.WHITE
+                    radiusDP = 5f
+                    text = if (it.confirmations < 100) {
+                        "${it.confirmations}"
+                    } else {
+                        "99+"
+                    }
                 }
+                val marker = MarkerOptions()
+                        .icon(bm.icon)
+                        .position(latLng)
+                        .anchor(bm.anchorPoints[0], bm.anchorPoints[1])
+                markers.add(map!!.addMarker(marker))
             }
-            val marker = MarkerOptions()
-                    .icon(bm.icon)
-                    .position(latLng)
-                    .anchor(bm.anchorPoints[0], bm.anchorPoints[1])
-            markers.add(map!!.addMarker(marker))
+            populateDetails(complaintSelected)
         }
     }
 
     override fun viewDetails() {
         if (complaintSelected > -1) {
-            startActivity(ComplaintDetailsActivity.getIntent(this, complaints!![complaintSelected]))
+            val intent = ComplaintDetailsActivity.getIntent(this, complaints!![complaintSelected])
+            startActivityForResult(intent, REQUEST_CONFIRM_REPORT)
         }
     }
 
@@ -222,7 +253,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
                 builder.include(it)
             }
             latLngBounds = builder.build()
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLngBounds!!.center, 14f))
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngBounds!!.center, 14f))
         }
     }
 
@@ -238,7 +269,10 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         if (requestCode == REQUEST_CREATE_REPORT) {
             if (resultCode == Activity.RESULT_OK) {
                 showAlertCongratulations = true
+                lastLatLong = data?.getParcelableExtra(ReportActivity.RESULT_LAT_LONG)
             }
+        } else if (requestCode == REQUEST_CONFIRM_REPORT) {
+            updateMarkers = resultCode == Activity.RESULT_OK
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
@@ -248,13 +282,12 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
         private val REQUEST_PERMISSION_LOCATION = 1
         private val REQUEST_CREATE_REPORT = 2
+        private val REQUEST_CONFIRM_REPORT = 3
         private val MAX_COUNT_CONFIRMATION = 30
 
-        fun getIntent(context: Context, enterprise: Enterprise, category: Category? = null): Intent {
-            val intent = Intent(context, ComplaintsActivity::class.java)
-            intent.putExtra(EXTRA_ENTERPRISE, enterprise)
-            intent.putExtra(EXTRA_CATEGORY, category)
-            return intent
-        }
+        fun getIntent(context: Context, enterprise: Enterprise, category: Category? = null): Intent =
+                Intent(context, ComplaintsActivity::class.java)
+                        .putExtra(EXTRA_ENTERPRISE, enterprise)
+                        .putExtra(EXTRA_CATEGORY, category)
     }
 }

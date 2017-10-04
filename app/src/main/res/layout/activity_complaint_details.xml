@@ -107,7 +107,7 @@
         app:tint="@color/colorPrimary"/>
 
     <TextView
-        android:id="@+id/tvQtyComplaints"
+        android:id="@+id/tvQtyConfirmations"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignTop="@id/ivLike"
@@ -119,13 +119,13 @@
     <android.support.v7.widget.AppCompatImageView
         android:layout_width="6dp"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@id/tvQtyComplaints"
-        android:layout_alignTop="@id/tvQtyComplaints"
+        android:layout_alignBottom="@id/tvQtyConfirmations"
+        android:layout_alignTop="@id/tvQtyConfirmations"
         android:layout_marginLeft="8dp"
         android:layout_marginStart="8dp"
         android:layout_marginTop="2dp"
-        android:layout_toEndOf="@id/tvQtyComplaints"
-        android:layout_toRightOf="@id/tvQtyComplaints"
+        android:layout_toEndOf="@id/tvQtyConfirmations"
+        android:layout_toRightOf="@id/tvQtyConfirmations"
         android:scaleType="centerInside"
         android:tint="#75706c"
         app:srcCompat="@drawable/ic_circle"/>
@@ -134,11 +134,11 @@
         android:id="@+id/tvQtyRemain"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignTop="@id/tvQtyComplaints"
+        android:layout_alignTop="@id/tvQtyConfirmations"
         android:layout_marginLeft="22dp"
         android:layout_marginStart="22dp"
-        android:layout_toEndOf="@id/tvQtyComplaints"
-        android:layout_toRightOf="@id/tvQtyComplaints"
+        android:layout_toEndOf="@id/tvQtyConfirmations"
+        android:layout_toRightOf="@id/tvQtyConfirmations"
         tools:text="09 ocorrências"/>
 
     <android.support.v7.widget.AppCompatImageView
@@ -147,7 +147,7 @@
         android:layout_height="wrap_content"
         android:layout_alignLeft="@id/ivLike"
         android:layout_alignStart="@id/ivLike"
-        android:layout_below="@id/tvQtyComplaints"
+        android:layout_below="@id/tvQtyConfirmations"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:adjustViewBounds="true"

@@ -1,8 +1,9 @@
-package com.eokoe.sagui.data.net
+package com.eokoe.sagui.data.net.auth
 
 import android.content.Context
 import com.eokoe.sagui.data.entities.Device
 import com.eokoe.sagui.data.entities.User
+import com.eokoe.sagui.data.net.RequestInterceptor
 import com.google.gson.Gson
 import okhttp3.MediaType
 import okhttp3.OkHttpClient
@@ -19,9 +20,14 @@ class ApiKeyManagerImpl(
         val context: Context,
         private val baseUrl: String
 ) : ApiKeyManager {
-    override fun getApiKey(): String = CredentialValues.API_KEY.getString(context)
+    override val apiKey: String
+        get() = CredentialValues.API_KEY.getString(context)
 
-    override fun hasApiKey() = getApiKey().isNotEmpty()
+    override val hasApiKey: Boolean
+        get() = apiKey.isNotEmpty()
+
+    override val deviceKey: String
+        get() = CredentialValues.DEVICE_KEY.getString(context)
 
     override fun clearApiKey() {
         CredentialValues.API_KEY.remove(context)
@@ -30,11 +36,8 @@ class ApiKeyManagerImpl(
     override fun newApiKey(): String? {
         var accessToken: String? = null
         val gson = Gson()
-
-        var deviceKey = CredentialValues.DEVICE_KEY.getString(context)
         if (deviceKey.isEmpty()) {
-            deviceKey = UUID.randomUUID().toString()
-            CredentialValues.DEVICE_KEY.putString(context, deviceKey)
+            CredentialValues.DEVICE_KEY.putString(context, UUID.randomUUID().toString())
         }
         val requestBody = RequestBody.create(
                 MediaType.parse("application/json"), gson.toJson(Device(deviceKey)))

@@ -17,4 +17,7 @@
     <color name="divider">#1E000000</color>
     <color name="strokePolygonMap">#FF0000</color>
     <color name="mapFillColor">#19FF0000</color>
+
+    <color name="markerComplaintColor">#D22F33</color>
+    <color name="markerCauseColor">#649947</color>
 </resources>

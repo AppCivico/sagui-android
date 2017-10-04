@@ -4,31 +4,62 @@ import android.content.Context
 import android.graphics.*
 import android.media.ExifInterface
 import android.net.Uri
-import android.os.Environment
 import com.eokoe.sagui.extensions.getRealPath
 import java.io.File
 import java.io.FileNotFoundException
 import java.io.FileOutputStream
 import java.io.IOException
 
+
+
 /**
  * @author Pedro Silva
  * @since 03/10/17
  */
 object ImageUtil {
-    val MAX_HEIGHT = 816f
-    val MAX_WIDTH = 612f
+    private val MAX_HEIGHT = 1080
+    private val MAX_WIDTH = 1980
 
-    fun compressImage(context: Context, imageUri: Uri, outputFile: File): Uri? {
-        val filePath = imageUri.getRealPath(context)
+    fun compressImage(context: Context, inputFile: Uri, outputFile: File) {
+        val fos = FileOutputStream(outputFile)
+        val bitmap = BitmapFactory.decodeFile(inputFile.getRealPath(context))
+        var scale = 1f
+        val scaledBitmap: Bitmap
+        if (bitmap.width > bitmap.height) {
+            if (MAX_WIDTH < bitmap.width) {
+                scale = bitmap.width / MAX_WIDTH.toFloat()
+            }
+            scaledBitmap = if (scale > 1)
+                Bitmap.createScaledBitmap(bitmap, MAX_WIDTH, (bitmap.height / scale).toInt(), true)
+            else bitmap
+        } else {
+            if (MAX_HEIGHT < bitmap.height) {
+                scale = bitmap.height / MAX_HEIGHT.toFloat()
+            }
+            scaledBitmap = if (scale > 1)
+                Bitmap.createScaledBitmap(bitmap, (bitmap.width / scale).toInt(), MAX_HEIGHT, true)
+            else bitmap
+        }
+
+        if (scaledBitmap != bitmap) {
+            bitmap.recycle()
+        }
+        scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 82, fos)
+        scaledBitmap.recycle()
+        fos.flush()
+        fos.close()
+    }
+
+    fun compressImageOld(context: Context, inputFile: Uri, outputFile: File): Uri? {
+        val filePath = inputFile.getRealPath(context)
         var scaledBitmap: Bitmap? = null
         val options = BitmapFactory.Options()
         // by setting this field as true, the actual bitmap pixels are not loaded in the memory.
         // Just the bounds are loaded. If you try the use the bitmap here, you will get null.
         options.inJustDecodeBounds = true
         var bmp = BitmapFactory.decodeFile(filePath, options)
-        var actualHeight = options.outHeight.toFloat()
-        var actualWidth = options.outWidth.toFloat()
+        var actualHeight = options.outHeight
+        var actualWidth = options.outWidth
         var imgRatio = actualWidth / actualHeight
         val maxRatio = MAX_WIDTH / MAX_HEIGHT
         //width and height values are set maintaining the aspect ratio of the image
@@ -36,7 +67,7 @@ object ImageUtil {
             when {
                 imgRatio < maxRatio -> {
                     imgRatio = MAX_HEIGHT / actualHeight
-                    actualWidth *= imgRatio
+                    actualWidth = (imgRatio * actualWidth.toFloat()).toInt()
                     actualHeight = MAX_HEIGHT
                 }
                 imgRatio > maxRatio -> {
@@ -52,7 +83,7 @@ object ImageUtil {
         }
 
         //setting inSampleSize value allows to load a scaled down version of the original image
-        options.inSampleSize = calculateInSampleSize(options, actualWidth.toInt(), actualHeight.toInt())
+        options.inSampleSize = calculateInSampleSize(options, actualWidth, actualHeight)
 
         //inJustDecodeBounds set to false to load the actual bitmap
         options.inJustDecodeBounds = false
@@ -67,17 +98,17 @@ object ImageUtil {
             error.printStackTrace()
         }
         try {
-            scaledBitmap = Bitmap.createBitmap(actualWidth.toInt(), actualHeight.toInt(), Bitmap.Config.ARGB_8888)
+            scaledBitmap = Bitmap.createBitmap(actualWidth, actualHeight, Bitmap.Config.ARGB_8888)
         } catch (error: OutOfMemoryError) {
             error.printStackTrace()
         }
 
-        val ratioX = actualWidth / options.outWidth
-        val ratioY = actualHeight / options.outHeight
+        val ratioX = actualWidth / options.outWidth.toFloat()
+        val ratioY = actualHeight / options.outHeight.toFloat()
         val middleX = actualWidth / 2.0f
         val middleY = actualHeight / 2.0f
         val scaleMatrix = Matrix()
-        scaleMatrix.setScale(ratioX, ratioY, middleX, middleY);
+        scaleMatrix.setScale(ratioX, ratioY, middleX, middleY)
         val canvas = Canvas(scaledBitmap)
         canvas.matrix = scaleMatrix
         canvas.drawBitmap(bmp, middleX - bmp.height / 2, middleY - bmp.height / 2,
@@ -98,15 +129,18 @@ object ImageUtil {
             error.printStackTrace()
         }
 
-        val file = File(Environment.getExternalStorageDirectory().path, "ProfilePic")
-        if (!file.exists()) {
-            file.mkdirs()
+        if (!outputFile.exists()) {
+            val parent = File(outputFile.parent)
+            if (!parent.exists()) {
+                parent.mkdirs()
+            }
+            outputFile.createNewFile()
         }
         val uriString = outputFile.absolutePath
         try {
             val out = FileOutputStream(uriString)
             //write the compressed bitmap at the destination specified by filename.
-            scaledBitmap?.compress(Bitmap.CompressFormat.JPEG, 70, out)
+            scaledBitmap?.compress(Bitmap.CompressFormat.JPEG, 80, out)
         } catch (error: FileNotFoundException) {
             error.printStackTrace()
         }

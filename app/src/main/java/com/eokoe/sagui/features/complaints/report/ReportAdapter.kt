@@ -2,16 +2,19 @@ package com.eokoe.sagui.features.complaints.report
 
 import android.support.annotation.DrawableRes
 import android.support.annotation.StringRes
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import com.eokoe.sagui.R
+import com.eokoe.sagui.data.entities.Asset
 import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import com.jakewharton.rxbinding2.widget.RxTextView
 import io.reactivex.subjects.PublishSubject
 import kotlinx.android.synthetic.main.item_report_action.view.*
 import kotlinx.android.synthetic.main.item_report_textarea.view.*
+import kotlinx.android.synthetic.main.item_report_thumbnails.view.*
 import kotlinx.android.synthetic.main.item_report_title.view.*
 
 /**
@@ -28,6 +31,8 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
     init {
         val items = ArrayList<Item>()
         items.add(Item(ItemType.DESCRIPTION))
+        items.add(Item(ItemType.DIVIDER))
+        items.add(Item(ItemType.THUMBNAILS, value = ArrayList<Asset>()))
         items.add(Item(ItemType.DIVIDER))
         items.add(Item(ItemType.TITLE))
         items.add(Item(ItemType.DIVIDER))
@@ -47,6 +52,9 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
             if (item.type == ItemType.LOCATION && item.value != complaint.address) {
                 item.value = complaint.address
                 notifyItemChanged(index)
+            } else if (item.type == ItemType.THUMBNAILS) {
+                item.value = complaint.files
+                notifyItemChanged(index)
             }
         }
     }
@@ -56,12 +64,17 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
                 ItemType.TITLE -> TitleViewHolder(inflate(R.layout.item_report_title, parent))
                 ItemType.DESCRIPTION -> DescriptionViewHolder(inflate(R.layout.item_report_textarea, parent))
                 ItemType.DIVIDER -> SimpleViewHolder(inflate(R.layout.divider_dark, parent))
+                ItemType.THUMBNAILS -> ThumbnailsViewHolder(inflate(R.layout.item_report_thumbnails, parent))
                 else -> ActionViewHolder(inflate(R.layout.item_report_action, parent))
             }
 
+    @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is ActionViewHolder) {
             holder.bind(getItem(position))
+        } else if (holder is ThumbnailsViewHolder) {
+            val assets = getItem(position).value as List<Asset>
+            holder.bind(assets)
         }
     }
 
@@ -83,6 +96,23 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
         }
     }
 
+    inner class ThumbnailsViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
+        init {
+            itemView.rvThumbnails.setHasFixedSize(true)
+            itemView.rvThumbnails.adapter = ThumbnailAdapter()
+            itemView.rvThumbnails.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
+        }
+
+        fun bind(assets: List<Asset>) {
+            (itemView.rvThumbnails.adapter as ThumbnailAdapter).items = assets
+            /*if (assets.isNotEmpty()) {
+                itemView.show()
+            } else {
+                itemView.hide()
+            }*/
+        }
+    }
+
     inner class ActionViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         init {
             itemView.setOnClickListener {
@@ -97,7 +127,7 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
             if (item.value == null) {
                 itemView.tvActionName.setText(item.actionName!!)
             } else {
-                itemView.tvActionName.text = item.value
+                itemView.tvActionName.text = item.value as? String
             }
         }
     }
@@ -108,11 +138,11 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
             val icon: Int? = null,
             @StringRes
             val actionName: Int? = null,
-            var value: String? = null
+            var value: Any? = null
     )
 
     enum class ItemType {
-        DIVIDER, DESCRIPTION, TITLE, LOCATION, CAMERA, INSERT_PHOTO_VIDEO, INSERT_AUDIO;
+        DIVIDER, DESCRIPTION, TITLE, LOCATION, CAMERA, INSERT_PHOTO_VIDEO, INSERT_AUDIO, THUMBNAILS;
 
         companion object {
             fun fromPosition(position: Int) = ItemType.values()[position]

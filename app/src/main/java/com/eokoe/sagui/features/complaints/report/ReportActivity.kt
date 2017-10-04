@@ -46,7 +46,6 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     private lateinit var progressDialog: LoadingDialog
     private val complaint = Complaint()
     private var enterprise: Enterprise? = null
-    private var picture: Uri? = null
     private var pictureFile: File? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -132,7 +131,6 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_ok) {
-            complaint.files.add(Asset(picture))
             presenter.saveComplaint(complaint)
             return true
         }
@@ -153,7 +151,9 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
 
     override fun onSaveSuccess(complaint: Complaint) {
         hideKeyboard()
-        setResult(Activity.RESULT_OK)
+        val data = Intent()
+        data.putExtra(RESULT_LAT_LONG, complaint.location)
+        setResult(Activity.RESULT_OK, data)
         finish()
     }
 
@@ -179,8 +179,15 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                         pictureFile!!.name
                 )
                 LogUtil.debug(this, "Old size: " + pictureFile?.length())
-                picture = ImageUtil.compressImage(this, Uri.fromFile(pictureFile), privatePicture)
-                pictureFile?.delete()
+                ImageUtil.compressImage(this, Uri.fromFile(pictureFile), privatePicture)
+                val uriImage = data?.data ?: Uri.fromFile(pictureFile)
+                try {
+                    pictureFile?.delete()
+                    contentResolver.delete(uriImage, null, null)
+                } catch (error: Exception) {
+                    error.printStackTrace()
+                }
+                complaint.files.add(Asset(Uri.fromFile(privatePicture)))
                 LogUtil.debug(this, "New size: " + privatePicture.length())
                 LogUtil.debug(this, "privatePicture exists: " + privatePicture.exists())
                 LogUtil.debug(this, "pictureFile exists: " + pictureFile?.exists())
@@ -217,12 +224,11 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
         private val REQUEST_CAMERA_PERMISSION = 1
+        val RESULT_LAT_LONG = "RESULT_LAT_LONG"
 
-        fun getIntent(context: Context, enterprise: Enterprise, category: Category?): Intent {
-            val intent = Intent(context, ReportActivity::class.java)
-            intent.putExtra(EXTRA_ENTERPRISE, enterprise)
-            intent.putExtra(EXTRA_CATEGORY, category)
-            return intent
-        }
+        fun getIntent(context: Context, enterprise: Enterprise, category: Category?): Intent =
+                Intent(context, ReportActivity::class.java)
+                        .putExtra(EXTRA_ENTERPRISE, enterprise)
+                        .putExtra(EXTRA_CATEGORY, category)
     }
 }

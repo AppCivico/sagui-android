@@ -101,7 +101,7 @@
             app:textAllCaps="true"/>
 
         <android.support.v7.widget.AppCompatTextView
-            android:id="@+id/tvQtyComplaints"
+            android:id="@+id/tvQtyConfirmations"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignLeft="@id/labelComplaint"
@@ -112,13 +112,13 @@
         <android.support.v7.widget.AppCompatImageView
             android:layout_width="6dp"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/tvQtyComplaints"
-            android:layout_alignTop="@id/tvQtyComplaints"
+            android:layout_alignBottom="@id/tvQtyConfirmations"
+            android:layout_alignTop="@id/tvQtyConfirmations"
             android:layout_marginLeft="8dp"
             android:layout_marginStart="8dp"
             android:layout_marginTop="2dp"
-            android:layout_toEndOf="@id/tvQtyComplaints"
-            android:layout_toRightOf="@id/tvQtyComplaints"
+            android:layout_toEndOf="@id/tvQtyConfirmations"
+            android:layout_toRightOf="@id/tvQtyConfirmations"
             android:scaleType="centerInside"
             android:tint="#75706c"
             app:srcCompat="@drawable/ic_circle"/>
@@ -127,12 +127,12 @@
             android:id="@+id/tvQtyCases"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignTop="@id/tvQtyComplaints"
+            android:layout_alignTop="@id/tvQtyConfirmations"
             android:layout_below="@id/labelComplaint"
             android:layout_marginLeft="22dp"
             android:layout_marginStart="22dp"
-            android:layout_toEndOf="@id/tvQtyComplaints"
-            android:layout_toRightOf="@id/tvQtyComplaints"
+            android:layout_toEndOf="@id/tvQtyConfirmations"
+            android:layout_toRightOf="@id/tvQtyConfirmations"
             tools:text="09 ocorrências"/>
 
         <LinearLayout
@@ -140,7 +140,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:layout_below="@id/tvQtyComplaints"
+            android:layout_below="@id/tvQtyConfirmations"
             android:layout_marginTop="12dp"
             android:orientation="horizontal"
             android:weightSum="4">

@@ -2,6 +2,9 @@ package com.eokoe.sagui.data.net
 
 import android.content.Context
 import com.eokoe.sagui.BuildConfig
+import com.eokoe.sagui.data.net.adapters.BooleanTypeAdapter
+import com.eokoe.sagui.data.net.auth.ApiKeyManagerImpl
+import com.eokoe.sagui.data.net.auth.AuthenticatorInterceptor
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -26,6 +29,7 @@ object ServiceGenerator {
                 .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
                 .excludeFieldsWithoutExposeAnnotation()
 //                .registerTypeAdapter(LatLong::class.java, LatLongTypeAdapter.INSTANCE)
+                .registerTypeAdapter(Boolean::class.java, BooleanTypeAdapter())
                 .create()
 
         val builder = OkHttpClient.Builder()

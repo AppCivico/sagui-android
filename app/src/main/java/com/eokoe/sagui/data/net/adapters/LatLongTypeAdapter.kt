@@ -1,4 +1,4 @@
-package com.eokoe.sagui.data.net
+package com.eokoe.sagui.data.net.adapters
 
 import com.eokoe.sagui.data.entities.LatLong
 import com.google.gson.TypeAdapter

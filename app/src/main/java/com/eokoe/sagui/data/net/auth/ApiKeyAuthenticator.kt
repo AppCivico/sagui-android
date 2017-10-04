@@ -1,4 +1,4 @@
-package com.eokoe.sagui.data.net
+package com.eokoe.sagui.data.net.auth
 
 import okhttp3.Authenticator
 import okhttp3.Request
