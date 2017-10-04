@@ -21,8 +21,12 @@ object ImageUtil {
     private val MAX_WIDTH = 1980
 
     fun compressImage(context: Context, inputFile: Uri, outputFile: File) {
-        val fos = FileOutputStream(outputFile)
         val bitmap = BitmapFactory.decodeFile(inputFile.getRealPath(context))
+        return compressImage(context, bitmap, outputFile)
+    }
+
+    fun compressImage(context: Context, bitmap: Bitmap, outputFile: File) {
+        val fos = FileOutputStream(outputFile)
         var scale = 1f
         val scaledBitmap: Bitmap
         if (bitmap.width > bitmap.height) {

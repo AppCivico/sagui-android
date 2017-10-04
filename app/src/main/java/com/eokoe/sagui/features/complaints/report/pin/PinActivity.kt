@@ -23,7 +23,6 @@ import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewLocation
 import com.eokoe.sagui.services.FetchAddressService
 import com.eokoe.sagui.utils.LocationHelper
-import com.eokoe.sagui.utils.LogUtil
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
@@ -90,7 +89,6 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
         addressChangeSubject
                 .subscribeOn(AndroidSchedulers.mainThread())
                 .subscribe {
-                    LogUtil.debug(this, "addressChangeSubject: $it")
                     address = it
                     tvAddress.text = address
                     showBox()
@@ -248,7 +246,6 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
     internal inner class AddressResultReceiver(handler: Handler) : ResultReceiver(handler) {
         override fun onReceiveResult(resultCode: Int, resultData: Bundle) {
             val result = resultData.getString(FetchAddressService.RESULT_DATA_KEY)
-            LogUtil.debug(this, result)
             if (resultCode == FetchAddressService.SUCCESS_RESULT) {
                 addressChangeSubject.onNext(result)
             } else {

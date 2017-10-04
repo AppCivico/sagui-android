@@ -75,7 +75,7 @@ val Uri.isMediaDocument: Boolean
     get() = "com.android.providers.media.documents" == authority
 
 val Uri.isGooglePhotosUri: Boolean
-    get() = "com.google.android.apps.photos.content" == authority
+    get() = authority?.startsWith("com.google.android.apps.photos.content") == true
 
 fun Uri.isLocal(path: String?) = path != null && !path.matches("https?://.+".toRegex())
 
@@ -85,8 +85,13 @@ fun Uri.getDataColumn(context: Context, selection: String? = null, vararg select
     return context.contentResolver
             .query(this, projection, selection, selectionArgs, null)
             ?.use { cursor ->
-                val columnIndex = cursor.getColumnIndexOrThrow(column)
-                cursor.getString(columnIndex)
+                try {
+                    val columnIndex = cursor.getColumnIndexOrThrow(column)
+                    cursor.getString(columnIndex)
+                } catch (error: Exception) {
+                    error.printStackTrace()
+                    null
+                }
             }
 }
 

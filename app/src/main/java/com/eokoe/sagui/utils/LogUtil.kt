@@ -37,6 +37,7 @@ object LogUtil {
     private fun println(priority: Int, tag: Any, msg: String, vararg args: String) {
         if (enableLog) {
             val tagStr = tag as? String ?: tag::class.simpleName ?: "LogUtil"
+//            Log.println(priority, tagPrefix + tagStr, msg)
             Log.println(priority, tagPrefix + tagStr, String.format(msg, *args))
         }
     }

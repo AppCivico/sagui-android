@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -19,6 +20,7 @@ import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.ErrorType
 import com.eokoe.sagui.extensions.errorType
+import com.eokoe.sagui.extensions.isGooglePhotosUri
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.report.ReportAdapter.ItemType
@@ -102,23 +104,33 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
             ReportAdapter.ItemType.DIVIDER -> TODO()
             ReportAdapter.ItemType.DESCRIPTION -> TODO()
             ReportAdapter.ItemType.TITLE -> TODO()
-            ReportAdapter.ItemType.INSERT_PHOTO_VIDEO -> TODO()
+            ReportAdapter.ItemType.INSERT_PHOTO_VIDEO -> {
+                openGallery()
+            }
             ReportAdapter.ItemType.INSERT_AUDIO -> TODO()
+        }
+    }
+
+    private fun openGallery() {
+        val pictureFromGallery = Intent(Intent.ACTION_PICK,
+                MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+        if (pictureFromGallery.resolveActivity(packageManager) != null) {
+            startActivityForResult(pictureFromGallery, REQUEST_CODE_GALLERY)
         }
     }
 
     private fun openCamera() {
         // https://developer.android.com/training/camera/photobasics.html
-        val filename = resources.getString(R.string.app_name)
+        val filename = resources.getString(R.string.app_name) +
+                "_complaint_" + System.currentTimeMillis() + ".jpg"
         pictureFile = File(
                 getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                filename + "_complaint_" + System.currentTimeMillis() + ".jpg"
+                filename
         )
         val authority = AUTHORITY
         val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         val file = FileProvider.getUriForFile(this, authority, pictureFile)
         takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, file)
-//        takePictureIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         if (takePictureIntent.resolveActivity(packageManager) != null) {
             startActivityForResult(takePictureIntent, REQUEST_CODE_CAMERA)
         }
@@ -166,13 +178,12 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        if (requestCode == REQUEST_CODE_LOCATION) {
-            if (resultCode == Activity.RESULT_OK) {
+        when (requestCode) {
+            REQUEST_CODE_LOCATION -> if (resultCode == Activity.RESULT_OK) {
                 complaint.location = data?.getParcelableExtra(PinActivity.RESULT_LOCATION)
                 complaint.address = data?.getStringExtra(PinActivity.RESULT_ADDRESS)
             }
-        } else if (requestCode == REQUEST_CODE_CAMERA) {
-            if (resultCode == Activity.RESULT_OK && pictureFile?.exists() == true) {
+            REQUEST_CODE_CAMERA -> if (resultCode == Activity.RESULT_OK && pictureFile?.exists() == true) {
                 val imagePath = File(filesDir, IMAGE_PATH)
                 val privatePicture = File(
                         imagePath,
@@ -191,6 +202,26 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 LogUtil.debug(this, "New size: " + privatePicture.length())
                 LogUtil.debug(this, "privatePicture exists: " + privatePicture.exists())
                 LogUtil.debug(this, "pictureFile exists: " + pictureFile?.exists())
+            }
+            REQUEST_CODE_GALLERY -> if (resultCode == Activity.RESULT_OK && data != null) {
+                val uri = data.data
+                val imagePath = File(filesDir, IMAGE_PATH)
+                val filename = resources.getString(R.string.app_name) +
+                        "_complaint_" + System.currentTimeMillis() + ".jpg"
+                val privatePicture = File(
+                        imagePath,
+                        filename
+                )
+                if (uri.isGooglePhotosUri) {
+                    val inputStream = contentResolver.openInputStream(uri)
+                    if (inputStream != null) {
+                        val bitmap = BitmapFactory.decodeStream(inputStream)
+                        ImageUtil.compressImage(this, bitmap, privatePicture)
+                    }
+                } else {
+                    ImageUtil.compressImage(this, uri, privatePicture)
+                }
+                complaint.files.add(Asset(Uri.fromFile(privatePicture)))
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -221,6 +252,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     companion object {
         private val REQUEST_CODE_LOCATION = 1
         private val REQUEST_CODE_CAMERA = 2
+        private val REQUEST_CODE_GALLERY = 3
         private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
         private val REQUEST_CAMERA_PERMISSION = 1
