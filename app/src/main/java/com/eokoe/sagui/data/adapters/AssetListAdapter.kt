@@ -1,8 +1,7 @@
-package com.eokoe.sagui.data
+package com.eokoe.sagui.data.adapters
 
 import android.os.Parcel
 import com.eokoe.sagui.data.entities.Asset
-import com.eokoe.sagui.data.entities.Confirmation
 import io.realm.RealmList
 import paperparcel.TypeAdapter
 

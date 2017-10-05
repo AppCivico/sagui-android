@@ -36,13 +36,15 @@ class UploadFilesJobIntentService : JobIntentService() {
                 }
                 .filter { !it.sent }
                 .count()
-                .subscribe { count ->
+                .subscribe({ count ->
                     if (count > 0) {
                         retry.schedule(applicationContext)
                     } else {
                         retry.cancel(applicationContext)
                     }
-                }
+                }, { err ->
+                    err.printStackTrace()
+                })
     }
 
     companion object {

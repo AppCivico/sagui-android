@@ -1,5 +1,6 @@
 package com.eokoe.sagui.features.enterprises
 
+import android.support.v7.widget.LinearLayoutManager
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
@@ -54,6 +55,7 @@ class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHold
 
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(enterprise: Enterprise) {
+            itemView.imgEnterprise.setImageURI(enterprise.images.first()?.imagePath)
             itemView.tvEnterpriseName.text = enterprise.name
             itemView.tvLocation.text = enterprise.address
             itemView.tvQtyConfirmations.text = itemView.resources.getQuantityString(
@@ -62,6 +64,11 @@ class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHold
                     R.plurals.qty_causes, enterprise.data.cases, enterprise.data.cases)
             itemView.setOnClickListener {
                 onItemClickListener?.onClick(enterprise)
+            }
+            if (enterprise.images.size > 0) {
+                itemView.rvImgEnterprise.setHasFixedSize(true)
+                itemView.rvImgEnterprise.adapter = ImageAdapter(enterprise.images)
+                itemView.rvImgEnterprise.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
             }
         }
     }

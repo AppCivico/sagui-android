@@ -1,12 +1,14 @@
 package com.eokoe.sagui.features.complaints.report
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
@@ -21,6 +23,7 @@ import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.ErrorType
+import com.eokoe.sagui.extensions.copyTo
 import com.eokoe.sagui.extensions.errorType
 import com.eokoe.sagui.extensions.getRealPath
 import com.eokoe.sagui.features.base.view.BaseActivity
@@ -109,10 +112,18 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 }
             }
             ReportAdapter.ItemType.INSERT_PHOTO_VIDEO -> {
-                openGallery()
+                if (hasReadExternalStoragePermission()) {
+                    openGallery()
+                } else {
+                    requestReadExternalStoragePermission(REQUEST_IMAGE_VIDEO_PERMISSION)
+                }
             }
             ReportAdapter.ItemType.INSERT_AUDIO -> {
-                openAudioGallery()
+                if (hasReadExternalStoragePermission()) {
+                    openAudioGallery()
+                } else {
+                    requestReadExternalStoragePermission(REQUEST_AUDIO_GALLERY_PERMISSION)
+                }
             }
         }
     }
@@ -292,21 +303,22 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                         imagePath,
                         filename
                 )
-                val inputStream = contentResolver.openInputStream(uri)
-                if (inputStream != null) {
-                    val bitmap = BitmapFactory.decodeStream(inputStream)
-                    FileUtil.compressImage(bitmap, privateFile)
-                    complaint.files.add(Asset(Uri.fromFile(privateFile)))
+                contentResolver.openInputStream(uri).use { inputStream ->
+                    if (inputStream != null) {
+                        val bitmap = BitmapFactory.decodeStream(inputStream)
+                        FileUtil.compressImage(bitmap, privateFile)
+                        complaint.files.add(Asset(Uri.fromFile(privateFile)))
+                    }
                 }
             }
             REQUEST_CODE_AUDIO -> if (resultCode == Activity.RESULT_OK && data != null) {
-                val file = File(data.data.getRealPath(this))
+                val uri = data.data
                 val audioPath = File(filesDir, AUDIO_PATH)
                 val privateFile = File(
                         audioPath,
-                        "_complaint_" + System.currentTimeMillis() + ".mp3"
+                        "_complaint_" + System.currentTimeMillis() + ".amr"
                 )
-                file.copyTo(privateFile, true)
+                uri.copyTo(this, privateFile)
                 complaint.files.add(Asset(Uri.fromFile(privateFile)))
             }
         }
@@ -314,9 +326,15 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode == REQUEST_CAMERA_PERMISSION) {
-            if (hasCameraPermission()) {
+        when (requestCode) {
+            REQUEST_CAMERA_PERMISSION -> if (hasCameraPermission()) {
                 openCamera()
+            }
+            REQUEST_IMAGE_VIDEO_PERMISSION -> if (hasReadExternalStoragePermission()) {
+                openGallery()
+            }
+            REQUEST_AUDIO_GALLERY_PERMISSION -> if (hasReadExternalStoragePermission()) {
+                openAudioGallery()
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -324,10 +342,27 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
 
     private fun hasCameraPermission() = hasPermission(Manifest.permission.CAMERA)
 
+    private fun hasReadExternalStoragePermission() =
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN ||
+                    hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+
     private fun requestCameraPermission() {
         // TODO handle permission not granted
         if (!hasCameraPermission()) {
             requestPermission(R.string.title_request_camera_permission, R.string.message_request_camera_permission, REQUEST_CAMERA_PERMISSION, Manifest.permission.CAMERA)
+        }
+    }
+
+    @SuppressLint("InlinedApi")
+    private fun requestReadExternalStoragePermission(requestCode: Int) {
+        // TODO handle permission not granted
+        if (!hasReadExternalStoragePermission()) {
+            requestPermission(
+                    R.string.title_request_read_external_storage_permission,
+                    R.string.message_request_read_external_storage_permission,
+                    requestCode,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            )
         }
     }
 
@@ -344,6 +379,8 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
         private val REQUEST_CAMERA_PERMISSION = 1
+        private val REQUEST_IMAGE_VIDEO_PERMISSION = 2
+        private val REQUEST_AUDIO_GALLERY_PERMISSION = 3
         val RESULT_LAT_LONG = "RESULT_LAT_LONG"
 
         fun getIntent(context: Context, enterprise: Enterprise, category: Category?): Intent =

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.facebook.drawee.view.SimpleDraweeView
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/ivEnterprise"
+    android:layout_width="wrap_content"
+    android:layout_height="60dp"
+    android:layout_margin="4dp"
+    android:background="#EEE"
+    app:actualImageScaleType="fitCenter"
+    app:placeholderImage="@drawable/ic_photo_white"/>

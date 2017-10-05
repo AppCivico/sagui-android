@@ -1,4 +1,4 @@
-package com.eokoe.sagui.data
+package com.eokoe.sagui.data.adapters
 
 import android.os.Parcel
 import com.eokoe.sagui.data.entities.Answer

@@ -11,6 +11,7 @@ import android.provider.MediaStore
 import android.webkit.MimeTypeMap
 import com.eokoe.sagui.utils.AUTHORITY
 import java.io.File
+import java.io.FileOutputStream
 
 /**
  * @author Pedro Silva
@@ -101,5 +102,25 @@ fun Uri.getMimeType(context: Context): String {
     } else {
         val extension = MimeTypeMap.getFileExtensionFromUrl(this.toString())
         MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension.toLowerCase())
+    }
+}
+
+fun Uri.copyTo(context: Context, file: File) {
+    context.contentResolver.openInputStream(this).use { inputStream ->
+        if (inputStream != null) {
+            if (!file.exists()) {
+                val parent = File(file.parent)
+                if (!parent.exists()) parent.mkdirs()
+                file.createNewFile()
+            }
+            FileOutputStream(file).use { outputStream ->
+                val buf = ByteArray(1024)
+                while (true) {
+                    val len = inputStream.read(buf)
+                    if (len != -1) outputStream.write(buf, 0, len)
+                    else break
+                }
+            }
+        }
     }
 }
