@@ -22,7 +22,7 @@
         tools:ignore="SpUsage"
         tools:text="&#xf17b;"/>
 
-    <android.support.v7.widget.AppCompatTextView
+    <com.eokoe.sagui.widgets.CustomTextView
         android:id="@+id/tvCategoryName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

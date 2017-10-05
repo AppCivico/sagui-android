@@ -29,7 +29,7 @@
         android:orientation="vertical"
         android:visibility="gone">
 
-        <android.support.v7.widget.AppCompatTextView
+        <com.eokoe.sagui.widgets.CustomTextView
             android:id="@+id/tvCategoryName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -59,7 +59,7 @@
                 app:civ_fill_color="#7EFFFFFF"
                 app:srcCompat="@drawable/ic_answer_survey"/>
 
-            <TextView
+            <com.eokoe.sagui.widgets.CustomTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
@@ -88,7 +88,7 @@
                 app:civ_fill_color="#7EFFFFFF"
                 app:srcCompat="@drawable/ic_see_complaints"/>
 
-            <TextView
+            <com.eokoe.sagui.widgets.CustomTextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"

@@ -7,7 +7,7 @@
     android:orientation="vertical"
     android:theme="@style/ThemeOverlay.AppCompat.Dark">
 
-    <TextView
+    <com.eokoe.sagui.widgets.CustomTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginLeft="16dp"
@@ -16,7 +16,7 @@
         android:textColor="@color/white"
         android:textSize="@dimen/nav_header_subtitle"/>
 
-    <TextView
+    <com.eokoe.sagui.widgets.CustomTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginBottom="16dp"

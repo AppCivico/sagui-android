@@ -22,7 +22,7 @@
         android:clickable="true"
         android:orientation="vertical">
 
-        <TextView
+        <com.eokoe.sagui.widgets.CustomTextView
             android:id="@+id/tvCategoryName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -31,12 +31,11 @@
             android:layout_marginEnd="16dp"
             android:layout_marginRight="16dp"
             android:layout_marginTop="16dp"
-            android:drawableLeft="@drawable/ic_category"
             android:drawablePadding="4dp"
-            android:drawableStart="@drawable/ic_category"
+            app:drawableLeftCompat="@drawable/ic_category"
             tools:text="Saúde"/>
 
-        <TextView
+        <com.eokoe.sagui.widgets.CustomTextView
             android:id="@+id/tvTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -80,7 +79,7 @@
             app:srcCompat="@drawable/ic_like"
             app:tint="@color/colorPrimary"/>
 
-        <TextView
+        <com.eokoe.sagui.widgets.CustomTextView
             android:id="@+id/tvQtyConfirmations"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -104,15 +103,18 @@
             android:tint="#75706c"
             app:srcCompat="@drawable/ic_circle"/>
 
-        <android.support.v7.widget.AppCompatTextView
+        <com.eokoe.sagui.widgets.CustomTextView
             android:id="@+id/tvQtyRemain"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_alignEnd="@id/tvCategoryName"
+            android:layout_alignRight="@id/tvCategoryName"
             android:layout_alignTop="@id/tvQtyConfirmations"
             android:layout_marginLeft="22dp"
             android:layout_marginStart="22dp"
             android:layout_toEndOf="@id/tvQtyConfirmations"
             android:layout_toRightOf="@id/tvQtyConfirmations"
+            android:ellipsize="end"
             tools:text="09 ocorrências"/>
 
         <android.support.v7.widget.AppCompatImageView
@@ -130,7 +132,7 @@
             app:srcCompat="@drawable/ic_description"
             app:tint="@color/colorPrimary"/>
 
-        <TextView
+        <com.eokoe.sagui.widgets.CustomTextView
             android:id="@+id/tvDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -152,7 +154,7 @@
             android:layout_height="1dp"
             android:layout_below="@id/tvDescription"/>
 
-        <Button
+        <com.eokoe.sagui.widgets.CustomButton
             android:id="@+id/btnConfirm"
             style="@style/Button.Transparent"
             android:layout_width="wrap_content"
@@ -160,9 +162,8 @@
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_below="@id/divider"
-            android:drawableLeft="@drawable/ic_like"
-            android:drawableStart="@drawable/ic_like"
             android:padding="16dp"
-            android:text="@string/confirm"/>
+            android:text="@string/confirm"
+            app:drawableLeftCompat="@drawable/ic_like"/>
     </RelativeLayout>
 </RelativeLayout>

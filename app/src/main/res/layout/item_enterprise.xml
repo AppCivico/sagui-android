@@ -28,7 +28,7 @@
             app:civ_fill_color="#eee"
             app:srcCompat="@drawable/ic_photo"/>
 
-        <android.support.v7.widget.AppCompatTextView
+        <com.eokoe.sagui.widgets.CustomTextView
             android:id="@+id/tvEnterpriseName"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -52,7 +52,7 @@
             android:tint="@color/colorPrimary"
             app:srcCompat="@drawable/ic_location"/>
 
-        <android.support.v7.widget.AppCompatTextView
+        <com.eokoe.sagui.widgets.CustomTextView
             android:id="@+id/labelLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -66,7 +66,7 @@
             android:textSize="12sp"
             app:textAllCaps="true"/>
 
-        <android.support.v7.widget.AppCompatTextView
+        <com.eokoe.sagui.widgets.CustomTextView
             android:id="@+id/tvLocation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -86,7 +86,7 @@
             android:tint="@color/colorPrimary"
             app:srcCompat="@drawable/ic_menu_complaint"/>
 
-        <android.support.v7.widget.AppCompatTextView
+        <com.eokoe.sagui.widgets.CustomTextView
             android:id="@+id/labelComplaint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -100,7 +100,7 @@
             android:textSize="12sp"
             app:textAllCaps="true"/>
 
-        <android.support.v7.widget.AppCompatTextView
+        <com.eokoe.sagui.widgets.CustomTextView
             android:id="@+id/tvQtyConfirmations"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -123,7 +123,7 @@
             android:tint="#75706c"
             app:srcCompat="@drawable/ic_circle"/>
 
-        <android.support.v7.widget.AppCompatTextView
+        <com.eokoe.sagui.widgets.CustomTextView
             android:id="@+id/tvQtyCases"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

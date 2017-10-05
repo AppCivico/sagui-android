@@ -19,7 +19,7 @@
         android:scaleType="fitCenter"
         app:tint="@color/colorPrimary"/>
 
-    <TextView
+    <com.eokoe.sagui.widgets.CustomTextView
         android:id="@+id/tvActionName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

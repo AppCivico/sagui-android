@@ -28,7 +28,7 @@
             app:actualImageScaleType="centerCrop"
             app:backgroundImage="@drawable/ic_circle_red"/>
 
-        <TextView
+        <com.eokoe.sagui.widgets.CustomTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"/>
@@ -52,7 +52,7 @@
             app:actualImageScaleType="centerCrop"
             app:backgroundImage="@drawable/ic_circle_yellow"/>
 
-        <TextView
+        <com.eokoe.sagui.widgets.CustomTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"/>
@@ -75,7 +75,7 @@
             app:actualImageScaleType="centerCrop"
             app:backgroundImage="@drawable/ic_circle_green"/>
 
-        <TextView
+        <com.eokoe.sagui.widgets.CustomTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center_horizontal"/>

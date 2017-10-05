@@ -9,7 +9,7 @@
     android:clickable="true"
     android:foreground="?attr/selectableItemBackground">
 
-    <TextView
+    <com.eokoe.sagui.widgets.CustomTextView
         android:id="@+id/tvSurveyTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

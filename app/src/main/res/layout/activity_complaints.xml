@@ -24,6 +24,7 @@
             android:layout_gravity="bottom|end"
             android:layout_margin="@dimen/fab_margin"
             android:visibility="invisible"
+            app:fabSize="normal"
             app:layout_anchor="@+id/rlBoxComplaint"
             app:layout_anchorGravity="top|right|end"
             app:srcCompat="@drawable/ic_add"/>

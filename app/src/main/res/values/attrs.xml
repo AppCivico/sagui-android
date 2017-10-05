@@ -38,8 +38,29 @@
 
     <declare-styleable name="SquareLinearLayout">
         <attr name="srl_adjustDimension" format="enum">
-            <enum name="height" value="0" />
-            <enum name="width" value="1" />
+            <enum name="height" value="0"/>
+            <enum name="width" value="1"/>
         </attr>
+    </declare-styleable>
+
+    <!-- views compat attrs -->
+    <attr name="drawableLeftCompat" format="reference"/>
+    <attr name="drawableRightCompat" format="reference"/>
+    <attr name="drawableTopCompat" format="reference"/>
+    <attr name="drawableBottomCompat" format="reference"/>
+    <!-- end views compat attrs -->
+
+    <declare-styleable name="CustomTextView">
+        <attr name="drawableLeftCompat"/>
+        <attr name="drawableRightCompat"/>
+        <attr name="drawableTopCompat"/>
+        <attr name="drawableBottomCompat"/>
+    </declare-styleable>
+
+    <declare-styleable name="CustomButton">
+        <attr name="drawableLeftCompat"/>
+        <attr name="drawableRightCompat"/>
+        <attr name="drawableTopCompat"/>
+        <attr name="drawableBottomCompat"/>
     </declare-styleable>
 </resources>

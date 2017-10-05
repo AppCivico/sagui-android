@@ -84,16 +84,6 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                     .filter {
                         return@filter it.questions != null && it.questions.isNotEmpty()
                     }
-                    .map { survey ->
-                        survey.questions?.forEach { question ->
-                            question.answers?.forEach { answer ->
-                                if (answer.image != null) {
-                                    answer.image = ServiceGenerator.BASE_URL + ".." + answer.image
-                                }
-                            }
-                        }
-                        return@map survey
-                    }
                     .toList()
                     .toObservable()
 

@@ -58,13 +58,13 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <android.support.v7.widget.AppCompatTextView
+                <com.eokoe.sagui.widgets.CustomTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Responda a perguntas e complete com suas observações"
                     android:textStyle="bold"/>
 
-                <android.support.v7.widget.AppCompatTextView
+                <com.eokoe.sagui.widgets.CustomTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Escolha a opção que represente melhor a sua resposta"/>
@@ -94,12 +94,12 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <android.support.v7.widget.AppCompatTextView
+                <com.eokoe.sagui.widgets.CustomTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Você já respondeu todas as perguntas. Obrigado!"/>
 
-                <android.support.v7.widget.AppCompatTextView
+                <com.eokoe.sagui.widgets.CustomTextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Gostaria de enviar observações?"

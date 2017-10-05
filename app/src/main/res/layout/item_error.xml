@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:padding="16dp">
 
-    <TextView
+    <com.eokoe.sagui.widgets.CustomTextView
         android:id="@+id/tvError"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,7 +25,7 @@
         android:tint="@color/colorTextSecondary"
         app:srcCompat="@drawable/ic_refresh"/>
 
-    <TextView
+    <com.eokoe.sagui.widgets.CustomTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"

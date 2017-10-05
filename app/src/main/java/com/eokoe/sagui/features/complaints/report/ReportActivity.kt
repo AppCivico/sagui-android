@@ -4,6 +4,7 @@ import android.Manifest
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
@@ -22,7 +23,6 @@ import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.ErrorType
 import com.eokoe.sagui.extensions.errorType
 import com.eokoe.sagui.extensions.getRealPath
-import com.eokoe.sagui.extensions.isGooglePhotosUri
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.report.ReportAdapter.ItemType
@@ -48,12 +48,21 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     private val complaint = Complaint()
     private var enterprise: Enterprise? = null
     private var fileAttached: File? = null
+    private var category: Category? = null
+
+    // region Lifecycle
+    override fun onResume() {
+        super.onResume()
+        reportAdapter.setComplaint(complaint)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_report)
     }
+    // endregion
 
+    // region Initialization and setup
     override fun setUp(savedInstanceState: Bundle?) {
         showBackButton()
         presenter = ReportPresenter(SaguiModelImpl())
@@ -61,7 +70,8 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
 
         enterprise = intent.extras?.getParcelable(EXTRA_ENTERPRISE)
         complaint.enterpriseId = enterprise?.id
-        complaint.categoryId = intent.extras?.getParcelable<Category>(EXTRA_CATEGORY)?.id
+        category = intent.extras?.getParcelable(EXTRA_CATEGORY)
+        complaint.categoryId = category?.id
     }
 
     override fun init(savedInstanceState: Bundle?) {
@@ -80,12 +90,9 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
             complaint.description = it
         }
     }
+    // endregion
 
-    override fun onResume() {
-        super.onResume()
-        reportAdapter.setComplaint(complaint)
-    }
-
+    // region Events
     @Suppress("NON_EXHAUSTIVE_WHEN")
     override fun onItemClick(itemType: ItemType) {
         when (itemType) {
@@ -110,23 +117,21 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         }
     }
 
-    private fun openGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        intent.type = "image/* video/*"
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivityForResult(intent, REQUEST_CODE_GALLERY)
-        }
+    override fun onCreateOptionsMenu(menu: Menu): Boolean {
+        menuInflater.inflate(R.menu.save_check, menu)
+        return true
     }
 
-    private fun openAudioGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivityForResult(intent, REQUEST_CODE_AUDIO)
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        if (item.itemId == R.id.action_ok) {
+            presenter.saveComplaint(complaint)
+            return true
         }
+        return super.onOptionsItemSelected(item)
     }
+    // endregion
 
+    // region Actions and intents
     private fun openCamera() {
         val alert = AlertDialog.Builder(this)
                 .setItems(R.array.camera_options, { dialog, position ->
@@ -148,6 +153,24 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         alert.show()
     }
 
+    private fun openGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
+//        intent.type = "image/* video/*"
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivityForResult(intent, REQUEST_CODE_GALLERY)
+        }
+    }
+
+    private fun openAudioGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivityForResult(intent, REQUEST_CODE_AUDIO)
+        }
+    }
+
+    // region Intents
     private fun takePictureIntent(): Intent {
         val filename = resources.getString(R.string.app_name) +
                 "_complaint_" + System.currentTimeMillis() + ".jpg"
@@ -156,9 +179,10 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 filename
         )
         val file = FileProvider.getUriForFile(this, AUTHORITY, fileAttached)
-        val takePictureIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, file)
-        return takePictureIntent
+        val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, file)
+        grantUriRwPermissions(intent, file)
+        return intent
     }
 
     private fun recordVideoIntent(): Intent {
@@ -169,23 +193,24 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 filename
         )
         val file = FileProvider.getUriForFile(this, AUTHORITY, fileAttached)
-        val takePictureIntent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
-        takePictureIntent.putExtra(MediaStore.EXTRA_OUTPUT, file)
-        return takePictureIntent
+        val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+        grantUriRwPermissions(intent, file)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, file)
+        return intent
     }
 
-    override fun onCreateOptionsMenu(menu: Menu): Boolean {
-        menuInflater.inflate(R.menu.save_check, menu)
-        return true
+    private fun grantUriRwPermissions(intent: Intent, file: Uri?) {
+        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        val resInfoList = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+        resInfoList
+                .map { it.activityInfo.packageName }
+                .forEach {
+                    grantUriPermission(it, file,
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
     }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        if (item.itemId == R.id.action_ok) {
-            presenter.saveComplaint(complaint)
-            return true
-        }
-        return super.onOptionsItemSelected(item)
-    }
+    // endregion
+    // endregion
 
     override fun showError(error: Throwable) {
         hideLoading()
@@ -242,15 +267,14 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 LogUtil.debug(this, "privateFile exists: " + privateFile.exists())
                 LogUtil.debug(this, "pictureFile exists: " + fileAttached?.exists())
             }
-            REQUEST_CODE_VIDEO -> if (resultCode == Activity.RESULT_OK) {
+            REQUEST_CODE_VIDEO -> if (resultCode == Activity.RESULT_OK && fileAttached?.exists() == true) {
                 val videoPath = File(filesDir, VIDEO_PATH)
                 val privateFile = File(
                         videoPath,
                         fileAttached!!.name
                 )
-                val inputFilePath = Uri.fromFile(fileAttached).getRealPath(this)!!
-                FileUtil.compressImage(inputFilePath, privateFile)
                 val uriVideo = data?.data ?: Uri.fromFile(fileAttached)
+                fileAttached!!.copyTo(privateFile, true)
                 try {
                     fileAttached?.delete()
                     contentResolver.delete(uriVideo, null, null)
@@ -268,17 +292,12 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                         imagePath,
                         filename
                 )
-                if (uri.isGooglePhotosUri) {
-                    val inputStream = contentResolver.openInputStream(uri)
-                    if (inputStream != null) {
-                        val bitmap = BitmapFactory.decodeStream(inputStream)
-                        FileUtil.compressImage(bitmap, privateFile)
-                    }
-                } else {
-                    val inputFilePath = uri.getRealPath(this)
-                    FileUtil.compressImage(inputFilePath!!, privateFile)
+                val inputStream = contentResolver.openInputStream(uri)
+                if (inputStream != null) {
+                    val bitmap = BitmapFactory.decodeStream(inputStream)
+                    FileUtil.compressImage(bitmap, privateFile)
+                    complaint.files.add(Asset(Uri.fromFile(privateFile)))
                 }
-                complaint.files.add(Asset(Uri.fromFile(privateFile)))
             }
             REQUEST_CODE_AUDIO -> if (resultCode == Activity.RESULT_OK && data != null) {
                 val file = File(data.data.getRealPath(this))
