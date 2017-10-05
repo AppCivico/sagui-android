@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="camera_options">
+        <item>Tirar foto</item>
+        <item>Gravar video</item>
+    </string-array>
+</resources>

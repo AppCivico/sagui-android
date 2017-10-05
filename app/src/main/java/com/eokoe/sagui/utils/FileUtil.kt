@@ -15,9 +15,9 @@ import java.io.IOException
  * @author Pedro Silva
  * @since 03/10/17
  */
-object ImageUtil {
-    private val MAX_HEIGHT = 1080
-    private val MAX_WIDTH = 1980
+object FileUtil {
+    private val MAX_IMAGE_HEIGHT = 1080
+    private val MAX_IMAGE_WIDTH = 1980
 
     fun compressImage(inputFilePath: String, outputFile: File) {
         val bitmap = BitmapFactory.decodeFile(inputFilePath)
@@ -36,18 +36,18 @@ object ImageUtil {
         var scale = 1f
         val scaledBitmap: Bitmap
         if (bitmap.width > bitmap.height) {
-            if (MAX_WIDTH < bitmap.width) {
-                scale = bitmap.width / MAX_WIDTH.toFloat()
+            if (MAX_IMAGE_WIDTH < bitmap.width) {
+                scale = bitmap.width / MAX_IMAGE_WIDTH.toFloat()
             }
             scaledBitmap = if (scale > 1)
-                Bitmap.createScaledBitmap(bitmap, MAX_WIDTH, (bitmap.height / scale).toInt(), true)
+                Bitmap.createScaledBitmap(bitmap, MAX_IMAGE_WIDTH, (bitmap.height / scale).toInt(), true)
             else bitmap
         } else {
-            if (MAX_HEIGHT < bitmap.height) {
-                scale = bitmap.height / MAX_HEIGHT.toFloat()
+            if (MAX_IMAGE_HEIGHT < bitmap.height) {
+                scale = bitmap.height / MAX_IMAGE_HEIGHT.toFloat()
             }
             scaledBitmap = if (scale > 1)
-                Bitmap.createScaledBitmap(bitmap, (bitmap.width / scale).toInt(), MAX_HEIGHT, true)
+                Bitmap.createScaledBitmap(bitmap, (bitmap.width / scale).toInt(), MAX_IMAGE_HEIGHT, true)
             else bitmap
         }
 
@@ -71,23 +71,23 @@ object ImageUtil {
         var actualHeight = options.outHeight
         var actualWidth = options.outWidth
         var imgRatio = actualWidth / actualHeight
-        val maxRatio = MAX_WIDTH / MAX_HEIGHT
+        val maxRatio = MAX_IMAGE_WIDTH / MAX_IMAGE_HEIGHT
         //width and height values are set maintaining the aspect ratio of the image
-        if (actualHeight > MAX_HEIGHT || actualWidth > MAX_WIDTH) {
+        if (actualHeight > MAX_IMAGE_HEIGHT || actualWidth > MAX_IMAGE_WIDTH) {
             when {
                 imgRatio < maxRatio -> {
-                    imgRatio = MAX_HEIGHT / actualHeight
+                    imgRatio = MAX_IMAGE_HEIGHT / actualHeight
                     actualWidth = (imgRatio * actualWidth.toFloat()).toInt()
-                    actualHeight = MAX_HEIGHT
+                    actualHeight = MAX_IMAGE_HEIGHT
                 }
                 imgRatio > maxRatio -> {
-                    imgRatio = MAX_WIDTH / actualWidth
+                    imgRatio = MAX_IMAGE_WIDTH / actualWidth
                     actualHeight *= imgRatio
-                    actualWidth = MAX_WIDTH
+                    actualWidth = MAX_IMAGE_WIDTH
                 }
                 else -> {
-                    actualHeight = MAX_HEIGHT
-                    actualWidth = MAX_WIDTH
+                    actualHeight = MAX_IMAGE_HEIGHT
+                    actualWidth = MAX_IMAGE_WIDTH
                 }
             }
         }

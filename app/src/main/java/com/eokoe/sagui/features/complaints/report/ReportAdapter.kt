@@ -42,8 +42,8 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
         items.add(Item(ItemType.DIVIDER))
         items.add(Item(ItemType.CAMERA, R.drawable.ic_photo_camera, R.string.camera))
         items.add(Item(ItemType.DIVIDER))
-//        items.add(Item(ItemType.INSERT_AUDIO, R.drawable.ic_audio, R.string.insert_audio))
-//        items.add(Item(ItemType.DIVIDER))
+        items.add(Item(ItemType.INSERT_AUDIO, R.drawable.ic_audio, R.string.insert_audio))
+        items.add(Item(ItemType.DIVIDER))
         this.items = items
     }
 
