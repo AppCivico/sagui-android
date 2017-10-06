@@ -17,7 +17,8 @@ import com.eokoe.sagui.features.enterprises.filter.EnterprisesFilterActivity
 import com.eokoe.sagui.features.show_asset.ShowAssetActivity
 import kotlinx.android.synthetic.main.content_enterprises.*
 
-class EnterprisesActivity : BaseActivityNavDrawer(), ViewPresenter<EnterprisesContract.Presenter>, EnterprisesContract.View {
+class EnterprisesActivity : BaseActivityNavDrawer(),
+        ViewPresenter<EnterprisesContract.Presenter>, EnterprisesContract.View {
 
     override lateinit var presenter: EnterprisesContract.Presenter
     private lateinit var enterprisesAdapter: EnterprisesAdapter

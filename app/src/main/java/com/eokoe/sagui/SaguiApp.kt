@@ -3,7 +3,7 @@ package com.eokoe.sagui
 import android.app.Application
 import android.content.Context
 import android.support.multidex.MultiDex
-import com.eokoe.sagui.data.adapters.*
+import com.eokoe.sagui.data.parcel.adapters.*
 import com.eokoe.sagui.data.net.ServiceGenerator
 import com.eokoe.sagui.extensions.getManifestValue
 import com.facebook.drawee.backends.pipeline.Fresco

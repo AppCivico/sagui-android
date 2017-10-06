@@ -1,8 +1,7 @@
-package com.eokoe.sagui.data.adapters
+package com.eokoe.sagui.data.parcel.adapters
 
 import android.os.Parcel
 import com.eokoe.sagui.data.entities.Comment
-import com.eokoe.sagui.data.entities.Image
 import io.realm.RealmList
 import paperparcel.TypeAdapter
 

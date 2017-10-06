@@ -21,6 +21,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import java.io.IOException
 import java.util.*
+import kotlin.collections.ArrayList
 
 /**
  * @author Pedro Silva
@@ -386,5 +387,33 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                 .flatMap {
                     Observable.just(confirmation)
                 }
+    }
+
+    override fun saveNotification(notification: Notification): Observable<Notification> {
+        return Observable.create { emitter ->
+            Realm.getDefaultInstance().use { realm ->
+                try {
+                    realm.beginTransaction()
+                    realm.copyToRealmOrUpdate(notification)
+                    realm.commitTransaction()
+                    emitter.onNext(notification)
+                    emitter.onComplete()
+                } catch (error: Exception) {
+                    emitter.onError(error)
+                }
+            }
+        }
+    }
+
+    override fun listUnreadNotifications(): Observable<List<Notification>> {
+        return Observable.create { emitter ->
+            Realm.getDefaultInstance().use { realm ->
+                val result = realm.where(Notification::class.java)
+                        .equalTo("read", false)
+                        .findAll()
+                emitter.onNext(result)
+                emitter.onComplete()
+            }
+        }
     }
 }

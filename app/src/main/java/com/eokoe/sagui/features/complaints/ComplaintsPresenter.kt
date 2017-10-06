@@ -5,6 +5,7 @@ import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.SaguiModel
 import com.eokoe.sagui.features.base.presenter.BasePresenterImpl
+import com.google.firebase.messaging.FirebaseMessaging
 import io.reactivex.observers.DisposableObserver
 
 /**
@@ -18,7 +19,9 @@ class ComplaintsPresenter constructor(private val saguiModel: SaguiModel)
             exec(saguiModel.listComplaints(enterprise, category), ComplaintsObserver())
 
     override fun allowNotification(allow: Boolean, complaintId: String) {
-        // TODO subscribe topic
+        if (allow) {
+            FirebaseMessaging.getInstance().subscribeToTopic("complaint-$complaintId")
+        }
     }
 
     inner class ComplaintsObserver : DisposableObserver<List<Complaint>>() {

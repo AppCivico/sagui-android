@@ -38,4 +38,8 @@ interface SaguiModel {
     fun getAssetsPendingUpload(): Observable<List<Asset>>
 
     fun confirmationFiles(confirmation: Confirmation): Observable<Confirmation>
+
+    fun saveNotification(notification: Notification): Observable<Notification>
+
+    fun listUnreadNotifications(): Observable<List<Notification>>
 }
