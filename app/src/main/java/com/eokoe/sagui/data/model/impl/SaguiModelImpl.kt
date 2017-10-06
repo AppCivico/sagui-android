@@ -411,7 +411,7 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                 val result = realm.where(Notification::class.java)
                         .equalTo("read", false)
                         .findAll()
-                emitter.onNext(result)
+                emitter.onNext(realm.copyFromRealm(result))
                 emitter.onComplete()
             }
         }
