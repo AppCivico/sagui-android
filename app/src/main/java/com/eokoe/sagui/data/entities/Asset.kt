@@ -32,17 +32,16 @@ open class Asset(
 
         var sent: Boolean = false
 ) : PaperParcelable, RealmObject() {
+
     var parentType: ParentType
         get() = ParentType.valueOf(parentTypeStr)
         set(value) {
             parentTypeStr = value.name
         }
 
-    constructor(uri: Uri?) : this(localPath = uri?.toString())
-
     var uri: Uri
         get() {
-            return if (localPath != null && (File(localPath).exists() || remotePath == null)) {
+            return if (isLocal) {
                 Uri.parse(localPath)
             } else {
                 Uri.parse(remotePath)
@@ -51,6 +50,9 @@ open class Asset(
         set(value) {
             localPath = value.toString()
         }
+
+    val isLocal: Boolean
+        get() = localPath != null && File(localPath).exists()
 
     companion object {
         @JvmField

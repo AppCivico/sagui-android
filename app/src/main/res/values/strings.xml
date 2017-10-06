@@ -67,4 +67,6 @@
     <string name="message_request_read_external_storage_permission">Este aplicativo precisa acessar a galeria do seu dispositivo, por favor aceite o uso dessa funcionalidade.</string>
     <string name="answers">Respostas</string>
     <string name="category">Categoria</string>
+    <string name="title_activity_notifications">Notificações</string>
+    <string name="unread">NÃO LIDOS</string>
 </resources>

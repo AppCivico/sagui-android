@@ -7,5 +7,7 @@
     android:layout_height="60dp"
     android:layout_margin="4dp"
     android:background="#EEE"
+    android:clickable="true"
+    android:foreground="?attr/selectableItemBackground"
     app:actualImageScaleType="fitCenter"
-    app:placeholderImage="@drawable/ic_photo_white"/>
+    app:placeholderImage="@drawable/placeholder_image"/>

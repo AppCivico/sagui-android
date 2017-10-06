@@ -18,5 +18,6 @@ interface ComplaintsContract {
 
     interface Presenter : BasePresenter<View> {
         fun list(enterprise: Enterprise, category: Category?): Observable<List<Complaint>>
+        fun allowNotification(allow: Boolean, complaintId: String)
     }
 }

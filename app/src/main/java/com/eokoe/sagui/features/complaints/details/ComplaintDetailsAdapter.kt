@@ -24,6 +24,7 @@ class ComplaintDetailsAdapter(complaint: Complaint) : RecyclerViewAdapter<Compla
             field = value
             setupItems()
         }
+    var onImageClickListener: AssetsAdapter.OnItemClickListener? = null
 
     init {
         this.complaint = complaint
@@ -91,7 +92,9 @@ class ComplaintDetailsAdapter(complaint: Complaint) : RecyclerViewAdapter<Compla
     inner class AssetsViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         init {
             itemView.rvAssets.setHasFixedSize(true)
-            itemView.rvAssets.adapter = AssetsAdapter()
+            val assetsAdapter = AssetsAdapter()
+            assetsAdapter.onItemClickListener = onImageClickListener
+            itemView.rvAssets.adapter = assetsAdapter
             itemView.rvAssets.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
         }
 

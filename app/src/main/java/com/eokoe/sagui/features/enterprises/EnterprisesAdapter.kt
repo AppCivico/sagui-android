@@ -14,13 +14,12 @@ import kotlinx.android.synthetic.main.item_error.view.*
  * @author Pedro Silva
  * @since 29/08/17
  */
-class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHolder> {
+class EnterprisesAdapter() : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHolder>() {
 
     var onItemClickListener: OnItemClickListener? = null
+    var onImageClickListener: ImageAdapter.OnItemClickListener? = null
 
-    constructor() : super()
-
-    constructor(isShowLoading: Boolean) : super() {
+    constructor(isShowLoading: Boolean) : this() {
         this.isShowLoading = isShowLoading
     }
 
@@ -67,7 +66,9 @@ class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHold
             }
             if (enterprise.images.size > 0) {
                 itemView.rvImgEnterprise.setHasFixedSize(true)
-                itemView.rvImgEnterprise.adapter = ImageAdapter(enterprise.images)
+                val imageAdapter = ImageAdapter(enterprise.images)
+                imageAdapter.onItemClickListener = onImageClickListener
+                itemView.rvImgEnterprise.adapter = imageAdapter
                 itemView.rvImgEnterprise.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
             }
         }

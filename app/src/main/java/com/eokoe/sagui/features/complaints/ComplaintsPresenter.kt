@@ -17,6 +17,10 @@ class ComplaintsPresenter constructor(private val saguiModel: SaguiModel)
     override fun list(enterprise: Enterprise, category: Category?) =
             exec(saguiModel.listComplaints(enterprise, category), ComplaintsObserver())
 
+    override fun allowNotification(allow: Boolean, complaintId: String) {
+        // TODO subscribe topic
+    }
+
     inner class ComplaintsObserver : DisposableObserver<List<Complaint>>() {
         override fun onNext(complaints: List<Complaint>) {
             view?.loadComplaints(complaints)

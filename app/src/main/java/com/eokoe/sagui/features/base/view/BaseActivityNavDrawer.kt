@@ -13,6 +13,7 @@ import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.features.categories.CategoriesActivity
 import com.eokoe.sagui.features.complaints.ComplaintsActivity
 import com.eokoe.sagui.features.enterprises.EnterprisesActivity
+import com.eokoe.sagui.features.notifications.NotificationsActivity
 
 /**
  * @author Pedro Silva
@@ -80,6 +81,7 @@ abstract class BaseActivityNavDrawer : BaseActivity(), NavigationView.OnNavigati
                     startActivity(intent)
                 }
                 R.id.nav_notifications -> {
+                    startActivity(NotificationsActivity.getIntent(this))
                 }
                 R.id.nav_pending -> {
                 }

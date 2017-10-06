@@ -21,7 +21,7 @@ import com.eokoe.sagui.extensions.friendlyMessage
 import com.eokoe.sagui.extensions.getRealPath
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
-import com.eokoe.sagui.features.view_asset.ViewAssetActivity
+import com.eokoe.sagui.features.show_asset.ShowAssetActivity
 import com.eokoe.sagui.services.upload_file.UploadFilesJobIntentService
 import com.eokoe.sagui.utils.AUTHORITY
 import com.eokoe.sagui.utils.FileUtil
@@ -83,13 +83,21 @@ class ComplaintDetailsActivity : BaseActivity(),
         presenter = ConfirmPresenter(SaguiModelImpl())
         loadingDialog = LoadingDialog.newInstance(getString(R.string.loading_confirm_complaint))
         btnConfirm.setOnClickListener {
+//            openContributeDialog()
             getConfirmDialog().show(supportFragmentManager)
         }
     }
 
     override fun init(savedInstanceState: Bundle?) {
         rvComplaintDetails.setHasFixedSize(true)
-        rvComplaintDetails.adapter = ComplaintDetailsAdapter(complaint)
+        val detailsAdapter = ComplaintDetailsAdapter(complaint)
+        detailsAdapter.onImageClickListener = object : AssetsAdapter.OnItemClickListener {
+            override fun onItemClick(asset: Asset) {
+                val intent = ShowAssetActivity.getIntent(this@ComplaintDetailsActivity, asset)
+                startActivity(intent)
+            }
+        }
+        rvComplaintDetails.adapter = detailsAdapter
     }
 
     override fun onComplaintConfirmed(confirmation: Confirmation) {
@@ -129,7 +137,6 @@ class ComplaintDetailsActivity : BaseActivity(),
         return AlertDialogFragment.create(this) {
             titleRes = R.string.confirmed
             messageRes = R.string.msg_contribute
-//            message = "Sua confirmação foi registrada."
             positiveTextRes = R.string.contribute
             negativeTextRes = R.string.cancel
             cancelable = true
@@ -142,9 +149,8 @@ class ComplaintDetailsActivity : BaseActivity(),
 
     private fun getContributeSuccess(): AlertDialogFragment {
         return AlertDialogFragment.create(this) {
-            title = "Parabéns!"
-//            messageRes = R.string.msg_contribute
-            message = "Sua contribuição foi feita com sucesso!"
+            titleRes = R.string.congratulations
+            messageRes = R.string.successful_contribution
             cancelable = true
         }
     }
@@ -252,7 +258,7 @@ class ComplaintDetailsActivity : BaseActivity(),
                 } catch (error: Exception) {
                     error.printStackTrace()
                 }
-                confirmation.files.add(Asset(Uri.fromFile(privateFile)))
+                confirmation.files.add(Asset(localPath = privateFile.path))
                 openPreview = true
             }
             REQUEST_CODE_PHOTO_GALLERY -> if (resultCode == Activity.RESULT_OK && data != null) {
@@ -266,7 +272,7 @@ class ComplaintDetailsActivity : BaseActivity(),
                     if (inputStream != null) {
                         val bitmap = BitmapFactory.decodeStream(inputStream)
                         FileUtil.compressImage(bitmap, privateFile)
-                        confirmation.files.add(Asset(Uri.fromFile(privateFile)))
+                        confirmation.files.add(Asset(localPath = privateFile.path))
                     }
                 }
                 openPreview = true
@@ -280,7 +286,7 @@ class ComplaintDetailsActivity : BaseActivity(),
     }
 
     private fun openPreview() {
-        val intent = ViewAssetActivity.getIntent(this, confirmation.files, showSendButton = true)
+        val intent = ShowAssetActivity.getIntent(this, confirmation.files, showSendButton = true)
         startActivityForResult(intent, REQUEST_PREVIEW_ASSET)
     }
 

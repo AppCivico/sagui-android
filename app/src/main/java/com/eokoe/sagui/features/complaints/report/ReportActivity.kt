@@ -246,6 +246,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     override fun onSaveSuccess(complaint: Complaint) {
         hideKeyboard()
         val data = Intent()
+        data.putExtra(RESULT_COMPLAINT_ID, complaint.id)
         data.putExtra(RESULT_LAT_LONG, complaint.location)
         setResult(Activity.RESULT_OK, data)
         finish()
@@ -281,7 +282,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 } catch (error: Exception) {
                     error.printStackTrace()
                 }
-                complaint.files.add(Asset(Uri.fromFile(privateFile)))
+                complaint.files.add(Asset(localPath = privateFile.path))
                 LogUtil.debug(this, "New size: " + privateFile.length())
                 LogUtil.debug(this, "privateFile exists: " + privateFile.exists())
                 LogUtil.debug(this, "pictureFile exists: " + fileAttached?.exists())
@@ -300,7 +301,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 } catch (error: Exception) {
                     error.printStackTrace()
                 }
-                complaint.files.add(Asset(Uri.fromFile(privateFile)))
+                complaint.files.add(Asset(localPath = privateFile.path))
             }
             REQUEST_CODE_GALLERY -> if (resultCode == Activity.RESULT_OK && data != null) {
                 val uri = data.data
@@ -315,7 +316,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                     if (inputStream != null) {
                         val bitmap = BitmapFactory.decodeStream(inputStream)
                         FileUtil.compressImage(bitmap, privateFile)
-                        complaint.files.add(Asset(Uri.fromFile(privateFile)))
+                        complaint.files.add(Asset(localPath = privateFile.path))
                     }
                 }
             }
@@ -327,7 +328,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                         "_complaint_" + System.currentTimeMillis() + ".amr"
                 )
                 uri.copyTo(this, privateFile)
-                complaint.files.add(Asset(Uri.fromFile(privateFile)))
+                complaint.files.add(Asset(localPath = privateFile.path))
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -381,6 +382,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         private val REQUEST_CAMERA_PERMISSION = 1
         private val REQUEST_IMAGE_VIDEO_PERMISSION = 2
         private val REQUEST_AUDIO_GALLERY_PERMISSION = 3
+        val RESULT_COMPLAINT_ID = "RESULT_COMPLAINT_ID"
         val RESULT_LAT_LONG = "RESULT_LAT_LONG"
 
         fun getIntent(context: Context, enterprise: Enterprise, category: Category): Intent =

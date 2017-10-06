@@ -1,5 +1,6 @@
 package com.eokoe.sagui.widgets.dialog
 
+import android.annotation.SuppressLint
 import android.app.Dialog
 import android.content.Context
 import android.content.DialogInterface
@@ -8,7 +9,10 @@ import android.support.annotation.StringRes
 import android.support.v4.app.DialogFragment
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AlertDialog
+import android.support.v7.widget.AppCompatCheckBox
+import android.view.ViewGroup
 import com.eokoe.sagui.R
+import kotlinx.android.synthetic.main.fragment_alertdialog.view.*
 
 /**
  * @author Pedro Silva
@@ -25,17 +29,30 @@ class AlertDialogFragment : DialogFragment() {
         retainInstance = true
     }
 
+    @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
+        val alertView = activity.layoutInflater.inflate(R.layout.fragment_alertdialog, null) as ViewGroup
+        alertView.message.text = arguments.getString(EXTRA_MESSAGE)
+
         val alertDialog = AlertDialog.Builder(context)
+                .setView(alertView)
                 .setTitle(arguments.getString(EXTRA_TITLE))
-                .setMessage(arguments.getString(EXTRA_MESSAGE))
                 .setCancelable(isCancelable)
                 .setPositiveButton(arguments.getString(EXTRA_POSITIVE_BUTTON), onConfirmClickListener)
 
         val multiChoiceItems = arguments.getStringArray(EXTRA_MULTICHOICE_ITEMS)
         if (multiChoiceItems != null) {
             val checkedItems = arguments.getBooleanArray(EXTRA_MULTICHOICE_ITEMS_SELECTED)
-            alertDialog.setMultiChoiceItems(multiChoiceItems, checkedItems, onMultiChoiceClickListener)
+            multiChoiceItems.forEachIndexed { index, str ->
+                val checkbox = AppCompatCheckBox(context)
+                checkbox.text = str
+                checkbox.isChecked = checkedItems?.isNotEmpty() == true &&
+                        checkedItems.size > index && checkedItems[index]
+                checkbox.setOnCheckedChangeListener { _, checked ->
+                    onMultiChoiceClickListener?.onClick(dialog, index, checked)
+                }
+                alertView.addView(checkbox)
+            }
         }
 
         val negativeText = arguments.getString(EXTRA_NEGATIVE_BUTTON)

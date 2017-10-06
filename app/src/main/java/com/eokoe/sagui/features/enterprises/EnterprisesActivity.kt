@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.MenuItem
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Enterprise
+import com.eokoe.sagui.data.entities.Image
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.friendlyMessage
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
@@ -13,6 +14,7 @@ import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.categories.CategoriesActivity
 import com.eokoe.sagui.features.enterprises.filter.EnterprisesFilterActivity
+import com.eokoe.sagui.features.show_asset.ShowAssetActivity
 import kotlinx.android.synthetic.main.content_enterprises.*
 
 class EnterprisesActivity : BaseActivityNavDrawer(), ViewPresenter<EnterprisesContract.Presenter>, EnterprisesContract.View {
@@ -62,6 +64,12 @@ class EnterprisesActivity : BaseActivityNavDrawer(), ViewPresenter<EnterprisesCo
         enterprisesAdapter.onItemClickListener = object : EnterprisesAdapter.OnItemClickListener {
             override fun onClick(enterprise: Enterprise) {
                 presenter.setEnterprise(enterprise)
+            }
+        }
+        enterprisesAdapter.onImageClickListener = object : ImageAdapter.OnItemClickListener {
+            override fun onItemClick(image: Image) {
+                val intent = ShowAssetActivity.getIntent(this@EnterprisesActivity, image.imagePath, false)
+                startActivity(intent)
             }
         }
     }

@@ -93,9 +93,13 @@
             android:label="@string/title_activity_complaint_details" />
 
         <activity
-            android:name=".features.view_asset.ViewAssetActivity"
+            android:name=".features.show_asset.ShowAssetActivity"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar" />
+
+        <activity
+            android:name=".features.notifications.NotificationsActivity"
+            android:label="@string/title_activity_notifications" />
 
         <!-- Services -->
         <service

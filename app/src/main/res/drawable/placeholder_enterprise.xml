@@ -5,5 +5,5 @@
             <solid android:color="#EEEEEE"/>
         </shape>
     </item>
-    <item android:drawable="@drawable/ic_photo_white"/>
+    <item android:drawable="@drawable/placeholder_image"/>
 </layer-list>

@@ -44,7 +44,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
 
     override lateinit var presenter: ComplaintsContract.Presenter
     private var map: GoogleMap? = null
-    private var showAlertCongratulations = false
+    private var insertedComplaintId: String? = null
     override var locationHelper = LocationHelper()
     private lateinit var mapFragment: SupportMapFragment
     private val markers = ArrayList<Marker>()
@@ -53,6 +53,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
     private var latLngBounds: LatLngBounds? = null
     private var lastLatLong: LatLong? = null
     private var updateMarkers = false
+    private var allowNotifications = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -95,7 +96,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         if (map != null && (lastLatLong != null || updateMarkers)) {
             updateMap()
         }
-        if (showAlertCongratulations) {
+        if (insertedComplaintId != null) {
             showAlertCongratulations()
         }
     }
@@ -109,12 +110,21 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
     }
 
     private fun showAlertCongratulations() {
-        showAlertCongratulations = false
         AlertDialogFragment
                 .create(this) {
                     titleRes = R.string.congratulations
                     messageRes = R.string.successful_contribution
                     multiChoiceItems = arrayOf("Desejo receber notificações sobre a reclamação")
+                    onMultiChoiceClickListener { dialog, index, isChecked ->
+                        allowNotifications = isChecked
+                    }
+                    onConfirmClickListener { dialog, _ ->
+                        presenter.allowNotification(allowNotifications, insertedComplaintId!!)
+                        dialog.dismiss()
+                    }
+                    onDismissListener {
+                        insertedComplaintId = null
+                    }
                 }
                 .show(supportFragmentManager)
     }
@@ -273,7 +283,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_CREATE_REPORT) {
             if (resultCode == Activity.RESULT_OK) {
-                showAlertCongratulations = true
+                insertedComplaintId = data?.getStringExtra(ReportActivity.RESULT_COMPLAINT_ID)
                 lastLatLong = data?.getParcelableExtra(ReportActivity.RESULT_LAT_LONG)
             }
         } else if (requestCode == REQUEST_CONFIRM_REPORT) {

@@ -1,4 +1,4 @@
-package com.eokoe.sagui.features.view_asset
+package com.eokoe.sagui.features.show_asset
 
 import android.app.Activity
 import android.content.Context
@@ -6,13 +6,14 @@ import android.content.Intent
 import android.os.Bundle
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Asset
+import com.eokoe.sagui.extensions.getRealPath
 import com.eokoe.sagui.features.base.view.BaseActivity
 import kotlinx.android.synthetic.main.activity_view_asset.*
 
 /**
  * @author Pedro Silva
  */
-class ViewAssetActivity : BaseActivity() {
+class ShowAssetActivity : BaseActivity() {
 
     lateinit var assets: List<Asset>
     var showSendButton: Boolean = false
@@ -35,7 +36,13 @@ class ViewAssetActivity : BaseActivity() {
         if (showSendButton) {
             fabSend.show()
         }
-        ivImage.setImageURI(assets[currentPosition].uri.toString())
+        val asset = assets[currentPosition]
+        val path = if (!asset.isLocal) {
+            asset.remotePath
+        } else {
+            "file://" + asset.uri.getRealPath(this)
+        }
+        ivImage.setImageURI(path)
         fabSend.setOnClickListener {
             setResult(Activity.RESULT_OK)
             finish()
@@ -48,9 +55,26 @@ class ViewAssetActivity : BaseActivity() {
         private val EXTRA_SHOW_SEND_BUTTON = "EXTRA_SHOW_SEND_BUTTON"
 
         fun getIntent(context: Context, assets: List<Asset>, currentPosition: Int = 0, showSendButton: Boolean = false): Intent =
-                Intent(context, ViewAssetActivity::class.java)
+                Intent(context, ShowAssetActivity::class.java)
                         .putExtra(EXTRA_ASSETS, ArrayList<Asset>(assets))
                         .putExtra(EXTRA_SHOW_SEND_BUTTON, showSendButton)
                         .putExtra(EXTRA_CURRENT_POSITION, currentPosition)
+
+        fun getIntent(context: Context, asset: Asset, showSendButton: Boolean = false): Intent {
+            val assets = ArrayList<Asset>()
+            assets.add(asset)
+            return getIntent(context, assets, 0, showSendButton)
+        }
+
+        fun getIntent(context: Context, path: String, isLocal: Boolean, showSendButton: Boolean = false): Intent {
+            val assets = ArrayList<Asset>()
+            val asset = if (isLocal) {
+                Asset(localPath = path)
+            } else {
+                Asset(remotePath = path)
+            }
+            assets.add(asset)
+            return getIntent(context, assets, 0, showSendButton)
+        }
     }
 }

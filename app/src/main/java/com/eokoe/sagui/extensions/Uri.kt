@@ -57,7 +57,7 @@ fun Uri.getRealPath(context: Context): String? {
     } else if ("content".equals(scheme, true)) {
         if (isGooglePhotosUri) return lastPathSegment
         return getDataColumn(context)
-    } else if ("file".equals(scheme, true)) {
+    } else if ("file".equals(scheme, true) || scheme == null) {
         return path
     }
     return null

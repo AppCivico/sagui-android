@@ -1,16 +1,12 @@
 package com.eokoe.sagui.features.enterprises
 
-import android.graphics.drawable.Animatable
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Image
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
-import com.facebook.drawee.backends.pipeline.Fresco
-import com.facebook.drawee.controller.BaseControllerListener
-import com.facebook.drawee.view.SimpleDraweeView
-import com.facebook.imagepipeline.image.ImageInfo
+import com.eokoe.sagui.widgets.listeners.FrescoWidthControllerListener
 import kotlinx.android.synthetic.main.item_enterprise_image.view.*
 
 
@@ -43,37 +39,11 @@ class ImageAdapter(items: List<Image>) : RecyclerViewAdapter<Image, RecyclerView
         }
 
         fun bind(image: Image) {
-            ControllerListener(itemView.ivEnterprise, image.imagePath)
+            FrescoWidthControllerListener(itemView.ivEnterprise, image.imagePath)
         }
     }
 
     interface OnItemClickListener {
         fun onItemClick(image: Image)
-    }
-
-    class ControllerListener(private val draweeView: SimpleDraweeView, imagePath: String): BaseControllerListener<ImageInfo>() {
-        init {
-            val controller = Fresco.newDraweeControllerBuilder()
-                    .setUri(imagePath)
-                    .setControllerListener(this)
-                    .build()
-            draweeView.controller = controller
-        }
-
-        override fun onIntermediateImageSet(id: String?, imageInfo: ImageInfo?) {
-            updateViewSize(imageInfo)
-        }
-
-        override fun onFinalImageSet(id: String?, imageInfo: ImageInfo?, animatable: Animatable?) {
-            updateViewSize(imageInfo)
-        }
-
-        fun updateViewSize(imageInfo: ImageInfo?) {
-            if (imageInfo != null) {
-                draweeView.layoutParams.width = ViewGroup.LayoutParams.WRAP_CONTENT
-//                draweeView.layoutParams.height = imageInfo.height
-                draweeView.aspectRatio = imageInfo.width.toFloat() / imageInfo.height
-            }
-        }
     }
 }

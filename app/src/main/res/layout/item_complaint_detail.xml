@@ -4,7 +4,8 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:paddingBottom="16dp">
 
     <com.eokoe.sagui.widgets.CustomTextView
         android:id="@+id/tvCategoryName"
@@ -133,6 +134,5 @@
         android:layout_alignRight="@id/tvCategoryName"
         android:layout_alignStart="@id/tvDescriptionTitle"
         android:layout_below="@id/tvDescriptionTitle"
-        android:layout_marginBottom="16dp"
         tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ultrices ante nec…"/>
 </RelativeLayout>
