@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Asset
+import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import com.jakewharton.rxbinding2.widget.RxTextView
@@ -21,7 +22,7 @@ import kotlinx.android.synthetic.main.item_report_title.view.*
  * @author Pedro Silva
  * @since 25/09/17
  */
-class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewHolder>() {
+class ReportAdapter(category: Category?) : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewHolder>() {
 
     var onItemClickListener: OnItemClickListener? = null
 
@@ -35,6 +36,10 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
         items.add(Item(ItemType.THUMBNAILS, value = ArrayList<Asset>()))
         items.add(Item(ItemType.DIVIDER))
         items.add(Item(ItemType.TITLE))
+        if (category == null) {
+            items.add(Item(ItemType.DIVIDER))
+            items.add(Item(ItemType.CATEGORY, R.drawable.ic_category, R.string.category))
+        }
         items.add(Item(ItemType.DIVIDER))
         items.add(Item(ItemType.LOCATION, R.drawable.ic_location, R.string.occurrence_place))
         items.add(Item(ItemType.DIVIDER))
@@ -137,7 +142,7 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
     )
 
     enum class ItemType {
-        DIVIDER, DESCRIPTION, TITLE, LOCATION, CAMERA, INSERT_PHOTO_VIDEO, INSERT_AUDIO, THUMBNAILS;
+        DIVIDER, DESCRIPTION, TITLE, CATEGORY, LOCATION, CAMERA, INSERT_PHOTO_VIDEO, INSERT_AUDIO, THUMBNAILS;
 
         companion object {
             fun fromPosition(position: Int) = ItemType.values()[position]

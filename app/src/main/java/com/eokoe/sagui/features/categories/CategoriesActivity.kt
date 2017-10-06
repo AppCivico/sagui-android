@@ -29,7 +29,6 @@ class CategoriesActivity : BaseActivityNavDrawer(), CategoryActionsDialog.OnActi
 
     private lateinit var categoriesAdapter: CategoriesAdapter
     override lateinit var presenter: CategoriesContract.Presenter
-    private var categories: ArrayList<Category>? = null
 
     private var categoryActionsDialog: CategoryActionsDialog? = null
 

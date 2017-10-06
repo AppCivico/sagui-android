@@ -26,8 +26,6 @@ class SurveyListActivity : BaseActivityNavDrawer(),
 
     private lateinit var surveyListAdapter: SurveyListAdapter
     override lateinit var presenter: SurveyListContract.Presenter
-
-    private var category: Category? = null
     private var surveys: ArrayList<Survey>? = null
 
     private var showAlertCongratulations = false

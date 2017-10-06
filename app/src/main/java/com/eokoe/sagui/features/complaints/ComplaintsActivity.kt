@@ -43,7 +43,6 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         ViewLocation, LocationHelper.OnLocationReceivedListener {
 
     override lateinit var presenter: ComplaintsContract.Presenter
-    private var category: Category? = null
     private var map: GoogleMap? = null
     private var showAlertCongratulations = false
     override var locationHelper = LocationHelper()
@@ -64,6 +63,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         super.setUp(savedInstanceState)
         enterprise = intent.extras?.getParcelable(EXTRA_ENTERPRISE)
         category = intent.extras?.getParcelable(EXTRA_CATEGORY)
+        categories = intent.extras?.getParcelableArrayList(EXTRA_CATEGORIES)
         title = enterprise?.name
         presenter = ComplaintsPresenter(SaguiModelImpl())
         mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -72,7 +72,12 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
     override fun init(savedInstanceState: Bundle?) {
         mapFragment.getMapAsync(this)
         fabAdd.setOnClickListener {
-            startActivityForResult(ReportActivity.getIntent(this, enterprise!!, category), REQUEST_CREATE_REPORT)
+            val intent = if (category != null) {
+                ReportActivity.getIntent(this, enterprise!!, category!!)
+            } else {
+                ReportActivity.getIntent(this, enterprise!!, categories!!)
+            }
+            startActivityForResult(intent, REQUEST_CREATE_REPORT)
             hideBoxDetails()
         }
         rlBoxComplaint.post {
@@ -280,14 +285,19 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
     companion object {
         private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
+        private val EXTRA_CATEGORIES = "EXTRA_CATEGORIES"
         private val REQUEST_PERMISSION_LOCATION = 1
         private val REQUEST_CREATE_REPORT = 2
         private val REQUEST_CONFIRM_REPORT = 3
-        private val MAX_COUNT_CONFIRMATION = 30
 
-        fun getIntent(context: Context, enterprise: Enterprise, category: Category? = null): Intent =
+        fun getIntent(context: Context, enterprise: Enterprise, category: Category): Intent =
                 Intent(context, ComplaintsActivity::class.java)
                         .putExtra(EXTRA_ENTERPRISE, enterprise)
                         .putExtra(EXTRA_CATEGORY, category)
+
+        fun getIntent(context: Context, enterprise: Enterprise, categories: ArrayList<Category>): Intent =
+                Intent(context, ComplaintsActivity::class.java)
+                        .putExtra(EXTRA_ENTERPRISE, enterprise)
+                        .putExtra(EXTRA_CATEGORIES, categories)
     }
 }

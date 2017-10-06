@@ -4,6 +4,7 @@ import android.Manifest
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
@@ -52,6 +53,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     private var enterprise: Enterprise? = null
     private var fileAttached: File? = null
     private var category: Category? = null
+    private var categories: List<Category>? = null
 
     // region Lifecycle
     override fun onResume() {
@@ -74,7 +76,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         enterprise = intent.extras?.getParcelable(EXTRA_ENTERPRISE)
         complaint.enterpriseId = enterprise?.id
         category = intent.extras?.getParcelable(EXTRA_CATEGORY)
-        complaint.categoryId = category?.id
+        categories = intent.extras?.getParcelableArrayList(EXTRA_CATEGORIES)
     }
 
     override fun init(savedInstanceState: Bundle?) {
@@ -83,7 +85,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
 
     private fun setupRecyclerView() {
         rvReport.setHasFixedSize(false)
-        reportAdapter = ReportAdapter()
+        reportAdapter = ReportAdapter(category)
         rvReport.adapter = reportAdapter
         reportAdapter.onItemClickListener = this
         reportAdapter.titleChangeSubject.subscribe {
@@ -111,19 +113,22 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                     requestCameraPermission()
                 }
             }
-            ReportAdapter.ItemType.INSERT_PHOTO_VIDEO -> {
+            ItemType.INSERT_PHOTO_VIDEO -> {
                 if (hasReadExternalStoragePermission()) {
                     openGallery()
                 } else {
                     requestReadExternalStoragePermission(REQUEST_IMAGE_VIDEO_PERMISSION)
                 }
             }
-            ReportAdapter.ItemType.INSERT_AUDIO -> {
+            ItemType.INSERT_AUDIO -> {
                 if (hasReadExternalStoragePermission()) {
                     openAudioGallery()
                 } else {
                     requestReadExternalStoragePermission(REQUEST_AUDIO_GALLERY_PERMISSION)
                 }
+            }
+            ItemType.CATEGORY -> {
+                openCategories()
             }
         }
     }
@@ -135,6 +140,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_ok) {
+            complaint.categoryId = category?.id
             presenter.saveComplaint(complaint)
             return true
         }
@@ -144,24 +150,37 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
 
     // region Actions and intents
     private fun openCamera() {
-        val alert = AlertDialog.Builder(this)
-                .setItems(R.array.camera_options, { dialog, position ->
-                    val intent: Intent
-                    val requestCode: Int
-                    if (position == 0) {
-                        intent = takePictureIntent()
-                        requestCode = REQUEST_CODE_CAMERA
-                    } else {
-                        intent = recordVideoIntent()
-                        requestCode = REQUEST_CODE_VIDEO
-                    }
-                    if (intent.resolveActivity(packageManager) != null) {
-                        startActivityForResult(intent, requestCode)
-                    }
-                    dialog.dismiss()
-                })
+        getAlertList(resources.getStringArray(R.array.camera_options)) { dialog, position ->
+            val intent: Intent
+            val requestCode: Int
+            if (position == 0) {
+                intent = takePictureIntent()
+                requestCode = REQUEST_CODE_CAMERA
+            } else {
+                intent = recordVideoIntent()
+                requestCode = REQUEST_CODE_VIDEO
+            }
+            if (intent.resolveActivity(packageManager) != null) {
+                startActivityForResult(intent, requestCode)
+            }
+            dialog.dismiss()
+        }.show()
+    }
+
+    private fun openCategories() {
+        val categoriesStr = categories!!.map {
+            it.name
+        }
+        getAlertList(categoriesStr.toTypedArray()) { dialog, position ->
+            category = categories!![position]
+            dialog.dismiss()
+        }.show()
+    }
+
+    private fun getAlertList(list: Array<String>, listener: (DialogInterface, Int) -> Unit): AlertDialog {
+        return AlertDialog.Builder(this)
+                .setItems(list, listener)
                 .create()
-        alert.show()
     }
 
     private fun openGallery() {
@@ -378,14 +397,20 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         private val REQUEST_CODE_AUDIO = 5
         private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
+        private val EXTRA_CATEGORIES = "EXTRA_CATEGORIES"
         private val REQUEST_CAMERA_PERMISSION = 1
         private val REQUEST_IMAGE_VIDEO_PERMISSION = 2
         private val REQUEST_AUDIO_GALLERY_PERMISSION = 3
         val RESULT_LAT_LONG = "RESULT_LAT_LONG"
 
-        fun getIntent(context: Context, enterprise: Enterprise, category: Category?): Intent =
+        fun getIntent(context: Context, enterprise: Enterprise, category: Category): Intent =
                 Intent(context, ReportActivity::class.java)
                         .putExtra(EXTRA_ENTERPRISE, enterprise)
                         .putExtra(EXTRA_CATEGORY, category)
+
+        fun getIntent(context: Context, enterprise: Enterprise, categories: ArrayList<Category>): Intent =
+                Intent(context, ReportActivity::class.java)
+                        .putExtra(EXTRA_ENTERPRISE, enterprise)
+                        .putExtra(EXTRA_CATEGORIES, categories)
     }
 }
