@@ -6,6 +6,7 @@ import com.google.gson.annotations.SerializedName
 import io.realm.RealmObject
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
+import java.io.File
 
 /**
  * @author Pedro Silva
@@ -33,7 +34,13 @@ open class Asset(
     constructor(uri: Uri?) : this(localPath = uri?.toString())
 
     var uri: Uri
-        get() = Uri.parse(localPath)
+        get() {
+            return if (localPath != null && (File(localPath).exists() || remotePath == null)) {
+                Uri.parse(localPath)
+            } else {
+                Uri.parse(remotePath)
+            }
+        }
         set(value) {
             localPath = value.toString()
         }
