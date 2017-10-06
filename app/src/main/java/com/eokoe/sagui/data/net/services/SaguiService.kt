@@ -38,6 +38,6 @@ interface SaguiService {
     fun sendComplaintAsset(@Path("complaintId") complaintId: String, @Part file: MultipartBody.Part): Observable<Asset>
 
     @Multipart
-    @POST("confirmation/{confirmationId}/assets")
+    @POST("confirmations/{confirmationId}/assets")
     fun sendConfirmationAsset(@Path("confirmationId") confirmationId: String, @Part file: MultipartBody.Part): Observable<Asset>
 }

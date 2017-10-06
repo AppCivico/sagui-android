@@ -1,20 +1,15 @@
 package com.eokoe.sagui.features.complaints.report
 
-import android.Manifest
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.support.v4.content.FileProvider
-import android.support.v7.app.AlertDialog
 import android.view.Menu
 import android.view.MenuItem
 import com.eokoe.sagui.R
@@ -353,29 +348,20 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    private fun hasCameraPermission() = hasPermission(Manifest.permission.CAMERA)
-
-    private fun hasReadExternalStoragePermission() =
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN ||
-                    hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+    private fun requestReadExternalStoragePermission(requestCode: Int) {
+        // TODO handle permission not granted
+        if (!hasReadExternalStoragePermission()) {
+            requestReadExternalStoragePermission(R.string.title_request_read_external_storage_permission,
+                    R.string.message_request_read_external_storage_permission, requestCode)
+        }
+    }
 
     private fun requestCameraPermission() {
         // TODO handle permission not granted
         if (!hasCameraPermission()) {
-            requestPermission(R.string.title_request_camera_permission, R.string.message_request_camera_permission, REQUEST_CAMERA_PERMISSION, Manifest.permission.CAMERA)
-        }
-    }
-
-    @SuppressLint("InlinedApi")
-    private fun requestReadExternalStoragePermission(requestCode: Int) {
-        // TODO handle permission not granted
-        if (!hasReadExternalStoragePermission()) {
-            requestPermission(
-                    R.string.title_request_read_external_storage_permission,
-                    R.string.message_request_read_external_storage_permission,
-                    requestCode,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-            )
+            requestCameraPermission(R.string.title_request_camera_permission,
+                    R.string.message_request_camera_permission,
+                    REQUEST_CAMERA_PERMISSION)
         }
     }
 

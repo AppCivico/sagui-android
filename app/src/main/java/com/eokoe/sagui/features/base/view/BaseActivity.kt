@@ -1,10 +1,12 @@
 package com.eokoe.sagui.features.base.view
 
 import android.Manifest
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.v4.app.ActivityCompat
@@ -87,10 +89,32 @@ abstract class BaseActivity : AppCompatActivity() {
 
     fun hasLocationPermission() = hasPermission(Manifest.permission.ACCESS_COARSE_LOCATION)
 
+    fun hasCameraPermission() = hasPermission(Manifest.permission.CAMERA)
+
+    fun hasReadExternalStoragePermission() =
+            Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN ||
+                    hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
+
     fun requestLocationPermission(@StringRes title: Int, @StringRes message: Int, requestCode: Int) {
         requestPermission(title, message, requestCode,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
                 Manifest.permission.ACCESS_FINE_LOCATION)
+    }
+
+    fun requestCameraPermission(@StringRes title: Int, @StringRes message: Int, requestCode: Int) {
+        requestPermission(title, message, requestCode, Manifest.permission.CAMERA)
+    }
+
+    @SuppressLint("InlinedApi")
+    fun requestReadExternalStoragePermission(
+            @StringRes title: Int, @StringRes message: Int, requestCode: Int) {
+        // TODO handle permission not granted
+        if (!hasReadExternalStoragePermission()) {
+            requestPermission(
+                    title, message, requestCode,
+                    Manifest.permission.READ_EXTERNAL_STORAGE
+            )
+        }
     }
 
     fun hasPermission(permission: String) =

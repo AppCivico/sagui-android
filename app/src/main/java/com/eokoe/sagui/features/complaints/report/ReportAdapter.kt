@@ -109,7 +109,7 @@ class ReportAdapter(category: Category?) : RecyclerViewAdapter<ReportAdapter.Ite
         }
 
         fun bind(assets: List<Asset>) {
-            (itemView.rvThumbnails.adapter as ThumbnailAdapter).items = assets
+            (itemView.rvThumbnails.adapter as ThumbnailAdapter).items = assets.reversed()
         }
     }
 

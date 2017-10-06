@@ -152,8 +152,20 @@ class ComplaintDetailsActivity : BaseActivity(),
     private fun openContributeDialog() {
         getAlertList(resources.getStringArray(R.array.contribute_options)) { dialog, position ->
             when (position) {
-                0 -> takePicture()
-                1 -> openGallery()
+                0 -> {
+                    if (hasCameraPermission()) {
+                        takePicture()
+                    } else {
+                        requestCameraPermission()
+                    }
+                }
+                1 -> {
+                    if (hasReadExternalStoragePermission()) {
+                        openGallery()
+                    } else {
+                        requestReadExternalStoragePermission()
+                    }
+                }
             }
             dialog.dismiss()
         }.show()
@@ -165,6 +177,15 @@ class ComplaintDetailsActivity : BaseActivity(),
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         if (intent.resolveActivity(packageManager) != null) {
             startActivityForResult(intent, REQUEST_CODE_PHOTO_GALLERY)
+        }
+    }
+
+    private fun requestCameraPermission() {
+        // TODO handle permission not granted
+        if (!hasCameraPermission()) {
+            requestCameraPermission(R.string.title_request_camera_permission,
+                    R.string.message_request_camera_permission,
+                    REQUEST_CAMERA_PERMISSION)
         }
     }
 
@@ -201,6 +222,15 @@ class ComplaintDetailsActivity : BaseActivity(),
                 ErrorType.CUSTOM -> error.friendlyMessage
                 else -> "Ocorreu um erro inexperado.\nTente novamente mais tarde"
             }
+        }
+    }
+
+    private fun requestReadExternalStoragePermission() {
+        // TODO handle permission not granted
+        if (!hasReadExternalStoragePermission()) {
+            requestReadExternalStoragePermission(R.string.title_request_read_external_storage_permission,
+                    R.string.message_request_read_external_storage_permission,
+                    REQUEST_IMAGE_VIDEO_PERMISSION)
         }
     }
 
@@ -259,11 +289,25 @@ class ComplaintDetailsActivity : BaseActivity(),
                 "_confirmation_" + System.currentTimeMillis() + ".jpg"
     }
 
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        when (requestCode) {
+            REQUEST_CAMERA_PERMISSION -> if (hasCameraPermission()) {
+                takePicture()
+            }
+            REQUEST_IMAGE_VIDEO_PERMISSION -> if (hasReadExternalStoragePermission()) {
+                openGallery()
+            }
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
     companion object {
         private val EXTRA_COMPLAINT = "EXTRA_COMPLAINT"
         private val REQUEST_PREVIEW_ASSET = 0
         private val REQUEST_CODE_PHOTO = 1
         private val REQUEST_CODE_PHOTO_GALLERY = 2
+        private val REQUEST_CAMERA_PERMISSION = 1
+        private val REQUEST_IMAGE_VIDEO_PERMISSION = 2
 
         fun getIntent(context: Context, complaint: Complaint): Intent =
                 Intent(context, ComplaintDetailsActivity::class.java)
