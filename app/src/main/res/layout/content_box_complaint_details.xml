@@ -163,7 +163,6 @@
             android:layout_alignParentRight="true"
             android:layout_below="@id/divider"
             android:padding="16dp"
-            android:text="@string/confirm"
-            app:drawableLeftCompat="@drawable/ic_like"/>
+            android:text="@string/see_more"/>
     </RelativeLayout>
 </RelativeLayout>

@@ -69,4 +69,5 @@
     <string name="category">Categoria</string>
     <string name="title_activity_notifications">Notificações</string>
     <string name="unread">NÃO LIDOS</string>
+    <string name="see_more">Ver mais</string>
 </resources>
