@@ -16,7 +16,9 @@ open class Asset(
         @Expose
         var id: String? = null,
 
-        var complaintId: String = "",
+        var parentId: String = "",
+
+        var parentTypeStr: String = "",
 
         @Expose
         @SerializedName("content_type")
@@ -30,6 +32,11 @@ open class Asset(
 
         var sent: Boolean = false
 ) : PaperParcelable, RealmObject() {
+    var parentType: ParentType
+        get() = ParentType.valueOf(parentTypeStr)
+        set(value) {
+            parentTypeStr = value.name
+        }
 
     constructor(uri: Uri?) : this(localPath = uri?.toString())
 
@@ -48,5 +55,9 @@ open class Asset(
     companion object {
         @JvmField
         val CREATOR = PaperParcelAsset.CREATOR
+    }
+
+    enum class ParentType {
+        COMPLAINT, CONFIRMATION
     }
 }

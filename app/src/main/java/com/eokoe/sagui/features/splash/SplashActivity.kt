@@ -35,6 +35,7 @@ class SplashActivity : BaseActivity(), SplashContract.View, ViewPresenter<Splash
     }
 
     override fun init(savedInstanceState: Bundle?) {
+        initServices()
         presenter.getEnterprise()
     }
 

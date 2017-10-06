@@ -25,15 +25,17 @@ interface SaguiModel {
 
     fun listComplaints(enterprise: Enterprise, category: Category?): Observable<List<Complaint>>
 
-    fun confirmComplaint(complaint: Complaint): Observable<Confirmation>
+    fun confirmComplaint(confirmation: Confirmation): Observable<Confirmation>
 
-    fun isComplaintConfirmed(complaint: Complaint): Observable<Boolean>
+    fun isComplaintConfirmed(complaintId: String): Observable<Boolean>
 
     fun getAddressByLatLong(latLong: LatLong): Observable<String>
 
-    fun sendComplaintAsset(asset: Asset): Observable<Asset>
+    fun sendAsset(asset: Asset): Observable<Asset>
 
     fun getComplaint(complaintId: String): Observable<Complaint>
 
     fun getAssetsPendingUpload(): Observable<List<Asset>>
+
+    fun confirmationFiles(confirmation: Confirmation): Observable<Confirmation>
 }

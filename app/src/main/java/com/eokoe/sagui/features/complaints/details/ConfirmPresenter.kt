@@ -12,10 +12,14 @@ import io.reactivex.observers.DisposableObserver
  */
 class ConfirmPresenter constructor(private val saguiModel: SaguiModel)
     : ConfirmContract.Presenter, BasePresenterImpl<ConfirmContract.View>() {
-
-    override fun confirmComplaint(complaint: Complaint): Observable<Confirmation> {
+    override fun updateConfirmation(confirmation: Confirmation): Observable<Confirmation> {
         view?.showLoading()
-        return exec(saguiModel.confirmComplaint(complaint), ConfirmationObserver())
+        return exec(saguiModel.confirmationFiles(confirmation), ConfirmationFilesObserver())
+    }
+
+    override fun confirmComplaint(confirmation: Confirmation): Observable<Confirmation> {
+        view?.showLoading()
+        return exec(saguiModel.confirmComplaint(confirmation), ConfirmationObserver())
     }
 
     inner class ConfirmationObserver : DisposableObserver<Confirmation>() {
@@ -30,6 +34,19 @@ class ConfirmPresenter constructor(private val saguiModel: SaguiModel)
         override fun onError(error: Throwable) {
             view?.showError(error)
         }
+    }
 
+    inner class ConfirmationFilesObserver : DisposableObserver<Confirmation>() {
+        override fun onNext(confirmation: Confirmation) {
+            view?.onFilesSave(confirmation)
+        }
+
+        override fun onComplete() {
+            view?.hideLoading()
+        }
+
+        override fun onError(error: Throwable) {
+            view?.showError(error)
+        }
     }
 }

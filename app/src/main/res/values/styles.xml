@@ -29,6 +29,14 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light"/>
 
+    <style name="AppTheme.ToolbarWhite" parent="Theme.AppCompat">
+        <item name="android:textColorPrimary">@android:color/white</item>
+        <item name="android:textColorSecondary">@android:color/white</item>
+        <item name="actionMenuTextColor">@android:color/white</item>
+        <!--<item name="actionOverflowButtonStyle">@style/ActionButtonOverflowStyle</item>
+        <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>-->
+    </style>
+
     <style name="Button"/>
 
     <style name="Button.Action" parent="Button">

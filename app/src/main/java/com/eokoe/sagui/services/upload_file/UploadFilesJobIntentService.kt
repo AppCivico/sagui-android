@@ -32,7 +32,7 @@ class UploadFilesJobIntentService : JobIntentService() {
         saguiModel.getAssetsPendingUpload()
                 .flatMapIterable { it }
                 .flatMap { asset ->
-                    saguiModel.sendComplaintAsset(asset)
+                    saguiModel.sendAsset(asset)
                 }
                 .filter { !it.sent }
                 .count()

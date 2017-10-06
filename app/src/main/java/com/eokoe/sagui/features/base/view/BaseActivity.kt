@@ -2,11 +2,13 @@ package com.eokoe.sagui.features.base.view
 
 import android.Manifest
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.v4.app.ActivityCompat
+import android.support.v7.app.AlertDialog
 import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
@@ -118,5 +120,11 @@ abstract class BaseActivity : AppCompatActivity() {
         view?.clearFocus()
         val imm = getSystemService(Context.INPUT_METHOD_SERVICE) as InputMethodManager
         imm.hideSoftInputFromWindow((view ?: findViewById(android.R.id.content)).windowToken, 0)
+    }
+
+    fun getAlertList(list: Array<String>, listener: (DialogInterface, Int) -> Unit): AlertDialog {
+        return AlertDialog.Builder(this)
+                .setItems(list, listener)
+                .create()
     }
 }

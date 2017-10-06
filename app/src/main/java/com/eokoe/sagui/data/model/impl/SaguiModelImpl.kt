@@ -15,6 +15,7 @@ import com.eokoe.sagui.extensions.toFile
 import io.reactivex.Observable
 import io.realm.Realm
 import io.realm.RealmList
+import io.realm.RealmQuery
 import okhttp3.MediaType
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -111,7 +112,8 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                 .map {
                     complaint.id = it.id
                     complaint.files.map {
-                        it.complaintId = complaint.id!!
+                        it.parentId = complaint.id!!
+                        it.parentType = Asset.ParentType.COMPLAINT
                         it
                     }
                     complaint
@@ -154,13 +156,12 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
         return Observable.concat(complaintsDB, complaintsApi)
     }
 
-    override fun confirmComplaint(complaint: Complaint): Observable<Confirmation> {
-        val confirmation = Confirmation(complaintId = complaint.id!!)
-        return isComplaintConfirmed(complaint)
+    override fun confirmComplaint(confirmation: Confirmation): Observable<Confirmation> {
+        return isComplaintConfirmed(confirmation.complaintId)
                 .flatMap { confirmed ->
-                    Observable.create<Complaint> { emitter ->
+                    Observable.create<Confirmation> { emitter ->
                         if (!confirmed) {
-                            emitter.onNext(complaint)
+                            emitter.onNext(confirmation)
                             emitter.onComplete()
                         } else {
                             emitter.onError(SaguiException("Você já enviou uma confirmação"))
@@ -169,10 +170,15 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                 }
                 .flatMap {
                     ServiceGenerator.getService(SaguiService::class.java)
-                            .confirmComplaint(confirmation)
+                            .confirmComplaint(it)
                 }
                 .map {
                     confirmation.id = it.id
+                    confirmation.files.map {
+                        it.parentId = confirmation.id!!
+                        it.parentType = Asset.ParentType.CONFIRMATION
+                        it
+                    }
                     confirmation
                 }
                 .flatMap { confirm ->
@@ -192,11 +198,11 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                 }
     }
 
-    override fun isComplaintConfirmed(complaint: Complaint): Observable<Boolean> {
+    override fun isComplaintConfirmed(complaintId: String): Observable<Boolean> {
         return Observable.create { emitter ->
             Realm.getDefaultInstance().use { realm ->
                 val result = realm.where(Confirmation::class.java)
-                        .equalTo("complaintId", complaint.id!!)
+                        .equalTo("complaintId", complaintId)
                         .findFirst()
                 emitter.onNext(result != null)
                 emitter.onComplete()
@@ -235,7 +241,7 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
         }
     }
 
-    override fun sendComplaintAsset(asset: Asset): Observable<Asset> {
+    override fun sendAsset(asset: Asset): Observable<Asset> {
         return Observable
                 .create<Uri> { emitter ->
                     // TODO
@@ -260,8 +266,13 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                     } else null
                 }
                 .flatMap {
-                    ServiceGenerator.getService(SaguiService::class.java)
-                            .sendAsset(asset.complaintId, it)
+                    if (asset.parentType == Asset.ParentType.COMPLAINT) {
+                        ServiceGenerator.getService(SaguiService::class.java)
+                                .sendComplaintAsset(asset.parentId, it)
+                    } else {
+                        ServiceGenerator.getService(SaguiService::class.java)
+                                .sendConfirmationAsset(asset.parentId, it)
+                    }
                 }
                 .map {
                     asset.id = it.id
@@ -275,17 +286,23 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                         Realm.getDefaultInstance().use { realm ->
                             try {
                                 realm.beginTransaction()
-                                val result = realm.where(Complaint::class.java)
-                                        .equalTo("id", it.complaintId)
+                                val query: RealmQuery<*> = if (asset.parentType == Asset.ParentType.COMPLAINT) {
+                                    realm.where(Complaint::class.java)
+                                } else {
+                                    realm.where(Confirmation::class.java)
+                                }
+                                @Suppress("UNCHECKED_CAST")
+                                val result: HasFiles = (query as RealmQuery<HasFiles>)
+                                        .equalTo("id", it.parentId)
                                         .findFirst()
 
-                                val complaint = realm.copyFromRealm(result)
-                                val files = complaint.files.map {
+                                val hasFiles = realm.copyFromRealm(result)
+                                val files = hasFiles.files.map {
                                     if (it.localPath == asset.localPath) asset
                                     else it
                                 }
-                                complaint.files = RealmList(*files.toTypedArray())
-                                realm.copyToRealmOrUpdate(complaint)
+                                hasFiles.files = RealmList(*files.toTypedArray())
+                                realm.copyToRealmOrUpdate(hasFiles)
                                 realm.commitTransaction()
                                 emitter.onNext(it)
                                 emitter.onComplete()
@@ -302,8 +319,8 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
     }
 
     override fun getAssetsPendingUpload(): Observable<List<Asset>> {
-        return Observable
-                .create<List<Complaint>> { emitter ->
+        val complaintAssets = Observable
+                .create<List<HasFiles>> { emitter ->
                     Realm.getDefaultInstance().use { realm ->
                         val result = realm.where(Complaint::class.java)
                                 .equalTo("files.sent", false)
@@ -314,10 +331,60 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                         emitter.onComplete()
                     }
                 }
+        val confirmationAssets = Observable
+                .create<List<HasFiles>> { emitter ->
+                    Realm.getDefaultInstance().use { realm ->
+                        val result = realm.where(Confirmation::class.java)
+                                .equalTo("files.sent", false)
+                                .findAll()
+                        if (result != null && result.isNotEmpty()) {
+                            emitter.onNext(realm.copyFromRealm(result))
+                        }
+                        emitter.onComplete()
+                    }
+                }
+        return Observable.merge(complaintAssets, confirmationAssets)
                 .flatMapIterable { it }
                 .flatMapIterable { it.files }
                 .filter { !it.sent }
                 .toList()
                 .toObservable()
+    }
+
+    override fun confirmationFiles(confirmation: Confirmation): Observable<Confirmation> {
+        return Observable.just(confirmation.files)
+                .flatMapIterable { asset ->
+                    asset
+                }
+                .map { asset ->
+                    asset.parentId = confirmation.id!!
+                    asset.parentType = Asset.ParentType.CONFIRMATION
+                    asset
+                }
+                .flatMap { asset ->
+                    Observable.create<Asset> { emitter ->
+                        Realm.getDefaultInstance().use { realm ->
+                            try {
+                                realm.beginTransaction()
+                                val files = confirmation.files.map {
+                                    if (it.localPath == asset.localPath) asset
+                                    else it
+                                }
+                                confirmation.files = RealmList(*files.toTypedArray())
+                                realm.copyToRealmOrUpdate(confirmation)
+                                realm.commitTransaction()
+                                emitter.onNext(asset)
+                                emitter.onComplete()
+                            } catch (error: Exception) {
+                                emitter.onError(error)
+                            }
+                        }
+                    }
+                }
+                .toList()
+                .toObservable()
+                .flatMap {
+                    Observable.just(confirmation)
+                }
     }
 }

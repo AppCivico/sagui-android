@@ -177,12 +177,6 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         }.show()
     }
 
-    private fun getAlertList(list: Array<String>, listener: (DialogInterface, Int) -> Unit): AlertDialog {
-        return AlertDialog.Builder(this)
-                .setItems(list, listener)
-                .create()
-    }
-
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
 //        intent.type = "image/* video/*"
@@ -271,7 +265,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
+            when (requestCode) {
             REQUEST_CODE_LOCATION -> if (resultCode == Activity.RESULT_OK) {
                 complaint.location = data?.getParcelableExtra(PinActivity.RESULT_LOCATION)
                 complaint.address = data?.getStringExtra(PinActivity.RESULT_ADDRESS)

@@ -49,7 +49,7 @@ open class Complaint(
         var confirmationsList: RealmList<Confirmation> = RealmList(),
 
         @Expose(serialize = false, deserialize = true)
-        var files: RealmList<Asset> = RealmList(),
+        override var files: RealmList<Asset> = RealmList(),
 
         @Expose(serialize = false, deserialize = true)
         @SerializedName("is_cause")
@@ -61,9 +61,9 @@ open class Complaint(
 
         @Expose(serialize = false, deserialize = true)
         var comments: RealmList<Comment> = RealmList()
-) : PaperParcelable, RealmObject() {
+) : PaperParcelable, RealmObject(), HasFiles {
     val confirmations: Int
-        get() = confirmationsList?.size ?: 0
+        get() = confirmationsList.size
 
     companion object {
         @JvmField

@@ -13,9 +13,11 @@ import io.reactivex.Observable
 interface ConfirmContract {
     interface View : ViewLoading, ViewError {
         fun onComplaintConfirmed(confirmation: Confirmation)
+        fun onFilesSave(confirmation: Confirmation)
     }
 
     interface Presenter : BasePresenter<View> {
-        fun confirmComplaint(complaint: Complaint): Observable<Confirmation>
+        fun confirmComplaint(confirmation: Confirmation): Observable<Confirmation>
+        fun updateConfirmation(confirmation: Confirmation): Observable<Confirmation>
     }
 }

@@ -20,4 +20,5 @@
 
     <color name="markerComplaintColor">#D22F33</color>
     <color name="markerCauseColor">#649947</color>
+    <color name="black">#000000</color>
 </resources>
