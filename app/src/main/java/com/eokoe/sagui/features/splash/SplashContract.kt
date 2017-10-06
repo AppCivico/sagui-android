@@ -12,6 +12,7 @@ interface SplashContract {
     interface View {
         fun setEnterprise(enterprise: Enterprise)
         fun onEmptyEnterprise()
+        fun initServices()
     }
 
     interface Presenter : BasePresenter<View> {

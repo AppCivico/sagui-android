@@ -1,8 +1,11 @@
 package com.eokoe.sagui.data.entities
 
 import com.google.gson.annotations.Expose
+import com.google.gson.annotations.SerializedName
+import io.realm.RealmObject
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
+import java.util.*
 
 /**
  * @author Pedro Silva
@@ -16,8 +19,12 @@ open class Comment(
         open var submissionsId: String? = null,
 
         @Expose
-        open var content: String = ""
-) : PaperParcelable {
+        open var content: String = "",
+
+        @Expose(serialize = false, deserialize = true)
+        @SerializedName("created_at")
+        var createdAt: Date? = null
+) : RealmObject(), PaperParcelable {
 
     companion object {
         @JvmField

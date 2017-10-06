@@ -59,7 +59,6 @@ class CategoriesActivity : BaseActivityNavDrawer(), CategoryActionsDialog.OnActi
     override fun onResume() {
         super.onResume()
         navigationView.setCheckedItem(R.id.nav_home)
-        UploadFilesJobIntentService.enqueueWork(this)
     }
 
     override fun onBackPressed() {

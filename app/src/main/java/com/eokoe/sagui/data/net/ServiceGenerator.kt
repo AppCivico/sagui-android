@@ -26,7 +26,7 @@ object ServiceGenerator {
         this.BASE_URL = baseUrl
 
         val gson = GsonBuilder()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS")
+                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
                 .excludeFieldsWithoutExposeAnnotation()
 //                .registerTypeAdapter(LatLong::class.java, LatLongTypeAdapter.INSTANCE)
                 .registerTypeAdapter(Boolean::class.java, BooleanTypeAdapter())

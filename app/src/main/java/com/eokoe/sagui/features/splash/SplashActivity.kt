@@ -10,9 +10,9 @@ import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.categories.CategoriesActivity
 import com.eokoe.sagui.features.enterprises.EnterprisesActivity
+import com.eokoe.sagui.services.upload_file.UploadFilesJobIntentService
 
 class SplashActivity : BaseActivity(), SplashContract.View, ViewPresenter<SplashContract.Presenter> {
-
     private val SPLASH_TIME = 1500L
     private var mHandler: Handler? = null
     private var mSplashRunnable: Runnable? = null
@@ -59,5 +59,9 @@ class SplashActivity : BaseActivity(), SplashContract.View, ViewPresenter<Splash
     override fun onPause() {
         mHandler?.removeCallbacks(mSplashRunnable)
         super.onPause()
+    }
+
+    override fun initServices() {
+        UploadFilesJobIntentService.enqueueWork(this)
     }
 }

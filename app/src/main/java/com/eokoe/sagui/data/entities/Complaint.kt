@@ -46,7 +46,7 @@ open class Complaint(
 
         @Expose(serialize = false, deserialize = true)
         @SerializedName("confirmations")
-        var confirmationsList: RealmList<Confirmation>? = null,
+        var confirmationsList: RealmList<Confirmation> = RealmList(),
 
         @Expose(serialize = false, deserialize = true)
         var files: RealmList<Asset> = RealmList(),
@@ -57,7 +57,10 @@ open class Complaint(
 
         @Expose(serialize = false, deserialize = true)
         @SerializedName("num_to_became_cause")
-        var numToBecameCause: Int = 99
+        var numToBecameCause: Int = 99,
+
+        @Expose(serialize = false, deserialize = true)
+        var comments: RealmList<Comment> = RealmList()
 ) : PaperParcelable, RealmObject() {
     val confirmations: Int
         get() = confirmationsList?.size ?: 0

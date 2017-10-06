@@ -45,30 +45,15 @@ class ComplaintDetailsActivity : BaseActivity(),
         showBackButton()
         complaint = intent.extras.getParcelable(EXTRA_COMPLAINT)
         presenter = ConfirmPresenter(SaguiModelImpl())
-        populateView()
         loadingDialog = LoadingDialog.newInstance(getString(R.string.loading_confirm_complaint))
-    }
-
-    override fun init(savedInstanceState: Bundle?) {
-
-    }
-
-    private fun populateView() {
-        tvTitle.text = complaint.title
-        tvCategoryName.text = complaint.category?.name
-        tvLocation.text = complaint.address
-        tvQtyConfirmations.text = resources.getQuantityString(R.plurals.qty_confirmations,
-                complaint.confirmations, complaint.confirmations)
-        val remain = MAX_COUNT_CONFIRMATION - complaint.confirmations
-        if (remain > 0) {
-            tvQtyRemain.text = resources.getQuantityString(R.plurals.qty_remain, remain, remain)
-        } else {
-            tvQtyRemain.setText(R.string.occurrence_already)
-        }
-        tvDescription.text = complaint.description
         btnConfirm.setOnClickListener {
             getConfirmDialog().show(supportFragmentManager)
         }
+    }
+
+    override fun init(savedInstanceState: Bundle?) {
+        rvComplaintDetails.setHasFixedSize(true)
+        rvComplaintDetails.adapter = ComplaintDetailsAdapter(complaint)
     }
 
     override fun onComplaintConfirmed(confirmation: Confirmation) {
@@ -130,7 +115,6 @@ class ComplaintDetailsActivity : BaseActivity(),
 
     companion object {
         private val EXTRA_COMPLAINT = "EXTRA_COMPLAINT"
-        private val MAX_COUNT_CONFIRMATION = 30
 
         fun getIntent(context: Context, complaint: Complaint): Intent =
                 Intent(context, ComplaintDetailsActivity::class.java)
