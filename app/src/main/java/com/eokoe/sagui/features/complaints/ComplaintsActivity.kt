@@ -4,10 +4,8 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.graphics.Color
 import android.location.Location
 import android.os.Bundle
-import android.support.v4.content.ContextCompat
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Complaint
@@ -23,14 +21,16 @@ import com.eokoe.sagui.features.base.view.ViewLocation
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.details.ComplaintDetailsActivity
 import com.eokoe.sagui.features.complaints.report.ReportActivity
-import com.eokoe.sagui.utils.BitmapMarker
 import com.eokoe.sagui.utils.LocationHelper
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.*
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.maps.android.clustering.Cluster
+import com.google.maps.android.clustering.ClusterManager
 import kotlinx.android.synthetic.main.activity_complaints.*
 import kotlinx.android.synthetic.main.content_box_complaint_details.*
 
@@ -40,26 +40,45 @@ import kotlinx.android.synthetic.main.content_box_complaint_details.*
  */
 class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         ComplaintsContract.View, ViewPresenter<ComplaintsContract.Presenter>,
-        ViewLocation, LocationHelper.OnLocationReceivedListener {
+        ViewLocation, LocationHelper.OnLocationReceivedListener, GoogleMap.OnMapClickListener,
+        ClusterManager.OnClusterClickListener<ComplaintItem>,
+        ClusterManager.OnClusterItemClickListener<ComplaintItem> {
 
     override lateinit var presenter: ComplaintsContract.Presenter
+
     private var map: GoogleMap? = null
-    private var insertedComplaintId: String? = null
     override var locationHelper = LocationHelper()
+    private lateinit var clusterManager: ClusterManager<ComplaintItem>
     private lateinit var mapFragment: SupportMapFragment
-    private val markers = ArrayList<Marker>()
+
     private var complaints: List<Complaint>? = null
-    private var complaintSelected: Int = -1
+    private var complaintSelected: String? = null
+    private var insertedComplaintId: String? = null
+
     private var latLngBounds: LatLngBounds? = null
     private var lastLatLong: LatLong? = null
     private var updateMarkers = false
     private var allowNotifications = false
 
+    // region Lifecycle
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_complaints)
     }
 
+    override fun onResume() {
+        super.onResume()
+        navigationView.setCheckedItem(R.id.nav_complaints)
+        if (map != null && (lastLatLong != null || updateMarkers)) {
+            updateMap()
+        }
+        if (insertedComplaintId != null) {
+            showAlertCongratulations()
+        }
+    }
+    // endregion
+
+    // region Setup and initialization
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
         enterprise = intent.extras?.getParcelable(EXTRA_ENTERPRISE)
@@ -89,186 +108,12 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
             viewDetails()
         }
     }
+    // endregion
 
-    override fun onResume() {
-        super.onResume()
-        navigationView.setCheckedItem(R.id.nav_complaints)
-        if (map != null && (lastLatLong != null || updateMarkers)) {
-            updateMap()
-        }
-        if (insertedComplaintId != null) {
-            showAlertCongratulations()
-        }
-    }
-
-    private fun updateMap() {
-        presenter.list(enterprise!!, category)
-        if (lastLatLong != null) {
-            map!!.moveCamera(CameraUpdateFactory.newLatLng(lastLatLong!!.toLatLng()))
-            lastLatLong = null
-        }
-    }
-
-    private fun showAlertCongratulations() {
-        AlertDialogFragment
-                .create(this) {
-                    titleRes = R.string.congratulations
-                    messageRes = R.string.successful_contribution
-                    multiChoiceItems = arrayOf("Desejo receber notificações sobre a reclamação")
-                    onMultiChoiceClickListener { dialog, index, isChecked ->
-                        allowNotifications = isChecked
-                    }
-                    onConfirmClickListener { dialog, _ ->
-                        presenter.allowNotification(allowNotifications, insertedComplaintId!!)
-                        dialog.dismiss()
-                    }
-                    onDismissListener {
-                        insertedComplaintId = null
-                    }
-                }
-                .show(supportFragmentManager)
-    }
-
+    // region Activity listeners
     override fun onBackPressed() {
         if (!hideBoxDetails()) {
             super.onBackPressed()
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    override fun onMapReady(map: GoogleMap) {
-        this.map = map
-        map.setup(this)
-        markEnterpriseLocation(map, enterprise!!)
-        presenter.list(enterprise!!, category)
-        if (!requestLocation()) {
-            requestLocationPermission(R.string.title_request_location_permission,
-                    R.string.message_request_location_permission, REQUEST_PERMISSION_LOCATION)
-        }
-        map.setOnMarkerClickListener { marker ->
-            val index = markers.indexOf(marker)
-            if (index >= 0 && complaints!!.size > index) {
-                showBoxDetails(index, map, marker)
-                true
-            } else {
-                false
-            }
-        }
-        map.setOnMapClickListener {
-            hideBoxDetails()
-        }
-    }
-
-    private fun hideBoxDetails(): Boolean {
-        complaintSelected = -1
-        if (rlBoxComplaint.isVisible) {
-            rlBoxComplaint.invisibleSlidingBottom()
-            return true
-        }
-        return false
-    }
-
-    private fun showBoxDetails(index: Int, map: GoogleMap, marker: Marker) {
-        map.animateCamera(CameraUpdateFactory.newLatLng(marker.position))
-        if (index != complaintSelected) {
-            complaintSelected = index
-            populateDetails(index)
-            if (!rlBoxComplaint.isVisible) {
-                rlBoxComplaint.showSlidingTop()
-            }
-        }
-    }
-
-    private fun populateDetails(index: Int) {
-        if (index > -1 && index < complaints!!.size) {
-            val complaint = complaints!![index]
-            tvTitle.text = complaint.title
-            tvLocation.text = complaint.address
-            tvDescription.text = complaint.description
-            tvCategoryName.text = complaint.category?.name
-            tvQtyConfirmations.text = resources.getQuantityString(
-                    R.plurals.qty_confirmations, complaint.confirmations, complaint.confirmations)
-            val remain = complaint.numToBecameCause - complaint.confirmations
-            if (remain > 0) {
-                tvQtyRemain.text = resources.getQuantityString(R.plurals.qty_remain, remain, remain)
-            } else {
-                tvQtyRemain.setText(R.string.occurrence_already)
-            }
-        }
-    }
-
-    override fun onLocationReceived(location: Location) {
-        cameraToCurrentLocation(map!!, location)
-    }
-
-    override fun loadComplaints(complaints: List<Complaint>) {
-        this.complaints = complaints
-        if (map != null) {
-            markers.forEach { it.remove() }
-            markers.clear()
-            complaints.forEach {
-                val latLng = LatLng(it.location!!.latitude, it.location!!.longitude)
-                val bm = BitmapMarker.build(this) {
-                    color = ContextCompat.getColor(this@ComplaintsActivity,
-                            if (it.isCause) R.color.markerCauseColor
-                            else R.color.markerComplaintColor
-                    )
-                    textColor = Color.WHITE
-                    radiusDP = 5f
-                    text = if (it.confirmations < 100) {
-                        "${it.confirmations}"
-                    } else {
-                        "99+"
-                    }
-                }
-                val marker = MarkerOptions()
-                        .icon(bm.icon)
-                        .position(latLng)
-                        .anchor(bm.anchorPoints[0], bm.anchorPoints[1])
-                markers.add(map!!.addMarker(marker))
-            }
-            populateDetails(complaintSelected)
-        }
-    }
-
-    override fun viewDetails() {
-        if (complaintSelected > -1) {
-            val intent = ComplaintDetailsActivity.getIntent(this, complaints!![complaintSelected])
-            startActivityForResult(intent, REQUEST_CONFIRM_REPORT)
-        }
-    }
-
-    @SuppressLint("MissingPermission")
-    private fun requestLocation(): Boolean {
-        if (hasLocationPermission()) {
-            map!!.isMyLocationEnabled = true
-            locationHelper.requestLocation(this, this)
-            return true
-        }
-        return false
-    }
-
-    private fun cameraToCurrentLocation(map: GoogleMap, location: Location) {
-        val latLng = LatLng(location.latitude, location.longitude)
-        if (latLngBounds?.contains(latLng) == true) {
-            map.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
-        }
-    }
-
-    private fun markEnterpriseLocation(map: GoogleMap, enterprise: Enterprise) {
-        if (enterprise.location != null) {
-            val polygonOptions = PolygonOptions()
-                    .addAll(enterprise.location!!)
-                    .strokeColor(ContextCompat.getColor(this, R.color.mapFillColor))
-                    .strokeWidth(2f)
-
-            map.addPolygon(polygonOptions)
-            val builder = LatLngBounds.Builder()
-            enterprise.location!!.forEach {
-                builder.include(it)
-            }
-            latLngBounds = builder.build()
-            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngBounds!!.center, 14f))
         }
     }
 
@@ -291,6 +136,163 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
+    // endregion
+
+    // region Map listeners
+    @SuppressLint("MissingPermission")
+    override fun onMapReady(map: GoogleMap) {
+        this.map = map
+        map.setup(this)
+
+        clusterManager = ClusterManager(this, map)
+        clusterManager.renderer = ComplaintClusterRender(map, this, clusterManager)
+        clusterManager.setOnClusterItemClickListener(this)
+        clusterManager.setOnClusterClickListener(this)
+
+        map.setOnCameraIdleListener(clusterManager)
+        map.setOnMarkerClickListener(clusterManager)
+        map.setOnMapClickListener(this)
+
+        markEnterpriseLocation(map, enterprise!!)
+        presenter.list(enterprise!!, category)
+        if (!requestLocation()) {
+            requestLocationPermission(R.string.title_request_location_permission,
+                    R.string.message_request_location_permission, REQUEST_PERMISSION_LOCATION)
+        }
+    }
+
+    override fun onClusterClick(cluster: Cluster<ComplaintItem>): Boolean {
+        val builder = LatLngBounds.Builder()
+        cluster.items.forEach { item ->
+            builder.include(item.position)
+        }
+        map!!.animateCamera(CameraUpdateFactory.newLatLngBounds(builder.build(), 0))
+        return true
+    }
+
+    override fun onClusterItemClick(item: ComplaintItem): Boolean {
+        showBoxDetails(map!!, item.complaint)
+        return true
+    }
+
+    override fun onMapClick(latLng: LatLng?) {
+        hideBoxDetails()
+    }
+
+    override fun onLocationReceived(location: Location) {
+        val latLng = LatLng(location.latitude, location.longitude)
+        if (latLngBounds?.contains(latLng) == true) {
+            map!!.animateCamera(CameraUpdateFactory.newLatLngZoom(latLng, 15f))
+        }
+    }
+    // endregion
+
+    // region Box details
+    private fun hideBoxDetails(): Boolean {
+        complaintSelected = null
+        if (rlBoxComplaint.isVisible) {
+            rlBoxComplaint.invisibleSlidingBottom()
+            return true
+        }
+        return false
+    }
+
+    private fun showBoxDetails(map: GoogleMap, complaint: Complaint) {
+        if (complaint.id != complaintSelected) {
+            complaintSelected = complaint.id
+            map.animateCamera(CameraUpdateFactory.newLatLng(complaint.location!!.toLatLng()))
+            populateDetails(complaint)
+            if (!rlBoxComplaint.isVisible) {
+                rlBoxComplaint.showSlidingTop()
+            }
+        }
+    }
+
+    private fun populateDetails(complaint: Complaint) {
+        tvTitle.text = complaint.title
+        tvLocation.text = complaint.address
+        tvDescription.text = complaint.description
+        tvCategoryName.text = complaint.category?.name
+        tvQtyConfirmations.text = resources.getQuantityString(
+                R.plurals.qty_confirmations, complaint.confirmations, complaint.confirmations)
+        val remain = complaint.numToBecameCause - complaint.confirmations
+        if (remain > 0) {
+            tvQtyRemain.text = resources.getQuantityString(R.plurals.qty_remain, remain, remain)
+        } else {
+            tvQtyRemain.setText(R.string.occurrence_already)
+        }
+    }
+
+    override fun viewDetails() {
+        if (complaintSelected != null) {
+            val complaint = complaints!!.first { it.id == complaintSelected }
+            val intent = ComplaintDetailsActivity.getIntent(this, complaint)
+            startActivityForResult(intent, REQUEST_CONFIRM_REPORT)
+        }
+    }
+    // endregion
+
+    override fun loadComplaints(complaints: List<Complaint>) {
+        this.complaints = complaints
+        if (map != null) {
+            clusterManager.clearItems()
+            complaints.forEach {
+                clusterManager.addItem(ComplaintItem(it))
+                if (complaintSelected != null && it.id == complaintSelected) {
+                    populateDetails(it)
+                }
+            }
+            clusterManager.cluster()
+        }
+    }
+
+    private fun updateMap() {
+        presenter.list(enterprise!!, category)
+        if (lastLatLong != null) {
+            map!!.moveCamera(CameraUpdateFactory.newLatLng(lastLatLong!!.toLatLng()))
+            lastLatLong = null
+        }
+    }
+
+    private fun markEnterpriseLocation(map: GoogleMap, enterprise: Enterprise) {
+        if (enterprise.location != null) {
+            val builder = LatLngBounds.Builder()
+            enterprise.location!!.forEach {
+                builder.include(it)
+            }
+            latLngBounds = builder.build()
+            map.moveCamera(CameraUpdateFactory.newLatLngZoom(latLngBounds!!.center, 14f))
+        }
+    }
+
+    @SuppressLint("MissingPermission")
+    private fun requestLocation(): Boolean {
+        return if (hasLocationPermission()) {
+            map!!.isMyLocationEnabled = true
+            locationHelper.requestLocation(this, this)
+            true
+        } else false
+    }
+
+    private fun showAlertCongratulations() {
+        AlertDialogFragment
+                .create(this) {
+                    titleRes = R.string.congratulations
+                    messageRes = R.string.successful_contribution
+                    multiChoiceItems = arrayOf("Desejo receber notificações sobre a reclamação")
+                    onMultiChoiceClickListener { _, _, isChecked ->
+                        allowNotifications = isChecked
+                    }
+                    onConfirmClickListener { dialog, _ ->
+                        presenter.allowNotification(allowNotifications, insertedComplaintId!!)
+                        dialog.dismiss()
+                    }
+                    onDismissListener {
+                        insertedComplaintId = null
+                    }
+                }
+                .show(supportFragmentManager)
+    }
 
     companion object {
         private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
@@ -310,4 +312,5 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
                         .putExtra(EXTRA_ENTERPRISE, enterprise)
                         .putExtra(EXTRA_CATEGORIES, categories)
     }
+
 }
