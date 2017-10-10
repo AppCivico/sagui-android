@@ -3,12 +3,13 @@ package com.eokoe.sagui.features.complaints.details
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
 import android.support.v4.content.FileProvider
+import android.view.Menu
+import android.view.MenuItem
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Asset
 import com.eokoe.sagui.data.entities.Complaint
@@ -18,6 +19,7 @@ import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.*
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
+import com.eokoe.sagui.features.complaints.ComplaintsActivity
 import com.eokoe.sagui.features.show_asset.ShowAssetActivity
 import com.eokoe.sagui.services.upload_file.UploadFilesJobIntentService
 import com.eokoe.sagui.utils.FileUtil
@@ -25,6 +27,7 @@ import com.eokoe.sagui.utils.Files
 import com.eokoe.sagui.utils.RequestCode
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
+import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_complaint_details.*
 import java.io.File
 
@@ -37,13 +40,17 @@ class ComplaintDetailsActivity : BaseActivity(),
 
     override lateinit var presenter: ConfirmContract.Presenter
 
-    private lateinit var complaint: Complaint
+    private var complaint: Complaint? = null
+    private var complaintId: String? = null
     private var confirmation = Confirmation()
     private lateinit var loadingDialog: LoadingDialog
     private var isConfirmed: Boolean = false
+    private var notificationId: String? = null
+    private var isFromNotification: Boolean = false
     private var fileAttached: File? = null
     private var openPreview: Boolean = false
     private var updateConfirmation: Boolean = false
+    private lateinit var detailsAdapter: ComplaintDetailsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -63,6 +70,12 @@ class ComplaintDetailsActivity : BaseActivity(),
     }
 
     override fun onBackPressed() {
+        if (isFromNotification && complaint?.enterprise != null && complaint?.category != null) {
+            val intent = ComplaintsActivity.getIntent(this, complaint?.enterprise!!, complaint?.category!!, true)
+            startActivity(intent)
+            finish()
+            return
+        }
         if (isConfirmed) {
             setResult(Activity.RESULT_OK)
         }
@@ -71,8 +84,12 @@ class ComplaintDetailsActivity : BaseActivity(),
 
     override fun setUp(savedInstanceState: Bundle?) {
         showBackButton()
-        complaint = intent.extras.getParcelable(EXTRA_COMPLAINT)
-        confirmation.complaintId = complaint.id!!
+        if (complaint == null) {
+            complaint = intent.extras.getParcelable(EXTRA_COMPLAINT)
+        }
+        isFromNotification = intent.extras.getBoolean(EXTRA_IS_FROM_NOTIFICATION)
+        complaintId = intent.extras.getString(EXTRA_COMPLAINT_ID)
+        notificationId = intent.extras.getString(EXTRA_NOTIFICATION_ID)
         presenter = ConfirmPresenter(SaguiModelImpl())
         loadingDialog = LoadingDialog.newInstance(getString(R.string.loading_confirm_complaint))
         btnConfirm.setOnClickListener {
@@ -83,7 +100,7 @@ class ComplaintDetailsActivity : BaseActivity(),
 
     override fun init(savedInstanceState: Bundle?) {
         rvComplaintDetails.setHasFixedSize(true)
-        val detailsAdapter = ComplaintDetailsAdapter(complaint)
+        detailsAdapter = ComplaintDetailsAdapter(complaint)
         detailsAdapter.onImageClickListener = object : AssetsAdapter.OnItemClickListener {
             override fun onItemClick(asset: Asset) {
                 val intent = ShowAssetActivity.getIntent(this@ComplaintDetailsActivity, asset)
@@ -91,6 +108,43 @@ class ComplaintDetailsActivity : BaseActivity(),
             }
         }
         rvComplaintDetails.adapter = detailsAdapter
+        if (complaint != null) {
+            onLoadComplaint(complaint!!)
+        } else {
+            presenter.getComplaint(complaintId!!)
+        }
+        if (notificationId != null) {
+            presenter.markAsRead(notificationId!!)
+        }
+    }
+
+    /*override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.notifications, menu)
+        return true
+    }*/
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.action_notifications -> {
+                AlertDialogFragment
+                        .create(this) {
+                            title = "Notificações"
+                            message = "Deseja receber notificações sobre a reclamação?"
+                            positiveText = "Sim"
+                            negativeText = "Não"
+                            onConfirmClickListener{ dialog, _ ->
+                                FirebaseMessaging.getInstance().subscribeToTopic("complaint-${complaint!!.id}")
+                                dialog.dismiss()
+                            }
+                            onCancelClickListener { dialog, _ ->
+                                FirebaseMessaging.getInstance().unsubscribeFromTopic("complaint-${complaint!!.id}")
+                                dialog.dismiss()
+                            }
+                        }
+                        .show(supportFragmentManager)
+            }
+        }
+        return super.onOptionsItemSelected(item)
     }
 
     override fun onComplaintConfirmed(confirmation: Confirmation) {
@@ -367,6 +421,7 @@ class ComplaintDetailsActivity : BaseActivity(),
     // endregion
 
     override fun saveInstanceState(outState: Bundle) {
+        outState.putParcelable(STATE_COMPLAINT, complaint)
         outState.putParcelable(STATE_CONFIRMATION, confirmation)
         if (fileAttached != null) {
             outState.putParcelable(STATE_FILE_ATTACHED, Uri.fromFile(fileAttached))
@@ -377,6 +432,7 @@ class ComplaintDetailsActivity : BaseActivity(),
     }
 
     override fun restoreInstanceState(savedInstanceState: Bundle) {
+        complaint = savedInstanceState.getParcelable(STATE_COMPLAINT)
         confirmation = savedInstanceState.getParcelable(STATE_CONFIRMATION)
         val uri = savedInstanceState.getParcelable<Uri>(STATE_FILE_ATTACHED)
         if (uri != null && fileAttached == null) {
@@ -387,9 +443,19 @@ class ComplaintDetailsActivity : BaseActivity(),
         updateConfirmation = savedInstanceState.getBoolean(STATE_UPDATE_CONFIRMATION)
     }
 
+    override fun onLoadComplaint(complaint: Complaint) {
+        this.complaint = complaint
+        confirmation.complaintId = complaint.id!!
+        detailsAdapter.complaint = complaint
+    }
+
     companion object {
         private val EXTRA_COMPLAINT = "EXTRA_COMPLAINT"
+        private val EXTRA_COMPLAINT_ID = "EXTRA_COMPLAINT_ID"
+        private val EXTRA_IS_FROM_NOTIFICATION = "EXTRA_IS_FROM_NOTIFICATION"
+        private val EXTRA_NOTIFICATION_ID = "EXTRA_NOTIFICATION_ID"
 
+        private val STATE_COMPLAINT = "STATE_COMPLAINT"
         private val STATE_CONFIRMATION = "STATE_CONFIRMATION"
         private val STATE_FILE_ATTACHED = "STATE_FILE_ATTACHED"
         private val STATE_IS_CONFIRMED = "STATE_IS_CONFIRMED"
@@ -399,5 +465,11 @@ class ComplaintDetailsActivity : BaseActivity(),
         fun getIntent(context: Context, complaint: Complaint): Intent =
                 Intent(context, ComplaintDetailsActivity::class.java)
                         .putExtra(EXTRA_COMPLAINT, complaint)
+
+        fun getIntent(context: Context, complaintId: String, notificationId: String, isFromNotification: Boolean = false): Intent =
+                Intent(context, ComplaintDetailsActivity::class.java)
+                        .putExtra(EXTRA_COMPLAINT_ID, complaintId)
+                        .putExtra(EXTRA_NOTIFICATION_ID, notificationId)
+                        .putExtra(EXTRA_IS_FROM_NOTIFICATION, isFromNotification)
     }
 }

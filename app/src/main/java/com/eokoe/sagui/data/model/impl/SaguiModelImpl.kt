@@ -317,7 +317,8 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
     }
 
     override fun getComplaint(complaintId: String): Observable<Complaint> {
-        TODO("not implemented")
+        return ServiceGenerator.getService(SaguiService::class.java)
+                .getComplaint(complaintId)
     }
 
     override fun getAssetsPendingUpload(): Observable<List<Asset>> {
@@ -395,6 +396,9 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
             Realm.getDefaultInstance().use { realm ->
                 try {
                     realm.beginTransaction()
+                    if (notification.id == null) {
+                        notification.id = UUID.randomUUID().toString()
+                    }
                     realm.copyToRealmOrUpdate(notification)
                     realm.commitTransaction()
                     emitter.onNext(notification)
@@ -414,6 +418,25 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                         .findAll()
                 emitter.onNext(realm.copyFromRealm(result))
                 emitter.onComplete()
+            }
+        }
+    }
+
+    override fun markAsRead(notification: Notification): Observable<Notification> {
+        return Observable.create { emitter ->
+            Realm.getDefaultInstance().use { realm ->
+                try {
+                    realm.beginTransaction()
+                    val result = realm.where(Notification::class.java)
+                            .equalTo("id", notification.id)
+                            .findFirst()
+                    result.read = true
+                    realm.commitTransaction()
+                    emitter.onNext(realm.copyFromRealm(result))
+                    emitter.onComplete()
+                } catch (error: Exception) {
+                    emitter.onError(error)
+                }
             }
         }
     }

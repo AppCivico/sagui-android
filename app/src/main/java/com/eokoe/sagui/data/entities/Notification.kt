@@ -14,6 +14,9 @@ import java.util.*
  */
 @PaperParcel
 open class Notification(
+        @PrimaryKey
+        var id: String? = null,
+
         @Expose
         @SerializedName("event")
         var eventStr: String = "",
@@ -23,20 +26,19 @@ open class Notification(
         var typeStr: String = "",
 
         @Expose
-        @PrimaryKey
-        var id: String = "",
+        var resourceId: String = "",
 
         @Expose
         var message: String = "",
 
         @Expose
         @SerializedName("created_at")
-        var createdAt: Date = Date(),
+        var createdAt: Date? = Date(),
 
         var read: Boolean = false
 ) : PaperParcelable, RealmObject() {
     val event: Event
-        get() = Event.valueOf(eventStr)
+        get() = Event.valueOf(eventStr.toUpperCase())
 
     val type: Type
         get() = Type.valueOf(typeStr)

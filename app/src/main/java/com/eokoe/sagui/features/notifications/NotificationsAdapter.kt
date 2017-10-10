@@ -51,7 +51,11 @@ class NotificationsAdapter : RecyclerViewAdapter<Notification, RecyclerView.View
         }
 
         fun bind(notification: Notification) {
-            itemView.tvEvent.text = notification.eventStr
+            itemView.tvEvent.text = when (notification.event) {
+                Notification.Event.CAUSE -> "Reclamação se tornou causa"
+                Notification.Event.COMMENT -> "Novo comentário"
+                Notification.Event.CONFIRMATION -> "Nova contribuição"
+            }
             itemView.tvMessage.text = notification.message
         }
     }

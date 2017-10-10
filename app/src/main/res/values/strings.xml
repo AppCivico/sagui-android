@@ -74,4 +74,5 @@
     <string name="select_picture_from_gallery">Selecionar foto da galeria</string>
     <string name="record_video">Gravar vídeo</string>
     <string name="select_video_from_gallery">Selecionar vídeo da galeria</string>
+    <string name="notifications">Notificações</string>
 </resources>

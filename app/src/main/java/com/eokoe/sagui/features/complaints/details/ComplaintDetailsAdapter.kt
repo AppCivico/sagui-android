@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.item_complaint_detail_comment.view.*
  * @author Pedro Silva
  * @since 05/10/17
  */
-class ComplaintDetailsAdapter(complaint: Complaint) : RecyclerViewAdapter<ComplaintDetailsAdapter.Item, RecyclerView.ViewHolder>() {
+class ComplaintDetailsAdapter(complaint: Complaint?) : RecyclerViewAdapter<ComplaintDetailsAdapter.Item, RecyclerView.ViewHolder>() {
     var complaint: Complaint? = null
         set(value) {
             field = value
@@ -32,14 +32,18 @@ class ComplaintDetailsAdapter(complaint: Complaint) : RecyclerViewAdapter<Compla
 
     private fun setupItems() {
         val items = ArrayList<Item>()
-        items.add(Item(ItemType.HEADER, R.string.explain_complaint))
-        items.add(Item(ItemType.DETAILS))
-        items.add(Item(ItemType.ASSETS))
-        if (complaint?.comments?.size ?: 0 > 0) {
-            items.add(Item(ItemType.COMMENT_HEADER))
-            complaint?.comments?.forEach {
-                items.add(Item(ItemType.COMMENT, it))
+        if (complaint != null) {
+            items.add(Item(ItemType.HEADER, R.string.explain_complaint))
+            items.add(Item(ItemType.DETAILS))
+            items.add(Item(ItemType.ASSETS))
+            if (complaint?.comments?.size ?: 0 > 0) {
+                items.add(Item(ItemType.COMMENT_HEADER))
+                complaint?.comments?.forEach {
+                    items.add(Item(ItemType.COMMENT, it))
+                }
             }
+        } else {
+            items.add(Item(ItemType.LOADING))
         }
         this.items = items
     }
@@ -51,6 +55,7 @@ class ComplaintDetailsAdapter(complaint: Complaint) : RecyclerViewAdapter<Compla
                 ItemType.COMMENT_HEADER -> SimpleViewHolder(inflate(R.layout.item_complaint_detail_comment_header, parent))
                 ItemType.COMMENT -> CommentViewHolder(inflate(R.layout.item_complaint_detail_comment, parent))
                 ItemType.ASSETS -> AssetsViewHolder(inflate(R.layout.item_complaint_detail_assets, parent))
+                ItemType.LOADING -> SimpleViewHolder(inflate(R.layout.item_progress, parent))
             }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -117,7 +122,7 @@ class ComplaintDetailsAdapter(complaint: Complaint) : RecyclerViewAdapter<Compla
     )
 
     enum class ItemType {
-        HEADER, DETAILS, COMMENT_HEADER, COMMENT, ASSETS;
+        HEADER, DETAILS, COMMENT_HEADER, COMMENT, ASSETS, LOADING;
 
         companion object {
             fun fromPosition(position: Int) = ItemType.values()[position]

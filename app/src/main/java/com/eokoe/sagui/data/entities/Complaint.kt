@@ -45,6 +45,10 @@ open class Complaint(
         var enterpriseId: String? = null,
 
         @Expose(serialize = false, deserialize = true)
+        @SerializedName("enterprise")
+        var enterprise: Enterprise? = null,
+
+        @Expose(serialize = false, deserialize = true)
         @SerializedName("confirmations")
         var confirmationsList: RealmList<Confirmation> = RealmList(),
 

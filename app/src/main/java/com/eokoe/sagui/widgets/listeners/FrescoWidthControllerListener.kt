@@ -27,8 +27,10 @@ class FrescoWidthControllerListener(private val draweeView: SimpleDraweeView, im
     private fun updateViewSize(imageInfo: ImageInfo?) {
         if (imageInfo != null) {
             val ratio = imageInfo.width.toFloat() / imageInfo.height.toFloat()
-            draweeView.layoutParams.width = (draweeView.layoutParams.height.toFloat() * ratio).toInt()
+            val layoutParams = draweeView.layoutParams
+            layoutParams.width = (layoutParams.height.toFloat() * ratio).toInt()
             draweeView.aspectRatio = ratio
+            draweeView.layoutParams = layoutParams
         }
     }
 }

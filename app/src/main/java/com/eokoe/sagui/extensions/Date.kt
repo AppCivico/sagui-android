@@ -9,3 +9,7 @@ import java.util.*
 fun Date.format(pattern: String): String? {
     return SimpleDateFormat(pattern, Locale.getDefault()).format(this)
 }
+
+fun Date.fromString(pattern: String, date: String): Date? {
+    return SimpleDateFormat(pattern, Locale.getDefault()).parse(date)
+}

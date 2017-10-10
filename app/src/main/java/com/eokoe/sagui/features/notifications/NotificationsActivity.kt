@@ -8,6 +8,7 @@ import com.eokoe.sagui.data.entities.Notification
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
+import com.eokoe.sagui.features.complaints.details.ComplaintDetailsActivity
 import kotlinx.android.synthetic.main.activity_notification.*
 
 /**
@@ -15,7 +16,7 @@ import kotlinx.android.synthetic.main.activity_notification.*
  * @since 06/10/17
  */
 class NotificationsActivity : BaseActivity(),
-        ViewPresenter<NotificationContract.Presenter>, NotificationContract.View{
+        ViewPresenter<NotificationContract.Presenter>, NotificationContract.View {
 
     override lateinit var presenter: NotificationContract.Presenter
     private lateinit var notificationsAdapter: NotificationsAdapter
@@ -39,9 +40,15 @@ class NotificationsActivity : BaseActivity(),
         rvNotifications.setHasFixedSize(true)
         notificationsAdapter.onItemClickListener = object : NotificationsAdapter.OnItemClickListener {
             override fun onItemClick(notification: Notification) {
-                // TODO
+                val intent = ComplaintDetailsActivity.getIntent(
+                        this@NotificationsActivity, notification.resourceId, notification.id!!)
+                startActivity(intent)
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
         presenter.list()
     }
 

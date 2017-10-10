@@ -19,6 +19,7 @@ import com.eokoe.sagui.extensions.showSlidingTop
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.base.view.ViewLocation
 import com.eokoe.sagui.features.base.view.ViewPresenter
+import com.eokoe.sagui.features.categories.CategoriesActivity
 import com.eokoe.sagui.features.complaints.details.ComplaintDetailsActivity
 import com.eokoe.sagui.features.complaints.report.ReportActivity
 import com.eokoe.sagui.utils.LocationHelper
@@ -54,6 +55,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
     private var complaints: List<Complaint>? = null
     private var complaintSelected: String? = null
     private var insertedComplaintId: String? = null
+    private var isFromNotification: Boolean = false
 
     private var latLngBounds: LatLngBounds? = null
     private var lastLatLong: LatLong? = null
@@ -84,6 +86,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         enterprise = intent.extras?.getParcelable(EXTRA_ENTERPRISE)
         category = intent.extras?.getParcelable(EXTRA_CATEGORY)
         categories = intent.extras?.getParcelableArrayList(EXTRA_CATEGORIES)
+        isFromNotification = intent.extras.getBoolean(EXTRA_IS_FROM_NOTIFICATION)
         title = enterprise?.name
         presenter = ComplaintsPresenter(SaguiModelImpl())
         mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
@@ -113,7 +116,13 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
     // region Activity listeners
     override fun onBackPressed() {
         if (!hideBoxDetails()) {
-            super.onBackPressed()
+            if (isFromNotification) {
+                val intent = CategoriesActivity.getIntent(this, enterprise!!)
+                startActivity(intent)
+                finish()
+            } else {
+                super.onBackPressed()
+            }
         }
     }
 
@@ -289,7 +298,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
                     }
                     multiChoiceItemsSelected = arrayListOf(allowNotifications).toBooleanArray()
                     onConfirmClickListener { dialog, _ ->
-//                        presenter.allowNotification(allowNotifications, insertedComplaintId!!)
+                        //                        presenter.allowNotification(allowNotifications, insertedComplaintId!!)
                         dialog.dismiss()
                     }
                     onDismissListener {
@@ -321,6 +330,8 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
         private val EXTRA_CATEGORIES = "EXTRA_CATEGORIES"
+        private val EXTRA_IS_FROM_NOTIFICATION = "EXTRA_IS_FROM_NOTIFICATION"
+
         private val REQUEST_PERMISSION_LOCATION = 1
         private val REQUEST_CREATE_REPORT = 2
         private val REQUEST_CONFIRM_REPORT = 3
@@ -332,10 +343,12 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         private val STATE_ALLOW_NOTIFICATIONS = "STATE_ALLOW_NOTIFICATIONS"
         private val STATE_LAST_LAT_LONG = "STATE_LAST_LAT_LONG"
 
-        fun getIntent(context: Context, enterprise: Enterprise, category: Category): Intent =
+        fun getIntent(context: Context, enterprise: Enterprise, category: Category,
+                      isFromNotification: Boolean = false): Intent =
                 Intent(context, ComplaintsActivity::class.java)
                         .putExtra(EXTRA_ENTERPRISE, enterprise)
                         .putExtra(EXTRA_CATEGORY, category)
+                        .putExtra(EXTRA_IS_FROM_NOTIFICATION, isFromNotification)
 
         fun getIntent(context: Context, enterprise: Enterprise, categories: ArrayList<Category>): Intent =
                 Intent(context, ComplaintsActivity::class.java)

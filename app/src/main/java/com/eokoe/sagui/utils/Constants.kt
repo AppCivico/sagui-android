@@ -7,6 +7,8 @@ import com.eokoe.sagui.BuildConfig
  * @since 02/10/17
  */
 
+val DATE_FORMAT = "yyyy-MM-dd'T'HH:mm:ss"
+
 object Job {
     val UPLOAD_FILES = 1
     val UPLOAD_FILES_RETRY = 2

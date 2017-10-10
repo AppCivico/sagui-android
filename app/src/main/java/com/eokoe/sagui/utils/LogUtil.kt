@@ -1,6 +1,7 @@
 package com.eokoe.sagui.utils
 
 import android.app.Activity
+import android.content.Context
 import android.util.Log
 import com.crashlytics.android.Crashlytics
 import com.eokoe.sagui.BuildConfig
@@ -13,7 +14,7 @@ object LogUtil {
     var enableLog: Boolean = BuildConfig.DEBUG
 
     @JvmStatic
-    fun startCrashlytics(context: Activity, enabled: Boolean = !BuildConfig.DEBUG) {
+    fun startCrashlytics(context: Context, enabled: Boolean = !BuildConfig.DEBUG) {
         if (enabled) Fabric.with(context, Crashlytics())
         enableCrashlytics = enabled
     }

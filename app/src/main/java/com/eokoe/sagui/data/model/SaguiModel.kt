@@ -42,4 +42,6 @@ interface SaguiModel {
     fun saveNotification(notification: Notification): Observable<Notification>
 
     fun listUnreadNotifications(): Observable<List<Notification>>
+
+    fun markAsRead(notification: Notification): Observable<Notification>
 }

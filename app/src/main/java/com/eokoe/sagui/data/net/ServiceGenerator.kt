@@ -5,6 +5,7 @@ import com.eokoe.sagui.BuildConfig
 import com.eokoe.sagui.data.net.adapters.BooleanTypeAdapter
 import com.eokoe.sagui.data.net.auth.ApiKeyManagerImpl
 import com.eokoe.sagui.data.net.auth.AuthenticatorInterceptor
+import com.eokoe.sagui.utils.DATE_FORMAT
 import com.google.gson.GsonBuilder
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -26,7 +27,7 @@ object ServiceGenerator {
         this.BASE_URL = baseUrl
 
         val gson = GsonBuilder()
-                .setDateFormat("yyyy-MM-dd'T'HH:mm:ss")
+                .setDateFormat(DATE_FORMAT)
                 .excludeFieldsWithoutExposeAnnotation()
 //                .registerTypeAdapter(LatLong::class.java, LatLongTypeAdapter.INSTANCE)
                 .registerTypeAdapter(Boolean::class.java, BooleanTypeAdapter())
