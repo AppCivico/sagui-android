@@ -45,7 +45,7 @@
     <string name="occurrence_already">Ocorrência já gerada</string>
     <string name="title_activity_complaint_details">Ver apontamento</string>
     <string name="whats_complaint">O QUE É APONTAMENTO?</string>
-    <string name="explain_complaint">São alertas sobre irregularidades e violações causadas diretamente pelo empreendimento. Ao atingir X contribuições, ele se torna uma causa e deve ser respondido pelo responsável.</string>
+    <string name="explain_complaint">São alertas sobre irregularidades e violações causadas diretamente pelo empreendimento. Ao atingir %d contribuições, ele se torna uma causa e deve ser respondido pelo responsável.</string>
     <string name="description">Descrição</string>
     <string name="confirm_complaint">Confirmar apontamento</string>
     <string name="confirm_complaint_question">Você confirma o problema relatado?</string>

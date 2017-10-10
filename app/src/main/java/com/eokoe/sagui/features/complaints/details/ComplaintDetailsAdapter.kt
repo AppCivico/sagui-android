@@ -32,7 +32,7 @@ class ComplaintDetailsAdapter(complaint: Complaint) : RecyclerViewAdapter<Compla
 
     private fun setupItems() {
         val items = ArrayList<Item>()
-        items.add(Item(ItemType.HEADER))
+        items.add(Item(ItemType.HEADER, R.string.explain_complaint))
         items.add(Item(ItemType.DETAILS))
         items.add(Item(ItemType.ASSETS))
         if (complaint?.comments?.size ?: 0 > 0) {
@@ -46,7 +46,7 @@ class ComplaintDetailsAdapter(complaint: Complaint) : RecyclerViewAdapter<Compla
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder =
             when (ItemType.fromPosition(viewType)) {
-                ItemType.HEADER -> SimpleViewHolder(inflate(R.layout.item_complaint_detail_header, parent))
+                ItemType.HEADER -> HeaderViewHolder(inflate(R.layout.item_complaint_detail_header, parent))
                 ItemType.DETAILS -> DetailsViewHolder(inflate(R.layout.item_complaint_detail, parent))
                 ItemType.COMMENT_HEADER -> SimpleViewHolder(inflate(R.layout.item_complaint_detail_comment_header, parent))
                 ItemType.COMMENT -> CommentViewHolder(inflate(R.layout.item_complaint_detail_comment, parent))
@@ -58,6 +58,7 @@ class ComplaintDetailsAdapter(complaint: Complaint) : RecyclerViewAdapter<Compla
             is DetailsViewHolder -> holder.bind(complaint!!)
             is CommentViewHolder -> holder.bind(getItem(position).value as Comment)
             is AssetsViewHolder -> holder.bind(complaint!!.files)
+            is HeaderViewHolder -> holder.bind(complaint)
         }
     }
 
@@ -100,6 +101,13 @@ class ComplaintDetailsAdapter(complaint: Complaint) : RecyclerViewAdapter<Compla
 
         fun bind(assets: List<Asset>) {
             (itemView.rvAssets.adapter as AssetsAdapter).items = assets
+        }
+    }
+
+    inner class HeaderViewHolder(view: View): TextViewHolder(view, R.id.tvExplainComplaint) {
+        fun bind(complaint: Complaint?) {
+            val explainComplaint = itemView.context.getString(R.string.explain_complaint, complaint?.numToBecameCause)
+            super.bind(explainComplaint)
         }
     }
 

@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.support.annotation.StringRes
@@ -173,4 +174,25 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     abstract fun restoreInstanceState(savedInstanceState: Bundle)
+
+    fun grantUriRwPermissions(intent: Intent, file: Uri?) {
+        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        val resInfoList = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+        resInfoList
+                .map { it.activityInfo.packageName }
+                .forEach {
+                    grantUriPermission(it, file,
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+    }
+
+    fun grantUriReadPermissions(intent: Intent, file: Uri?) {
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        val resInfoList = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+        resInfoList
+                .map { it.activityInfo.packageName }
+                .forEach {
+                    grantUriPermission(it, file, Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+    }
 }

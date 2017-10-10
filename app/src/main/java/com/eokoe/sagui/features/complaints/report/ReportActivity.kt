@@ -220,17 +220,6 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         intent.putExtra(MediaStore.EXTRA_OUTPUT, file)
         return intent
     }
-
-    private fun grantUriRwPermissions(intent: Intent, file: Uri?) {
-        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-        val resInfoList = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-        resInfoList
-                .map { it.activityInfo.packageName }
-                .forEach {
-                    grantUriPermission(it, file,
-                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
-    }
     // endregion
     // endregion
 

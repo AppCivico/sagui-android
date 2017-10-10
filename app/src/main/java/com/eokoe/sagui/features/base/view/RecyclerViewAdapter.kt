@@ -97,11 +97,11 @@ abstract class RecyclerViewAdapter<E, VH : RecyclerView.ViewHolder> : RecyclerVi
             bind(text)
         }
 
-        fun bind(text: String) {
+        open fun bind(text: String) {
             textView.text = text
         }
 
-        fun bind(@StringRes text: Int) {
+        open fun bind(@StringRes text: Int) {
             bind(itemView.context.getString(text))
         }
     }

@@ -43,11 +43,10 @@ class ShowAssetActivity : BaseActivity() {
         }
         val asset = assets[currentPosition]
         if (asset.isImage) {
-            val path: String?
-            if (!asset.isLocal) {
-                path = asset.remotePath
+            val path = if (!asset.isLocal) {
+                asset.remotePath
             } else {
-                path = "file://" + asset.uri.getRealPath(this)
+                "file://" + asset.uri.getRealPath(this)
             }
             ivImage.setImageURI(path)
         } else {
@@ -58,6 +57,19 @@ class ShowAssetActivity : BaseActivity() {
                     ivImage.setImageBitmap(videoThumbnail)
                 } else {
                     // TODO remote thumbnail
+                }
+                ivPlay.setOnClickListener {
+                    /*val intent = Intent(Intent.ACTION_VIEW)
+                    intent.data = if (asset.isLocal) {
+                        val uri = FileProvider.getUriForFile(this, Files.AUTHORITY,
+                                asset.uri.toFile(this))
+                        grantUriReadPermissions(intent, uri)
+                        uri
+                    } else {
+                        asset.uri
+                    }
+                    intent.type = asset.type
+                    startActivity(intent)*/
                 }
                 ivPlay.show()
             } else {

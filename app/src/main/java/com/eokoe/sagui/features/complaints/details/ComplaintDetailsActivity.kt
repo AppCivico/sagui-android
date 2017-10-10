@@ -334,7 +334,7 @@ class ComplaintDetailsActivity : BaseActivity(),
 
     private fun generateFilename(extension: String): String {
         return resources.getString(R.string.app_name) +
-                "_confirmation_" + System.currentTimeMillis() + ".$extension"
+                "_confirmation_" + System.currentTimeMillis() + extension
     }
 
     override fun onFilesSave(confirmation: Confirmation) {
@@ -343,17 +343,6 @@ class ComplaintDetailsActivity : BaseActivity(),
     }
 
     // region Permissions
-    private fun grantUriRwPermissions(intent: Intent, file: Uri?) {
-        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-        val resInfoList = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-        resInfoList
-                .map { it.activityInfo.packageName }
-                .forEach {
-                    grantUriPermission(it, file,
-                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
-    }
-
     @Suppress("NON_EXHAUSTIVE_WHEN")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
         when (RequestCode.Permission.fromInt(requestCode)) {
