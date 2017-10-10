@@ -1,6 +1,7 @@
 package com.eokoe.sagui.widgets.listeners
 
 import android.graphics.drawable.Animatable
+import com.eokoe.sagui.utils.LogUtil
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.BaseControllerListener
 import com.facebook.drawee.view.SimpleDraweeView
@@ -23,11 +24,11 @@ class FrescoWidthControllerListener(private val draweeView: SimpleDraweeView, im
         updateViewSize(imageInfo)
     }
 
-    fun updateViewSize(imageInfo: ImageInfo?) {
+    private fun updateViewSize(imageInfo: ImageInfo?) {
         if (imageInfo != null) {
             val ratio = imageInfo.width.toFloat() / imageInfo.height.toFloat()
             draweeView.layoutParams.width = (draweeView.layoutParams.height.toFloat() * ratio).toInt()
-            draweeView.aspectRatio = imageInfo.width.toFloat() / imageInfo.height
+            draweeView.aspectRatio = ratio
         }
     }
 }

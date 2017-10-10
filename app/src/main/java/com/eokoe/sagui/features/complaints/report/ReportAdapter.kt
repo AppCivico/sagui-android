@@ -8,7 +8,6 @@ import android.view.View
 import android.view.ViewGroup
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Asset
-import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import com.jakewharton.rxbinding2.widget.RxTextView
@@ -22,7 +21,7 @@ import kotlinx.android.synthetic.main.item_report_title.view.*
  * @author Pedro Silva
  * @since 25/09/17
  */
-class ReportAdapter(category: Category?) : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewHolder>() {
+class ReportAdapter(complaint: Complaint?, showCategories: Boolean = false) : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewHolder>() {
 
     var onItemClickListener: OnItemClickListener? = null
 
@@ -36,9 +35,9 @@ class ReportAdapter(category: Category?) : RecyclerViewAdapter<ReportAdapter.Ite
         items.add(Item(ItemType.THUMBNAILS, value = ArrayList<Asset>()))
         items.add(Item(ItemType.DIVIDER))
         items.add(Item(ItemType.TITLE))
-        if (category == null) {
+        if (showCategories) {
             items.add(Item(ItemType.DIVIDER))
-            items.add(Item(ItemType.CATEGORY, R.drawable.ic_category, R.string.category))
+            items.add(Item(ItemType.CATEGORY, R.drawable.ic_category, R.string.category, complaint?.category?.name))
         }
         items.add(Item(ItemType.DIVIDER))
         items.add(Item(ItemType.LOCATION, R.drawable.ic_location, R.string.occurrence_place))
@@ -52,17 +51,26 @@ class ReportAdapter(category: Category?) : RecyclerViewAdapter<ReportAdapter.Ite
         this.items = items
     }
 
-    fun setComplaint(complaint: Complaint) {
-        items?.forEachIndexed { index, item ->
-            if (item.type == ItemType.LOCATION && item.value != complaint.address) {
-                item.value = complaint.address
-                notifyItemChanged(index)
-            } else if (item.type == ItemType.THUMBNAILS) {
-                item.value = complaint.files
-                notifyItemChanged(index)
+    var complaint: Complaint? = null
+        set(complaint) {
+            field = complaint
+            items?.forEachIndexed { index, item ->
+                when {
+                    item.type == ItemType.LOCATION -> if (item.value != complaint?.address) {
+                        item.value = complaint?.address
+                        notifyItemChanged(index)
+                    }
+                    item.type == ItemType.THUMBNAILS -> {
+                        item.value = complaint?.files
+                        notifyItemChanged(index)
+                    }
+                    item.type == ItemType.CATEGORY -> if (complaint?.category != null) {
+                        item.value = complaint.category?.name
+                        notifyItemChanged(index)
+                    }
+                }
             }
         }
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             when (ItemType.fromPosition(viewType)) {
@@ -75,11 +83,14 @@ class ReportAdapter(category: Category?) : RecyclerViewAdapter<ReportAdapter.Ite
 
     @Suppress("UNCHECKED_CAST")
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
-        if (holder is ActionViewHolder) {
-            holder.bind(getItem(position))
-        } else if (holder is ThumbnailsViewHolder) {
-            val assets = getItem(position).value as List<Asset>
-            holder.bind(assets)
+        when (holder) {
+            is ActionViewHolder -> holder.bind(getItem(position))
+            is ThumbnailsViewHolder -> {
+                val assets = getItem(position).value as List<Asset>
+                holder.bind(assets)
+            }
+            is TitleViewHolder -> holder.bind(complaint?.title)
+            is DescriptionViewHolder -> holder.bind(complaint?.description)
         }
     }
 
@@ -88,16 +99,34 @@ class ReportAdapter(category: Category?) : RecyclerViewAdapter<ReportAdapter.Ite
     inner class TitleViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         init {
             RxTextView.textChangeEvents(itemView.etTitle)
-                    .map {return@map it.text().toString()}
+                    .skipInitialValue()
+                    .map { return@map it.text().toString() }
+                    .map {
+                        complaint?.title = it
+                        return@map it
+                    }
                     .subscribe(titleChangeSubject)
+        }
+
+        fun bind(value: String?) {
+            itemView.etTitle.setText(value)
         }
     }
 
     inner class DescriptionViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         init {
             RxTextView.textChangeEvents(itemView.etDescription)
-                    .map {return@map it.text().toString()}
+                    .skipInitialValue()
+                    .map { return@map it.text().toString() }
+                    .map {
+                        complaint?.description = it
+                        return@map it
+                    }
                     .subscribe(descriptionChangeSubject)
+        }
+
+        fun bind(value: String?) {
+            itemView.etDescription.setText(value)
         }
     }
 

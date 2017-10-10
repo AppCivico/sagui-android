@@ -29,7 +29,6 @@ import com.eokoe.sagui.features.complaints.report.pin.PinActivity
 import com.eokoe.sagui.services.upload_file.UploadFilesJobIntentService
 import com.eokoe.sagui.utils.FileUtil
 import com.eokoe.sagui.utils.Files
-import com.eokoe.sagui.utils.LogUtil
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
 import kotlinx.android.synthetic.main.activity_report.*
@@ -57,7 +56,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     // region Lifecycle
     override fun onResume() {
         super.onResume()
-        reportAdapter.setComplaint(complaint)
+        reportAdapter.complaint = complaint
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -75,6 +74,9 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         enterprise = intent.extras?.getParcelable(EXTRA_ENTERPRISE)
         complaint.enterpriseId = enterprise?.id
         category = intent.extras?.getParcelable(EXTRA_CATEGORY)
+        if (complaint.category == null) {
+            complaint.category = category
+        }
         categories = intent.extras?.getParcelableArrayList(EXTRA_CATEGORIES)
     }
 
@@ -84,7 +86,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
 
     private fun setupRecyclerView() {
         rvReport.setHasFixedSize(false)
-        reportAdapter = ReportAdapter(category)
+        reportAdapter = ReportAdapter(complaint, categories != null)
         rvReport.adapter = reportAdapter
         reportAdapter.onItemClickListener = this
         reportAdapter.titleChangeSubject.subscribe {
@@ -139,7 +141,6 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         if (item.itemId == R.id.action_ok) {
-            complaint.categoryId = category?.id
             presenter.saveComplaint(complaint)
             return true
         }
@@ -171,7 +172,8 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
             it.name
         }
         getAlertList(categoriesStr.toTypedArray()) { dialog, position ->
-            category = categories!![position]
+            complaint.category = categories!![position]
+            reportAdapter.complaint = complaint
             dialog.dismiss()
         }.show()
     }
@@ -275,7 +277,6 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                         imagePath,
                         fileAttached!!.name
                 )
-                LogUtil.debug(this, "Old size: " + fileAttached?.length())
                 val inputFilePath = Uri.fromFile(fileAttached).getRealPath(this)!!
                 FileUtil.compressImage(inputFilePath, privateFile)
                 val uriImage = data?.data ?: Uri.fromFile(fileAttached)
@@ -286,9 +287,6 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                     error.printStackTrace()
                 }
                 complaint.files.add(Asset(localPath = privateFile.path))
-                LogUtil.debug(this, "New size: " + privateFile.length())
-                LogUtil.debug(this, "privateFile exists: " + privateFile.exists())
-                LogUtil.debug(this, "pictureFile exists: " + fileAttached?.exists())
             }
             REQUEST_CODE_VIDEO -> if (resultCode == Activity.RESULT_OK && fileAttached?.exists() == true) {
                 val videoPath = File(filesDir, Files.Path.VIDEO_PATH)
