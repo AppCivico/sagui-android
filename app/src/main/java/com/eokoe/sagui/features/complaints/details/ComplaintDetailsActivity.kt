@@ -16,10 +16,7 @@ import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Confirmation
 import com.eokoe.sagui.data.entities.ContributeOptions
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
-import com.eokoe.sagui.extensions.ErrorType
-import com.eokoe.sagui.extensions.errorType
-import com.eokoe.sagui.extensions.friendlyMessage
-import com.eokoe.sagui.extensions.getRealPath
+import com.eokoe.sagui.extensions.*
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.show_asset.ShowAssetActivity
@@ -264,13 +261,10 @@ class ComplaintDetailsActivity : BaseActivity(),
                         imagePath,
                         generateFilename(Files.Extensions.JPG)
                 )
-                contentResolver.openInputStream(uri).use { inputStream ->
-                    if (inputStream != null) {
-                        val bitmap = BitmapFactory.decodeStream(inputStream)
-                        FileUtil.compressImage(bitmap, privateFile)
-                        confirmation.files.add(Asset(localPath = privateFile.path))
-                    }
-                }
+                val tempFile = File.createTempFile(getString(R.string.app_name) + "_confirmation_", ".jpg")
+                uri.copyTo(this, tempFile)
+                FileUtil.compressImage(tempFile.toUri()?.getRealPath(this)!!, privateFile)
+                confirmation.files.add(Asset(localPath = privateFile.path))
                 openPreview = true
             }
             RequestCode.Intent.PREVIEW_ASSET -> if (resultCode == Activity.RESULT_OK) {
@@ -327,24 +321,6 @@ class ComplaintDetailsActivity : BaseActivity(),
                     grantUriPermission(it, file,
                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
-    }
-
-    private fun requestCameraPermission(requestCode: Int) {
-        // TODO handle permission not granted
-        if (!hasCameraPermission()) {
-            requestCameraPermission(R.string.title_request_camera_permission,
-                    R.string.message_request_camera_permission,
-                    requestCode)
-        }
-    }
-
-    private fun requestReadExternalStoragePermission(requestCode: Int) {
-        // TODO handle permission not granted
-        if (!hasReadExternalStoragePermission()) {
-            requestReadExternalStoragePermission(R.string.title_request_read_external_storage_permission,
-                    R.string.message_request_read_external_storage_permission,
-                    requestCode)
-        }
     }
 
     @Suppress("NON_EXHAUSTIVE_WHEN")

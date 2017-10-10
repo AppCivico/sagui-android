@@ -108,6 +108,7 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
     }
 
     override fun sendComplaint(complaint: Complaint): Observable<Complaint> {
+        complaint.categoryId = complaint.category?.id
         return ServiceGenerator.getService(SaguiService::class.java)
                 .saveComplaint(complaint)
                 .map {

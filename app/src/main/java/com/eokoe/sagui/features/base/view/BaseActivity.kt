@@ -101,17 +101,19 @@ abstract class BaseActivity : AppCompatActivity() {
                 Manifest.permission.ACCESS_FINE_LOCATION)
     }
 
-    fun requestCameraPermission(@StringRes title: Int, @StringRes message: Int, requestCode: Int) {
-        requestPermission(title, message, requestCode, Manifest.permission.CAMERA)
+    fun requestCameraPermission(requestCode: Int) {
+        // TODO handle permission not granted
+        if (!hasCameraPermission()) {
+            requestPermission(requestCode, Manifest.permission.CAMERA)
+        }
     }
 
     @SuppressLint("InlinedApi")
-    fun requestReadExternalStoragePermission(
-            @StringRes title: Int, @StringRes message: Int, requestCode: Int) {
+    fun requestReadExternalStoragePermission(requestCode: Int) {
         // TODO handle permission not granted
         if (!hasReadExternalStoragePermission()) {
             requestPermission(
-                    title, message, requestCode,
+                    requestCode,
                     Manifest.permission.READ_EXTERNAL_STORAGE
             )
         }
@@ -130,6 +132,10 @@ abstract class BaseActivity : AppCompatActivity() {
             }
         }
         alertDialog.show(supportFragmentManager)
+    }
+
+    fun requestPermission(requestCode: Int, vararg permissions: String) {
+        ActivityCompat.requestPermissions(this@BaseActivity, permissions, requestCode)
     }
 
     fun showKeyboard(view: View) {

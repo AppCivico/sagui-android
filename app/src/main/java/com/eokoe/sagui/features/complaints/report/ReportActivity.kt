@@ -18,10 +18,7 @@ import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
-import com.eokoe.sagui.extensions.ErrorType
-import com.eokoe.sagui.extensions.copyTo
-import com.eokoe.sagui.extensions.errorType
-import com.eokoe.sagui.extensions.getRealPath
+import com.eokoe.sagui.extensions.*
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.report.ReportAdapter.ItemType
@@ -111,7 +108,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 if (hasCameraPermission()) {
                     openCamera()
                 } else {
-                    requestCameraPermission()
+                    requestCameraPermission(REQUEST_CAMERA_PERMISSION)
                 }
             }
             ItemType.INSERT_PHOTO_VIDEO -> {
@@ -313,20 +310,17 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                         imagePath,
                         filename
                 )
-                contentResolver.openInputStream(uri).use { inputStream ->
-                    if (inputStream != null) {
-                        val bitmap = BitmapFactory.decodeStream(inputStream)
-                        FileUtil.compressImage(bitmap, privateFile)
-                        complaint.files.add(Asset(localPath = privateFile.path))
-                    }
-                }
+                val tempFile = File.createTempFile(getString(R.string.app_name) + "_complaint_", ".jpg")
+                uri.copyTo(this, tempFile)
+                FileUtil.compressImage(tempFile.toUri()?.getRealPath(this)!!, privateFile)
+                complaint.files.add(Asset(localPath = privateFile.path))
             }
             REQUEST_CODE_AUDIO -> if (resultCode == Activity.RESULT_OK && data != null) {
                 val uri = data.data
                 val audioPath = File(filesDir, Files.Path.AUDIO_PATH)
                 val privateFile = File(
                         audioPath,
-                        "_complaint_" + System.currentTimeMillis() + ".amr"
+                        "_complaint_" + System.currentTimeMillis()
                 )
                 uri.copyTo(this, privateFile)
                 complaint.files.add(Asset(localPath = privateFile.path))
@@ -348,23 +342,6 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
-    private fun requestReadExternalStoragePermission(requestCode: Int) {
-        // TODO handle permission not granted
-        if (!hasReadExternalStoragePermission()) {
-            requestReadExternalStoragePermission(R.string.title_request_read_external_storage_permission,
-                    R.string.message_request_read_external_storage_permission, requestCode)
-        }
-    }
-
-    private fun requestCameraPermission() {
-        // TODO handle permission not granted
-        if (!hasCameraPermission()) {
-            requestCameraPermission(R.string.title_request_camera_permission,
-                    R.string.message_request_camera_permission,
-                    REQUEST_CAMERA_PERMISSION)
-        }
     }
 
     override fun uploadAssets() {

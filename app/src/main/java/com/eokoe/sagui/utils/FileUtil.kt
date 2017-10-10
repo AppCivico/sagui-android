@@ -21,10 +21,21 @@ object FileUtil {
 
     fun compressImage(inputFilePath: String, outputFile: File) {
         val bitmap = BitmapFactory.decodeFile(inputFilePath)
-        return compressImage(bitmap, outputFile)
+        try {
+            var rotationAngle = 0f
+            val exif = ExifInterface(inputFilePath)
+            val orientString = exif.getAttribute(ExifInterface.TAG_ORIENTATION)
+            val orientation = if (orientString != null) Integer.parseInt(orientString) else ExifInterface.ORIENTATION_NORMAL
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_90) rotationAngle = 90f
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_180) rotationAngle = 180f
+            if (orientation == ExifInterface.ORIENTATION_ROTATE_270) rotationAngle = 270f
+            saveImageFile(outputFile, bitmap, rotationAngle)
+        } catch (error: IOException) {
+            LogUtil.error(this, error)
+        }
     }
 
-    fun compressImage(bitmap: Bitmap, outputFile: File) {
+    private fun saveImageFile(outputFile: File, bitmap: Bitmap, rotation: Float) {
         if (!outputFile.exists()) {
             val parent = File(outputFile.parent)
             if (!parent.exists()) {
@@ -54,8 +65,14 @@ object FileUtil {
         if (scaledBitmap != bitmap) {
             bitmap.recycle()
         }
-        scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 82, fos)
+
+        val matrix = Matrix()
+        matrix.setRotate(rotation, scaledBitmap.width.toFloat() / 2, scaledBitmap.height.toFloat() / 2)
+        val rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
         scaledBitmap.recycle()
+
+        rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 82, fos)
+        rotatedBitmap.recycle()
         fos.flush()
         fos.close()
     }
