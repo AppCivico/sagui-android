@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
@@ -77,7 +76,7 @@ class ComplaintDetailsActivity : BaseActivity(),
         presenter = ConfirmPresenter(SaguiModelImpl())
         loadingDialog = LoadingDialog.newInstance(getString(R.string.loading_confirm_complaint))
         btnConfirm.setOnClickListener {
-//            openContributeDialog()
+            //openContributeDialog()
             getConfirmDialog().show(supportFragmentManager)
         }
     }
@@ -161,16 +160,21 @@ class ComplaintDetailsActivity : BaseActivity(),
                 } else {
                     requestReadExternalStoragePermission(RequestCode.Permission.PICTURE_STORAGE.value)
                 }
-            /*2 -> if (hasCameraPermission()) {
-                recordVideo()
-            } else {
-                requestCameraPermission()
-            }
-            3 -> if (requestReadExternalStoragePermission(REQUEST_VIDEO_STORAGE_PERMISSION)) {
-                recordVideo()
-            } else {
-                requestCameraPermission()
-            }*/
+                ContributeOptions.RECORD_VIDEO -> if (hasCameraPermission()) {
+                    recordVideo()
+                } else {
+                    requestCameraPermission(RequestCode.Permission.CAMERA_VIDEO.value)
+                }
+                ContributeOptions.GALLERY_VIDEO -> if (hasReadExternalStoragePermission()) {
+                    openVideoGallery()
+                } else {
+                    requestCameraPermission(RequestCode.Permission.VIDEO_STORAGE.value)
+                }
+                ContributeOptions.AUDIO -> if (hasReadExternalStoragePermission()) {
+                    openAudioGallery()
+                } else {
+                    requestCameraPermission(RequestCode.Permission.AUDIO.value)
+                }
             }
             dialog.dismiss()
         }.show()
@@ -189,6 +193,14 @@ class ComplaintDetailsActivity : BaseActivity(),
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         if (intent.resolveActivity(packageManager) != null) {
             startActivityForResult(intent, RequestCode.Intent.GALLERY_VIDEO.value)
+        }
+    }
+
+    private fun openAudioGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivityForResult(intent, RequestCode.Intent.AUDIO.value)
         }
     }
 
@@ -234,7 +246,6 @@ class ComplaintDetailsActivity : BaseActivity(),
     @Suppress("NON_EXHAUSTIVE_WHEN")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (RequestCode.Intent.fromInt(requestCode)) {
-
             RequestCode.Intent.CAMERA_PICTURE -> if (resultCode == Activity.RESULT_OK && fileAttached?.exists() == true) {
                 val imagePath = File(filesDir, Files.Path.IMAGE_PATH)
                 val privateFile = File(
@@ -250,7 +261,7 @@ class ComplaintDetailsActivity : BaseActivity(),
                 } catch (error: Exception) {
                     error.printStackTrace()
                 }
-                confirmation.files.add(Asset(localPath = privateFile.path))
+                confirmation.files.add(Asset(localPath = privateFile.path, type = "image/*"))
                 openPreview = true
             }
 
@@ -264,7 +275,48 @@ class ComplaintDetailsActivity : BaseActivity(),
                 val tempFile = File.createTempFile(getString(R.string.app_name) + "_confirmation_", ".jpg")
                 uri.copyTo(this, tempFile)
                 FileUtil.compressImage(tempFile.toUri()?.getRealPath(this)!!, privateFile)
-                confirmation.files.add(Asset(localPath = privateFile.path))
+                confirmation.files.add(Asset(localPath = privateFile.path, type = "image/*"))
+                openPreview = true
+            }
+
+            RequestCode.Intent.CAMERA_VIDEO -> if (resultCode == Activity.RESULT_OK && fileAttached?.exists() == true) {
+                val videoPath = File(filesDir, Files.Path.VIDEO_PATH)
+                val privateFile = File(
+                        videoPath,
+                        fileAttached!!.name
+                )
+                val uriVideo = data?.data ?: Uri.fromFile(fileAttached)
+                fileAttached!!.copyTo(privateFile, true)
+                try {
+                    fileAttached?.delete()
+                    contentResolver.delete(uriVideo, null, null)
+                } catch (error: Exception) {
+                    error.printStackTrace()
+                }
+                confirmation.files.add(Asset(localPath = privateFile.path, type = "video/*"))
+                openPreview = true
+            }
+
+            RequestCode.Intent.GALLERY_VIDEO -> if (resultCode == Activity.RESULT_OK && data != null) {
+                val uri = data.data
+                val imagePath = File(filesDir, Files.Path.VIDEO_PATH)
+                val privateFile = File(
+                        imagePath,
+                        generateFilename(Files.Extensions.MP4)
+                )
+                uri.copyTo(this, privateFile)
+                confirmation.files.add(Asset(localPath = privateFile.path, type = "video/*"))
+                openPreview = true
+            }
+            RequestCode.Intent.AUDIO -> if (resultCode == Activity.RESULT_OK && data != null) {
+                val uri = data.data
+                val audioPath = File(filesDir, Files.Path.AUDIO_PATH)
+                val privateFile = File(
+                        audioPath,
+                        generateFilename(Files.Extensions.NONE)
+                )
+                uri.copyTo(this, privateFile)
+                confirmation.files.add(Asset(localPath = privateFile.path, type = "audio/*"))
                 openPreview = true
             }
             RequestCode.Intent.PREVIEW_ASSET -> if (resultCode == Activity.RESULT_OK) {
@@ -288,27 +340,6 @@ class ComplaintDetailsActivity : BaseActivity(),
     override fun onFilesSave(confirmation: Confirmation) {
         UploadFilesJobIntentService.enqueueWork(this)
         getContributeSuccess().show(supportFragmentManager)
-    }
-
-    override fun saveInstanceState(outState: Bundle) {
-        outState.putParcelable(STATE_CONFIRMATION, confirmation)
-        if (fileAttached != null) {
-            outState.putParcelable(STATE_FILE_ATTACHED, Uri.fromFile(fileAttached))
-        }
-        outState.putBoolean(STATE_IS_CONFIRMED, isConfirmed)
-        outState.putBoolean(STATE_OPEN_PREVIEW, openPreview)
-        outState.putBoolean(STATE_UPDATE_CONFIRMATION, updateConfirmation)
-    }
-
-    override fun restoreInstanceState(savedInstanceState: Bundle) {
-        confirmation = savedInstanceState.getParcelable(STATE_CONFIRMATION)
-        val uri = savedInstanceState.getParcelable<Uri>(STATE_FILE_ATTACHED)
-        if (uri != null && fileAttached == null) {
-            fileAttached = File(uri.toString())
-        }
-        isConfirmed = savedInstanceState.getBoolean(STATE_IS_CONFIRMED)
-        openPreview = savedInstanceState.getBoolean(STATE_OPEN_PREVIEW)
-        updateConfirmation = savedInstanceState.getBoolean(STATE_UPDATE_CONFIRMATION)
     }
 
     // region Permissions
@@ -338,10 +369,34 @@ class ComplaintDetailsActivity : BaseActivity(),
             RequestCode.Permission.VIDEO_STORAGE -> if (hasReadExternalStoragePermission()) {
                 openVideoGallery()
             }
+            RequestCode.Permission.AUDIO -> {
+                openAudioGallery()
+            }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
     // endregion
+
+    override fun saveInstanceState(outState: Bundle) {
+        outState.putParcelable(STATE_CONFIRMATION, confirmation)
+        if (fileAttached != null) {
+            outState.putParcelable(STATE_FILE_ATTACHED, Uri.fromFile(fileAttached))
+        }
+        outState.putBoolean(STATE_IS_CONFIRMED, isConfirmed)
+        outState.putBoolean(STATE_OPEN_PREVIEW, openPreview)
+        outState.putBoolean(STATE_UPDATE_CONFIRMATION, updateConfirmation)
+    }
+
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
+        confirmation = savedInstanceState.getParcelable(STATE_CONFIRMATION)
+        val uri = savedInstanceState.getParcelable<Uri>(STATE_FILE_ATTACHED)
+        if (uri != null && fileAttached == null) {
+            fileAttached = File(uri.toString())
+        }
+        isConfirmed = savedInstanceState.getBoolean(STATE_IS_CONFIRMED)
+        openPreview = savedInstanceState.getBoolean(STATE_OPEN_PREVIEW)
+        updateConfirmation = savedInstanceState.getBoolean(STATE_UPDATE_CONFIRMATION)
+    }
 
     companion object {
         private val EXTRA_COMPLAINT = "EXTRA_COMPLAINT"

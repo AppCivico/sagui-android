@@ -3,10 +3,13 @@ package com.eokoe.sagui.features.show_asset
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.media.ThumbnailUtils
 import android.os.Bundle
+import android.provider.MediaStore
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Asset
 import com.eokoe.sagui.extensions.getRealPath
+import com.eokoe.sagui.extensions.show
 import com.eokoe.sagui.features.base.view.BaseActivity
 import kotlinx.android.synthetic.main.activity_view_asset.*
 
@@ -39,12 +42,28 @@ class ShowAssetActivity : BaseActivity() {
             fabSend.show()
         }
         val asset = assets[currentPosition]
-        val path = if (!asset.isLocal) {
-            asset.remotePath
+        if (asset.isImage) {
+            val path: String?
+            if (!asset.isLocal) {
+                path = asset.remotePath
+            } else {
+                path = "file://" + asset.uri.getRealPath(this)
+            }
+            ivImage.setImageURI(path)
         } else {
-            "file://" + asset.uri.getRealPath(this)
+            if (asset.isVideo) {
+                if (asset.isLocal) {
+                    val videoThumbnail = ThumbnailUtils.createVideoThumbnail(asset.uri.toString(),
+                            MediaStore.Images.Thumbnails.FULL_SCREEN_KIND)
+                    ivImage.setImageBitmap(videoThumbnail)
+                } else {
+                    // TODO remote thumbnail
+                }
+                ivPlay.show()
+            } else {
+                ivAudio.show()
+            }
         }
-        ivImage.setImageURI(path)
         fabSend.setOnClickListener {
             setResult(Activity.RESULT_OK)
             finish()
@@ -78,12 +97,12 @@ class ShowAssetActivity : BaseActivity() {
             return getIntent(context, assets, 0, showSendButton)
         }
 
-        fun getIntent(context: Context, path: String, isLocal: Boolean, showSendButton: Boolean = false): Intent {
+        fun getIntent(context: Context, path: String, type: String, isLocal: Boolean, showSendButton: Boolean = false): Intent {
             val assets = ArrayList<Asset>()
             val asset = if (isLocal) {
-                Asset(localPath = path)
+                Asset(localPath = path, type = type)
             } else {
-                Asset(remotePath = path)
+                Asset(remotePath = path, type = type)
             }
             assets.add(asset)
             return getIntent(context, assets, 0, showSendButton)

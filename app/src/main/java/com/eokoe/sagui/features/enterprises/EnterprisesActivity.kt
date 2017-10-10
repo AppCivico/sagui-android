@@ -75,7 +75,8 @@ class EnterprisesActivity : BaseActivityNavDrawer(),
         }
         enterprisesAdapter.onImageClickListener = object : ImageAdapter.OnItemClickListener {
             override fun onItemClick(image: Image) {
-                val intent = ShowAssetActivity.getIntent(this@EnterprisesActivity, image.imagePath, false)
+                val intent = ShowAssetActivity.getIntent(this@EnterprisesActivity,
+                        image.imagePath, "image/*", false)
                 startActivity(intent)
             }
         }

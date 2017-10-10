@@ -38,7 +38,7 @@ class AssetsAdapter : RecyclerViewAdapter<Asset, RecyclerView.ViewHolder>() {
         fun bind(asset: Asset) {
             itemView.ivPlay.hide()
             when {
-                asset.type.matches("image/.+".toRegex()) ->
+                asset.isImage ->
                     FrescoWidthControllerListener(itemView.ivThumbnail, asset.uri.toString())
                 else -> {
                     itemView.ivPlay.show()

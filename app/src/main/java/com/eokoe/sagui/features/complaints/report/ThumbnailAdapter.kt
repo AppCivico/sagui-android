@@ -46,13 +46,8 @@ class ThumbnailAdapter : RecyclerViewAdapter<Asset, RecyclerView.ViewHolder>() {
         fun bind(file: Asset) {
             val context = itemView.context
             val fileUri = file.uri.getRealPath(context)
-            val options = BitmapFactory.Options()
-            options.inJustDecodeBounds = true
-            var bitmap: Bitmap? = BitmapFactory.decodeFile(fileUri, options)
-            val thumbnail = if (options.outWidth != -1 && options.outHeight != -1) {
-                if (bitmap == null) {
-                    bitmap = BitmapFactory.decodeFile(fileUri)
-                }
+            val thumbnail = if (isImage(file)) {
+                val bitmap = BitmapFactory.decodeFile(fileUri)
                 val size = UnitUtils.dp2px(context, 100f).toInt()
                 itemView.ivPlay.hide()
                 ThumbnailUtils.extractThumbnail(bitmap, size, size)
@@ -67,6 +62,19 @@ class ThumbnailAdapter : RecyclerViewAdapter<Asset, RecyclerView.ViewHolder>() {
                 val audioThumbnail = AppCompatResources.getDrawable(context, R.drawable.ic_audio)
                 audioThumbnail?.mutate()?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN)
                 itemView.ivThumbnail.setImageDrawable(audioThumbnail)
+            }
+        }
+
+        private fun isImage(asset: Asset): Boolean {
+            return if (asset.type != null) {
+                asset.isImage
+            } else {
+                val context = itemView.context
+                val fileUri = asset.uri.getRealPath(context)
+                val options = BitmapFactory.Options()
+                options.inJustDecodeBounds = true
+                BitmapFactory.decodeFile(fileUri, options)
+                options.outWidth != -1 && options.outHeight != -1
             }
         }
     }

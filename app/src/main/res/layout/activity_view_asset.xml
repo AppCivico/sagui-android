@@ -17,8 +17,27 @@
         android:id="@+id/ivImage"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_gravity="center"
+        android:layout_marginBottom="?attr/actionBarSize"
         android:layout_marginTop="?attr/actionBarSize"
         app:actualImageScaleType="fitCenter" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/ivPlay"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_play_circle_outline" />
+
+    <android.support.v7.widget.AppCompatImageView
+        android:id="@+id/ivAudio"
+        android:layout_width="56dp"
+        android:layout_height="56dp"
+        android:layout_gravity="center"
+        android:visibility="gone"
+        app:srcCompat="@drawable/ic_audio"
+        app:tint="@color/white" />
 
     <android.support.design.widget.FloatingActionButton
         android:id="@+id/fabSend"

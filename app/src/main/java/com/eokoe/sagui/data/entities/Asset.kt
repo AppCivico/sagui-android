@@ -54,7 +54,16 @@ open class Asset(
     val isLocal: Boolean
         get() = localPath != null && File(localPath).exists()
 
-    companion object {
+    val isImage: Boolean
+        get() = type.matches("image/.+".toRegex())
+
+    val isVideo: Boolean
+        get() = type.matches("video/.+".toRegex())
+
+    val isAudio: Boolean
+        get() = type.matches("audio/.+".toRegex())
+
+            companion object {
         @JvmField
         val CREATOR = PaperParcelAsset.CREATOR
     }

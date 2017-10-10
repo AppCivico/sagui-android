@@ -24,14 +24,15 @@ object Files {
     object Extensions {
         val MP4 = ".mp4"
         val JPG = ".jpg"
+        val NONE = ""
     }
 }
 
 object RequestCode {
     enum class Intent {
-        PREVIEW_ASSET,
+        PREVIEW_ASSET, LOCATION,
         GALLERY_PICTURE, GALLERY_VIDEO,
-        CAMERA_PICTURE, CAMERA_VIDEO,
+        CAMERA, CAMERA_PICTURE, CAMERA_VIDEO,
         AUDIO;
 
         val value: Int
@@ -46,9 +47,9 @@ object RequestCode {
 
     enum class Permission {
         READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE,
-        CAMERA,
-        CAMERA_PICTURE, CAMERA_VIDEO,
-        PICTURE_STORAGE, VIDEO_STORAGE;
+        PICTURE_STORAGE, VIDEO_STORAGE,
+        CAMERA, CAMERA_PICTURE, CAMERA_VIDEO,
+        AUDIO;
 
         val value: Int
             get() = ordinal

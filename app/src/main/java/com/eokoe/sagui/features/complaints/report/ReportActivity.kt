@@ -26,6 +26,7 @@ import com.eokoe.sagui.features.complaints.report.pin.PinActivity
 import com.eokoe.sagui.services.upload_file.UploadFilesJobIntentService
 import com.eokoe.sagui.utils.FileUtil
 import com.eokoe.sagui.utils.Files
+import com.eokoe.sagui.utils.RequestCode
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
 import kotlinx.android.synthetic.main.activity_report.*
@@ -102,27 +103,27 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
             ItemType.LOCATION -> {
                 val intent = PinActivity.getIntent(this@ReportActivity, enterprise!!,
                         complaint.location, complaint.address)
-                startActivityForResult(intent, REQUEST_CODE_LOCATION)
+                startActivityForResult(intent, RequestCode.Intent.LOCATION.value)
             }
             ItemType.CAMERA -> {
                 if (hasCameraPermission()) {
                     openCamera()
                 } else {
-                    requestCameraPermission(REQUEST_CAMERA_PERMISSION)
+                    requestCameraPermission(RequestCode.Permission.CAMERA.value)
                 }
             }
             ItemType.INSERT_PHOTO_VIDEO -> {
                 if (hasReadExternalStoragePermission()) {
                     openGallery()
                 } else {
-                    requestReadExternalStoragePermission(REQUEST_IMAGE_VIDEO_PERMISSION)
+                    requestReadExternalStoragePermission(RequestCode.Permission.PICTURE_STORAGE.value)
                 }
             }
             ItemType.INSERT_AUDIO -> {
                 if (hasReadExternalStoragePermission()) {
                     openAudioGallery()
                 } else {
-                    requestReadExternalStoragePermission(REQUEST_AUDIO_GALLERY_PERMISSION)
+                    requestReadExternalStoragePermission(RequestCode.Permission.AUDIO.value)
                 }
             }
             ItemType.CATEGORY -> {
@@ -149,16 +150,16 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     private fun openCamera() {
         getAlertList(resources.getStringArray(R.array.camera_options)) { dialog, position ->
             val intent: Intent
-            val requestCode: Int
+            val requestCode: RequestCode.Intent
             if (position == 0) {
                 intent = takePictureIntent()
-                requestCode = REQUEST_CODE_CAMERA
+                requestCode = RequestCode.Intent.CAMERA_PICTURE
             } else {
                 intent = recordVideoIntent()
-                requestCode = REQUEST_CODE_VIDEO
+                requestCode = RequestCode.Intent.CAMERA_VIDEO
             }
             if (intent.resolveActivity(packageManager) != null) {
-                startActivityForResult(intent, requestCode)
+                startActivityForResult(intent, requestCode.value)
             }
             dialog.dismiss()
         }.show()
@@ -179,7 +180,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         if (intent.resolveActivity(packageManager) != null) {
-            startActivityForResult(intent, REQUEST_CODE_GALLERY)
+            startActivityForResult(intent, RequestCode.Intent.GALLERY_PICTURE.value)
         }
     }
 
@@ -187,7 +188,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         if (intent.resolveActivity(packageManager) != null) {
-            startActivityForResult(intent, REQUEST_CODE_AUDIO)
+            startActivityForResult(intent, RequestCode.Intent.AUDIO.value)
         }
     }
 
@@ -262,13 +263,14 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         progressDialog.dismiss()
     }
 
+    @Suppress("NON_EXHAUSTIVE_WHEN")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        when (requestCode) {
-            REQUEST_CODE_LOCATION -> if (resultCode == Activity.RESULT_OK) {
+        when (RequestCode.Intent.fromInt(requestCode)) {
+            RequestCode.Intent.LOCATION -> if (resultCode == Activity.RESULT_OK) {
                 complaint.location = data?.getParcelableExtra(PinActivity.RESULT_LOCATION)
                 complaint.address = data?.getStringExtra(PinActivity.RESULT_ADDRESS)
             }
-            REQUEST_CODE_CAMERA -> if (resultCode == Activity.RESULT_OK && fileAttached?.exists() == true) {
+            RequestCode.Intent.CAMERA_PICTURE -> if (resultCode == Activity.RESULT_OK && fileAttached?.exists() == true) {
                 val imagePath = File(filesDir, Files.Path.IMAGE_PATH)
                 val privateFile = File(
                         imagePath,
@@ -283,9 +285,9 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 } catch (error: Exception) {
                     error.printStackTrace()
                 }
-                complaint.files.add(Asset(localPath = privateFile.path))
+                complaint.files.add(Asset(localPath = privateFile.path, type = "image/*"))
             }
-            REQUEST_CODE_VIDEO -> if (resultCode == Activity.RESULT_OK && fileAttached?.exists() == true) {
+            RequestCode.Intent.CAMERA_VIDEO -> if (resultCode == Activity.RESULT_OK && fileAttached?.exists() == true) {
                 val videoPath = File(filesDir, Files.Path.VIDEO_PATH)
                 val privateFile = File(
                         videoPath,
@@ -299,9 +301,9 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 } catch (error: Exception) {
                     error.printStackTrace()
                 }
-                complaint.files.add(Asset(localPath = privateFile.path))
+                complaint.files.add(Asset(localPath = privateFile.path, type = "video/*"))
             }
-            REQUEST_CODE_GALLERY -> if (resultCode == Activity.RESULT_OK && data != null) {
+            RequestCode.Intent.GALLERY_PICTURE -> if (resultCode == Activity.RESULT_OK && data != null) {
                 val uri = data.data
                 val imagePath = File(filesDir, Files.Path.IMAGE_PATH)
                 val filename = resources.getString(R.string.app_name) +
@@ -313,9 +315,9 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 val tempFile = File.createTempFile(getString(R.string.app_name) + "_complaint_", ".jpg")
                 uri.copyTo(this, tempFile)
                 FileUtil.compressImage(tempFile.toUri()?.getRealPath(this)!!, privateFile)
-                complaint.files.add(Asset(localPath = privateFile.path))
+                complaint.files.add(Asset(localPath = privateFile.path, type = "image/*"))
             }
-            REQUEST_CODE_AUDIO -> if (resultCode == Activity.RESULT_OK && data != null) {
+            RequestCode.Intent.AUDIO -> if (resultCode == Activity.RESULT_OK && data != null) {
                 val uri = data.data
                 val audioPath = File(filesDir, Files.Path.AUDIO_PATH)
                 val privateFile = File(
@@ -323,21 +325,22 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                         "_complaint_" + System.currentTimeMillis()
                 )
                 uri.copyTo(this, privateFile)
-                complaint.files.add(Asset(localPath = privateFile.path))
+                complaint.files.add(Asset(localPath = privateFile.path, type = "audio/*"))
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
     }
 
+    @Suppress("NON_EXHAUSTIVE_WHEN")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        when (requestCode) {
-            REQUEST_CAMERA_PERMISSION -> if (hasCameraPermission()) {
+        when (RequestCode.Permission.fromInt(requestCode)) {
+            RequestCode.Permission.CAMERA -> if (hasCameraPermission()) {
                 openCamera()
             }
-            REQUEST_IMAGE_VIDEO_PERMISSION -> if (hasReadExternalStoragePermission()) {
+            RequestCode.Permission.PICTURE_STORAGE -> if (hasReadExternalStoragePermission()) {
                 openGallery()
             }
-            REQUEST_AUDIO_GALLERY_PERMISSION -> if (hasReadExternalStoragePermission()) {
+            RequestCode.Permission.AUDIO -> if (hasReadExternalStoragePermission()) {
                 openAudioGallery()
             }
         }
@@ -364,17 +367,10 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     }
 
     companion object {
-        private val REQUEST_CODE_LOCATION = 1
-        private val REQUEST_CODE_CAMERA = 2
-        private val REQUEST_CODE_VIDEO = 3
-        private val REQUEST_CODE_GALLERY = 4
-        private val REQUEST_CODE_AUDIO = 5
         private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
         private val EXTRA_CATEGORIES = "EXTRA_CATEGORIES"
-        private val REQUEST_CAMERA_PERMISSION = 1
-        private val REQUEST_IMAGE_VIDEO_PERMISSION = 2
-        private val REQUEST_AUDIO_GALLERY_PERMISSION = 3
+
         val RESULT_COMPLAINT_ID = "RESULT_COMPLAINT_ID"
         val RESULT_LAT_LONG = "RESULT_LAT_LONG"
 
