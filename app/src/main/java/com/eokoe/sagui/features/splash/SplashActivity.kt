@@ -65,4 +65,12 @@ class SplashActivity : BaseActivity(), SplashContract.View, ViewPresenter<Splash
     override fun initServices() {
         UploadFilesJobIntentService.enqueueWork(this)
     }
+
+    override fun saveInstanceState(outState: Bundle) {
+
+    }
+
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
+
+    }
 }

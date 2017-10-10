@@ -17,7 +17,7 @@ class ShowAssetActivity : BaseActivity() {
 
     lateinit var assets: List<Asset>
     var showSendButton: Boolean = false
-    var currentPosition: Int = 0
+    var currentPosition: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -29,7 +29,9 @@ class ShowAssetActivity : BaseActivity() {
         showBackButton()
         assets = intent.extras.getParcelableArrayList(EXTRA_ASSETS)
         showSendButton = intent.extras.getBoolean(EXTRA_SHOW_SEND_BUTTON)
-        currentPosition = intent.extras.getInt(EXTRA_CURRENT_POSITION)
+        if (currentPosition == -1) {
+            currentPosition = intent.extras.getInt(EXTRA_CURRENT_POSITION)
+        }
     }
 
     override fun init(savedInstanceState: Bundle?) {
@@ -49,10 +51,20 @@ class ShowAssetActivity : BaseActivity() {
         }
     }
 
+    override fun saveInstanceState(outState: Bundle) {
+        outState.putInt(STATE_CURRENT_POSITION, currentPosition)
+    }
+
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
+        currentPosition = savedInstanceState.getInt(STATE_CURRENT_POSITION)
+    }
+
     companion object {
         private val EXTRA_ASSETS = "EXTRA_ASSETS"
         private val EXTRA_CURRENT_POSITION = "EXTRA_CURRENT_POSITION"
         private val EXTRA_SHOW_SEND_BUTTON = "EXTRA_SHOW_SEND_BUTTON"
+
+        private val STATE_CURRENT_POSITION = "STATE_CURRENT_POSITION"
 
         fun getIntent(context: Context, assets: List<Asset>, currentPosition: Int = 0, showSendButton: Boolean = false): Intent =
                 Intent(context, ShowAssetActivity::class.java)

@@ -27,7 +27,9 @@ import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.report.ReportAdapter.ItemType
 import com.eokoe.sagui.features.complaints.report.pin.PinActivity
 import com.eokoe.sagui.services.upload_file.UploadFilesJobIntentService
-import com.eokoe.sagui.utils.*
+import com.eokoe.sagui.utils.FileUtil
+import com.eokoe.sagui.utils.Files
+import com.eokoe.sagui.utils.LogUtil
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
 import kotlinx.android.synthetic.main.activity_report.*
@@ -44,9 +46,11 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     override lateinit var presenter: ReportContract.Presenter
     private lateinit var reportAdapter: ReportAdapter
     private lateinit var progressDialog: LoadingDialog
-    private val complaint = Complaint()
-    private var enterprise: Enterprise? = null
+
+    private var complaint = Complaint()
     private var fileAttached: File? = null
+
+    private var enterprise: Enterprise? = null
     private var category: Category? = null
     private var categories: List<Category>? = null
 
@@ -174,7 +178,6 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
 
     private fun openGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-//        intent.type = "image/* video/*"
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         if (intent.resolveActivity(packageManager) != null) {
             startActivityForResult(intent, REQUEST_CODE_GALLERY)
@@ -197,7 +200,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 getExternalFilesDir(Environment.DIRECTORY_PICTURES),
                 filename
         )
-        val file = FileProvider.getUriForFile(this, AUTHORITY, fileAttached)
+        val file = FileProvider.getUriForFile(this, Files.AUTHORITY, fileAttached)
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, file)
         grantUriRwPermissions(intent, file)
@@ -211,7 +214,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 getExternalFilesDir(Environment.DIRECTORY_MOVIES),
                 filename
         )
-        val file = FileProvider.getUriForFile(this, AUTHORITY, fileAttached)
+        val file = FileProvider.getUriForFile(this, Files.AUTHORITY, fileAttached)
         val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
         grantUriRwPermissions(intent, file)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, file)
@@ -261,13 +264,13 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-            when (requestCode) {
+        when (requestCode) {
             REQUEST_CODE_LOCATION -> if (resultCode == Activity.RESULT_OK) {
                 complaint.location = data?.getParcelableExtra(PinActivity.RESULT_LOCATION)
                 complaint.address = data?.getStringExtra(PinActivity.RESULT_ADDRESS)
             }
             REQUEST_CODE_CAMERA -> if (resultCode == Activity.RESULT_OK && fileAttached?.exists() == true) {
-                val imagePath = File(filesDir, IMAGE_PATH)
+                val imagePath = File(filesDir, Files.Path.IMAGE_PATH)
                 val privateFile = File(
                         imagePath,
                         fileAttached!!.name
@@ -288,7 +291,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 LogUtil.debug(this, "pictureFile exists: " + fileAttached?.exists())
             }
             REQUEST_CODE_VIDEO -> if (resultCode == Activity.RESULT_OK && fileAttached?.exists() == true) {
-                val videoPath = File(filesDir, VIDEO_PATH)
+                val videoPath = File(filesDir, Files.Path.VIDEO_PATH)
                 val privateFile = File(
                         videoPath,
                         fileAttached!!.name
@@ -305,7 +308,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
             }
             REQUEST_CODE_GALLERY -> if (resultCode == Activity.RESULT_OK && data != null) {
                 val uri = data.data
-                val imagePath = File(filesDir, IMAGE_PATH)
+                val imagePath = File(filesDir, Files.Path.IMAGE_PATH)
                 val filename = resources.getString(R.string.app_name) +
                         "_complaint_" + System.currentTimeMillis() + ".jpg"
                 val privateFile = File(
@@ -322,7 +325,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
             }
             REQUEST_CODE_AUDIO -> if (resultCode == Activity.RESULT_OK && data != null) {
                 val uri = data.data
-                val audioPath = File(filesDir, AUDIO_PATH)
+                val audioPath = File(filesDir, Files.Path.AUDIO_PATH)
                 val privateFile = File(
                         audioPath,
                         "_complaint_" + System.currentTimeMillis() + ".amr"
@@ -370,6 +373,21 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         UploadFilesJobIntentService.enqueueWork(this)
     }
 
+    override fun saveInstanceState(outState: Bundle) {
+        outState.putParcelable(STATE_COMPLAINT, complaint)
+        if (fileAttached != null) {
+            outState.putParcelable(STATE_FILE_ATTACHED, Uri.fromFile(fileAttached))
+        }
+    }
+
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
+        complaint = savedInstanceState.getParcelable(STATE_COMPLAINT)
+        val uri = savedInstanceState.getParcelable<Uri>(STATE_FILE_ATTACHED)
+        if (uri != null && fileAttached == null) {
+            fileAttached = File(uri.toString())
+        }
+    }
+
     companion object {
         private val REQUEST_CODE_LOCATION = 1
         private val REQUEST_CODE_CAMERA = 2
@@ -384,6 +402,9 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         private val REQUEST_AUDIO_GALLERY_PERMISSION = 3
         val RESULT_COMPLAINT_ID = "RESULT_COMPLAINT_ID"
         val RESULT_LAT_LONG = "RESULT_LAT_LONG"
+
+        private val STATE_COMPLAINT = "STATE_COMPLAINT"
+        private val STATE_FILE_ATTACHED = "STATE_FILE_ATTACHED"
 
         fun getIntent(context: Context, enterprise: Enterprise, category: Category): Intent =
                 Intent(context, ReportActivity::class.java)

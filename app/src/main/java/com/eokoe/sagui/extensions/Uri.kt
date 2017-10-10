@@ -9,7 +9,7 @@ import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.webkit.MimeTypeMap
-import com.eokoe.sagui.utils.AUTHORITY
+import com.eokoe.sagui.utils.Files
 import java.io.File
 import java.io.FileOutputStream
 
@@ -64,7 +64,7 @@ fun Uri.getRealPath(context: Context): String? {
 }
 
 val Uri.isLocalStorageDocument: Boolean
-    get() = AUTHORITY == this.authority
+    get() = Files.AUTHORITY == this.authority
 
 val Uri.isExternalStorageDocument: Boolean
     get() = "com.android.externalstorage.documents" == authority

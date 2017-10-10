@@ -24,6 +24,7 @@ abstract class BaseActivityNavDrawer : BaseActivity(), NavigationView.OnNavigati
     protected var enterprise: Enterprise? = null
     protected var category: Category? = null
     protected var categories: ArrayList<Category>? = null
+
     protected val toolbar: Toolbar
         get() = findViewById(R.id.toolbar)
     protected val drawerLayout: DrawerLayout
@@ -97,5 +98,27 @@ abstract class BaseActivityNavDrawer : BaseActivity(), NavigationView.OnNavigati
             return true
         }
         return false
+    }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putParcelable(STATE_ENTERPRISE, enterprise)
+        outState.putParcelable(STATE_CATEGORY, category)
+        outState.putParcelableArrayList(STATE_CATEGORIES, categories)
+    }
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
+        if (savedInstanceState != null) {
+            enterprise = enterprise ?: savedInstanceState.getParcelable(STATE_ENTERPRISE)
+            category = category ?: savedInstanceState.getParcelable(STATE_CATEGORY)
+            categories = categories ?: savedInstanceState.getParcelableArrayList(STATE_CATEGORIES)
+        }
+    }
+
+    companion object {
+        private val STATE_ENTERPRISE = "STATE_ENTERPRISE"
+        private val STATE_CATEGORY = "STATE_CATEGORY"
+        private val STATE_CATEGORIES = "STATE_CATEGORIES"
     }
 }

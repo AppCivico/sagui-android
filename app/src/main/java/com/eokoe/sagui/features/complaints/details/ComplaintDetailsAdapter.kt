@@ -78,7 +78,7 @@ class ComplaintDetailsAdapter(complaint: Complaint) : RecyclerViewAdapter<Compla
             } else {
                 itemView.tvQtyRemain.setText(R.string.occurrence_already)
             }
-            itemView.tvDescription.text = complaint.description
+            itemView.etDescription.text = complaint.description
         }
     }
 

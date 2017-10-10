@@ -14,6 +14,7 @@ import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Asset
 import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Confirmation
+import com.eokoe.sagui.data.entities.ContributeOptions
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.ErrorType
 import com.eokoe.sagui.extensions.errorType
@@ -23,10 +24,9 @@ import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.show_asset.ShowAssetActivity
 import com.eokoe.sagui.services.upload_file.UploadFilesJobIntentService
-import com.eokoe.sagui.utils.AUTHORITY
 import com.eokoe.sagui.utils.FileUtil
-import com.eokoe.sagui.utils.IMAGE_PATH
-import com.eokoe.sagui.utils.LogUtil
+import com.eokoe.sagui.utils.Files
+import com.eokoe.sagui.utils.RequestCode
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
 import kotlinx.android.synthetic.main.activity_complaint_details.*
@@ -38,12 +38,9 @@ import java.io.File
  */
 class ComplaintDetailsActivity : BaseActivity(),
         ConfirmContract.View, ViewPresenter<ConfirmContract.Presenter> {
-    override fun onFilesSave(confirmation: Confirmation) {
-        UploadFilesJobIntentService.enqueueWork(this)
-        getContributeSuccess().show(supportFragmentManager)
-    }
 
     override lateinit var presenter: ConfirmContract.Presenter
+
     private lateinit var complaint: Complaint
     private var confirmation = Confirmation()
     private lateinit var loadingDialog: LoadingDialog
@@ -126,21 +123,20 @@ class ComplaintDetailsActivity : BaseActivity(),
             positiveTextRes = R.string.confirm
             negativeTextRes = R.string.cancel
             cancelable = true
-            onConfirmClickListener { dialog, which ->
+            onConfirmClickListener { _, _ ->
                 presenter.confirmComplaint(confirmation)
             }
         }
     }
 
     private fun getContributeDialog(): AlertDialogFragment {
-        // TODO change to contribute
         return AlertDialogFragment.create(this) {
             titleRes = R.string.confirmed
             messageRes = R.string.msg_contribute
             positiveTextRes = R.string.contribute
-            negativeTextRes = R.string.cancel
+            negativeTextRes = R.string.no
             cancelable = true
-            onConfirmClickListener { dialog, which ->
+            onConfirmClickListener { dialog, _ ->
                 openContributeDialog()
                 dialog.dismiss()
             }
@@ -156,68 +152,75 @@ class ComplaintDetailsActivity : BaseActivity(),
     }
 
     private fun openContributeDialog() {
-        getAlertList(resources.getStringArray(R.array.contribute_options)) { dialog, position ->
-            when (position) {
-                0 -> {
-                    if (hasCameraPermission()) {
-                        takePicture()
-                    } else {
-                        requestCameraPermission()
-                    }
+        getAlertList(ContributeOptions.list(this)) { dialog, position ->
+            when (ContributeOptions.fromPosition(position)) {
+                ContributeOptions.TAKE_PICTURE -> if (hasCameraPermission()) {
+                    takePicture()
+                } else {
+                    requestCameraPermission(RequestCode.Permission.CAMERA_PICTURE.value)
                 }
-                1 -> {
-                    if (hasReadExternalStoragePermission()) {
-                        openGallery()
-                    } else {
-                        requestReadExternalStoragePermission()
-                    }
+                ContributeOptions.GALLERY_PICTURE -> if (hasReadExternalStoragePermission()) {
+                    openImageGallery()
+                } else {
+                    requestReadExternalStoragePermission(RequestCode.Permission.PICTURE_STORAGE.value)
                 }
+            /*2 -> if (hasCameraPermission()) {
+                recordVideo()
+            } else {
+                requestCameraPermission()
+            }
+            3 -> if (requestReadExternalStoragePermission(REQUEST_VIDEO_STORAGE_PERMISSION)) {
+                recordVideo()
+            } else {
+                requestCameraPermission()
+            }*/
             }
             dialog.dismiss()
         }.show()
     }
 
-    private fun openGallery() {
+    private fun openImageGallery() {
         val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-//        intent.type = "image/* video/*"
         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
         if (intent.resolveActivity(packageManager) != null) {
-            startActivityForResult(intent, REQUEST_CODE_PHOTO_GALLERY)
+            startActivityForResult(intent, RequestCode.Intent.GALLERY_PICTURE.value)
         }
     }
 
-    private fun requestCameraPermission() {
-        // TODO handle permission not granted
-        if (!hasCameraPermission()) {
-            requestCameraPermission(R.string.title_request_camera_permission,
-                    R.string.message_request_camera_permission,
-                    REQUEST_CAMERA_PERMISSION)
+    private fun openVideoGallery() {
+        val intent = Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
+        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivityForResult(intent, RequestCode.Intent.GALLERY_VIDEO.value)
         }
     }
 
     private fun takePicture() {
         fileAttached = File(
                 getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                generateFilename()
+                generateFilename(Files.Extensions.JPG)
         )
-        val file = FileProvider.getUriForFile(this, AUTHORITY, fileAttached)
+        val file = FileProvider.getUriForFile(this, Files.AUTHORITY, fileAttached)
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, file)
         grantUriRwPermissions(intent, file)
         if (intent.resolveActivity(packageManager) != null) {
-            startActivityForResult(intent, REQUEST_CODE_PHOTO)
+            startActivityForResult(intent, RequestCode.Intent.CAMERA_PICTURE.value)
         }
     }
 
-    private fun grantUriRwPermissions(intent: Intent, file: Uri?) {
-        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
-        val resInfoList = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-        resInfoList
-                .map { it.activityInfo.packageName }
-                .forEach {
-                    grantUriPermission(it, file,
-                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
+    private fun recordVideo() {
+        fileAttached = File(
+                getExternalFilesDir(Environment.DIRECTORY_MOVIES),
+                generateFilename(Files.Extensions.MP4)
+        )
+        val file = FileProvider.getUriForFile(this, Files.AUTHORITY, fileAttached)
+        val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, file)
+        grantUriRwPermissions(intent, file)
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivityForResult(intent, RequestCode.Intent.CAMERA_VIDEO.value)
+        }
     }
 
     private fun getErrorDialog(error: Throwable): AlertDialogFragment {
@@ -231,20 +234,12 @@ class ComplaintDetailsActivity : BaseActivity(),
         }
     }
 
-    private fun requestReadExternalStoragePermission() {
-        // TODO handle permission not granted
-        if (!hasReadExternalStoragePermission()) {
-            requestReadExternalStoragePermission(R.string.title_request_read_external_storage_permission,
-                    R.string.message_request_read_external_storage_permission,
-                    REQUEST_IMAGE_VIDEO_PERMISSION)
-        }
-    }
-
+    @Suppress("NON_EXHAUSTIVE_WHEN")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        LogUtil.debug(this, "" + requestCode)
-        when (requestCode) {
-            REQUEST_CODE_PHOTO -> if (resultCode == Activity.RESULT_OK && fileAttached?.exists() == true) {
-                val imagePath = File(filesDir, IMAGE_PATH)
+        when (RequestCode.Intent.fromInt(requestCode)) {
+
+            RequestCode.Intent.CAMERA_PICTURE -> if (resultCode == Activity.RESULT_OK && fileAttached?.exists() == true) {
+                val imagePath = File(filesDir, Files.Path.IMAGE_PATH)
                 val privateFile = File(
                         imagePath,
                         fileAttached!!.name
@@ -261,12 +256,13 @@ class ComplaintDetailsActivity : BaseActivity(),
                 confirmation.files.add(Asset(localPath = privateFile.path))
                 openPreview = true
             }
-            REQUEST_CODE_PHOTO_GALLERY -> if (resultCode == Activity.RESULT_OK && data != null) {
+
+            RequestCode.Intent.GALLERY_PICTURE -> if (resultCode == Activity.RESULT_OK && data != null) {
                 val uri = data.data
-                val imagePath = File(filesDir, IMAGE_PATH)
+                val imagePath = File(filesDir, Files.Path.IMAGE_PATH)
                 val privateFile = File(
                         imagePath,
-                        generateFilename()
+                        generateFilename(Files.Extensions.JPG)
                 )
                 contentResolver.openInputStream(uri).use { inputStream ->
                     if (inputStream != null) {
@@ -277,7 +273,7 @@ class ComplaintDetailsActivity : BaseActivity(),
                 }
                 openPreview = true
             }
-            REQUEST_PREVIEW_ASSET -> if (resultCode == Activity.RESULT_OK) {
+            RequestCode.Intent.PREVIEW_ASSET -> if (resultCode == Activity.RESULT_OK) {
                 updateConfirmation = true
             } else {
                 confirmation.files.clear()
@@ -287,33 +283,98 @@ class ComplaintDetailsActivity : BaseActivity(),
 
     private fun openPreview() {
         val intent = ShowAssetActivity.getIntent(this, confirmation.files, showSendButton = true)
-        startActivityForResult(intent, REQUEST_PREVIEW_ASSET)
+        startActivityForResult(intent, RequestCode.Intent.PREVIEW_ASSET.value)
     }
 
-    private fun generateFilename(): String {
+    private fun generateFilename(extension: String): String {
         return resources.getString(R.string.app_name) +
-                "_confirmation_" + System.currentTimeMillis() + ".jpg"
+                "_confirmation_" + System.currentTimeMillis() + ".$extension"
     }
 
+    override fun onFilesSave(confirmation: Confirmation) {
+        UploadFilesJobIntentService.enqueueWork(this)
+        getContributeSuccess().show(supportFragmentManager)
+    }
+
+    override fun saveInstanceState(outState: Bundle) {
+        outState.putParcelable(STATE_CONFIRMATION, confirmation)
+        if (fileAttached != null) {
+            outState.putParcelable(STATE_FILE_ATTACHED, Uri.fromFile(fileAttached))
+        }
+        outState.putBoolean(STATE_IS_CONFIRMED, isConfirmed)
+        outState.putBoolean(STATE_OPEN_PREVIEW, openPreview)
+        outState.putBoolean(STATE_UPDATE_CONFIRMATION, updateConfirmation)
+    }
+
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
+        confirmation = savedInstanceState.getParcelable(STATE_CONFIRMATION)
+        val uri = savedInstanceState.getParcelable<Uri>(STATE_FILE_ATTACHED)
+        if (uri != null && fileAttached == null) {
+            fileAttached = File(uri.toString())
+        }
+        isConfirmed = savedInstanceState.getBoolean(STATE_IS_CONFIRMED)
+        openPreview = savedInstanceState.getBoolean(STATE_OPEN_PREVIEW)
+        updateConfirmation = savedInstanceState.getBoolean(STATE_UPDATE_CONFIRMATION)
+    }
+
+    // region Permissions
+    private fun grantUriRwPermissions(intent: Intent, file: Uri?) {
+        intent.flags = Intent.FLAG_GRANT_READ_URI_PERMISSION
+        val resInfoList = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
+        resInfoList
+                .map { it.activityInfo.packageName }
+                .forEach {
+                    grantUriPermission(it, file,
+                            Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
+                }
+    }
+
+    private fun requestCameraPermission(requestCode: Int) {
+        // TODO handle permission not granted
+        if (!hasCameraPermission()) {
+            requestCameraPermission(R.string.title_request_camera_permission,
+                    R.string.message_request_camera_permission,
+                    requestCode)
+        }
+    }
+
+    private fun requestReadExternalStoragePermission(requestCode: Int) {
+        // TODO handle permission not granted
+        if (!hasReadExternalStoragePermission()) {
+            requestReadExternalStoragePermission(R.string.title_request_read_external_storage_permission,
+                    R.string.message_request_read_external_storage_permission,
+                    requestCode)
+        }
+    }
+
+    @Suppress("NON_EXHAUSTIVE_WHEN")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        when (requestCode) {
-            REQUEST_CAMERA_PERMISSION -> if (hasCameraPermission()) {
+        when (RequestCode.Permission.fromInt(requestCode)) {
+            RequestCode.Permission.CAMERA_PICTURE -> if (hasCameraPermission()) {
                 takePicture()
             }
-            REQUEST_IMAGE_VIDEO_PERMISSION -> if (hasReadExternalStoragePermission()) {
-                openGallery()
+            RequestCode.Permission.PICTURE_STORAGE -> if (hasReadExternalStoragePermission()) {
+                openImageGallery()
+            }
+            RequestCode.Permission.CAMERA_VIDEO -> if (hasCameraPermission()) {
+                recordVideo()
+            }
+            RequestCode.Permission.VIDEO_STORAGE -> if (hasReadExternalStoragePermission()) {
+                openVideoGallery()
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
+    // endregion
 
     companion object {
         private val EXTRA_COMPLAINT = "EXTRA_COMPLAINT"
-        private val REQUEST_PREVIEW_ASSET = 0
-        private val REQUEST_CODE_PHOTO = 1
-        private val REQUEST_CODE_PHOTO_GALLERY = 2
-        private val REQUEST_CAMERA_PERMISSION = 1
-        private val REQUEST_IMAGE_VIDEO_PERMISSION = 2
+
+        private val STATE_CONFIRMATION = "STATE_CONFIRMATION"
+        private val STATE_FILE_ATTACHED = "STATE_FILE_ATTACHED"
+        private val STATE_IS_CONFIRMED = "STATE_IS_CONFIRMED"
+        private val STATE_OPEN_PREVIEW = "STATE_OPEN_PREVIEW"
+        private val STATE_UPDATE_CONFIRMATION = "STATE_UPDATE_CONFIRMATION"
 
         fun getIntent(context: Context, complaint: Complaint): Intent =
                 Intent(context, ComplaintDetailsActivity::class.java)

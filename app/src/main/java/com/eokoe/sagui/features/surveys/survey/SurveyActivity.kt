@@ -306,18 +306,14 @@ class SurveyActivity : BaseActivity(),
         this.location = LatLong(location.latitude, location.longitude)
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        super.onRestoreInstanceState(savedInstanceState)
-        if (savedInstanceState != null) {
-            currentProgress = savedInstanceState.getInt(STATE_CURRENT_PROGRESS)
-            questionBoxOpened = savedInstanceState.getBoolean(STATE_QUESTION_BOX_OPENED)
-        }
+    override fun saveInstanceState(outState: Bundle) {
+        outState.putInt(STATE_CURRENT_PROGRESS, currentProgress)
+        outState.putBoolean(STATE_QUESTION_BOX_OPENED, questionBoxOpened)
     }
 
-    override fun onSaveInstanceState(outState: Bundle?) {
-        super.onSaveInstanceState(outState)
-        outState?.putInt(STATE_CURRENT_PROGRESS, currentProgress)
-        outState?.putBoolean(STATE_QUESTION_BOX_OPENED, questionBoxOpened)
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
+        currentProgress = savedInstanceState.getInt(STATE_CURRENT_PROGRESS)
+        questionBoxOpened = savedInstanceState.getBoolean(STATE_QUESTION_BOX_OPENED)
     }
 
     companion object {

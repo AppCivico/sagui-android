@@ -154,7 +154,11 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         map.setOnMapClickListener(this)
 
         markEnterpriseLocation(map, enterprise!!)
-        presenter.list(enterprise!!, category)
+        if (complaints == null || complaints!!.isEmpty()) {
+            presenter.list(enterprise!!, category)
+        } else {
+            loadComplaints(complaints!!)
+        }
         if (!requestLocation()) {
             requestLocationPermission(R.string.title_request_location_permission,
                     R.string.message_request_location_permission, REQUEST_PERMISSION_LOCATION)
@@ -211,7 +215,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
     private fun populateDetails(complaint: Complaint) {
         tvTitle.text = complaint.title
         tvLocation.text = complaint.address
-        tvDescription.text = complaint.description
+        etDescription.text = complaint.description
         tvCategoryName.text = complaint.category?.name
         tvQtyConfirmations.text = resources.getQuantityString(
                 R.plurals.qty_confirmations, complaint.confirmations, complaint.confirmations)
@@ -283,8 +287,9 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
                     onMultiChoiceClickListener { _, _, isChecked ->
                         allowNotifications = isChecked
                     }
+                    multiChoiceItemsSelected = arrayListOf(allowNotifications).toBooleanArray()
                     onConfirmClickListener { dialog, _ ->
-                        presenter.allowNotification(allowNotifications, insertedComplaintId!!)
+//                        presenter.allowNotification(allowNotifications, insertedComplaintId!!)
                         dialog.dismiss()
                     }
                     onDismissListener {
@@ -294,6 +299,24 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
                 .show(supportFragmentManager)
     }
 
+    override fun saveInstanceState(outState: Bundle) {
+        outState.putParcelableArrayList(STATE_COMPLAINTS, ArrayList<Complaint>(complaints))
+        outState.putString(STATE_COMPLAINT_SELECTED, complaintSelected)
+        outState.putString(STATE_COMPLAINT_INSERTED, insertedComplaintId)
+        outState.putBoolean(STATE_UPDATE_MARKERS, updateMarkers)
+        outState.putBoolean(STATE_ALLOW_NOTIFICATIONS, allowNotifications)
+        outState.putParcelable(STATE_LAST_LAT_LONG, lastLatLong)
+    }
+
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
+        complaints = savedInstanceState.getParcelableArrayList(STATE_COMPLAINTS)
+        complaintSelected = savedInstanceState.getString(STATE_COMPLAINT_SELECTED)
+        insertedComplaintId = savedInstanceState.getString(STATE_COMPLAINT_INSERTED)
+        updateMarkers = savedInstanceState.getBoolean(STATE_UPDATE_MARKERS)
+        allowNotifications = savedInstanceState.getBoolean(STATE_ALLOW_NOTIFICATIONS)
+        lastLatLong = savedInstanceState.getParcelable(STATE_LAST_LAT_LONG)
+    }
+
     companion object {
         private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
@@ -301,6 +324,13 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         private val REQUEST_PERMISSION_LOCATION = 1
         private val REQUEST_CREATE_REPORT = 2
         private val REQUEST_CONFIRM_REPORT = 3
+
+        private val STATE_COMPLAINTS = "STATE_COMPLAINTS"
+        private val STATE_COMPLAINT_SELECTED = "STATE_COMPLAINT_SELECTED"
+        private val STATE_COMPLAINT_INSERTED = "STATE_COMPLAINT_INSERTED"
+        private val STATE_UPDATE_MARKERS = "STATE_UPDATE_MARKERS"
+        private val STATE_ALLOW_NOTIFICATIONS = "STATE_ALLOW_NOTIFICATIONS"
+        private val STATE_LAST_LAT_LONG = "STATE_LAST_LAT_LONG"
 
         fun getIntent(context: Context, enterprise: Enterprise, category: Category): Intent =
                 Intent(context, ComplaintsActivity::class.java)

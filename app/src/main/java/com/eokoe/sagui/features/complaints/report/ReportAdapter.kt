@@ -95,7 +95,7 @@ class ReportAdapter(category: Category?) : RecyclerViewAdapter<ReportAdapter.Ite
 
     inner class DescriptionViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         init {
-            RxTextView.textChangeEvents(itemView.tvDescription)
+            RxTextView.textChangeEvents(itemView.etDescription)
                     .map {return@map it.text().toString()}
                     .subscribe(descriptionChangeSubject)
         }

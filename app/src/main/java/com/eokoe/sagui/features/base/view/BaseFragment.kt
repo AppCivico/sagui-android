@@ -33,4 +33,18 @@ abstract class BaseFragment: Fragment() {
     }
 
     abstract fun init(view: View?, savedInstanceState: Bundle?)
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        saveInstanceState(outState)
+    }
+
+    abstract fun saveInstanceState(outState: Bundle)
+
+    override fun onViewStateRestored(savedInstanceState: Bundle?) {
+        super.onViewStateRestored(savedInstanceState)
+        restoreInstanceState(savedInstanceState)
+    }
+
+    abstract fun restoreInstanceState(savedInstanceState: Bundle?)
 }

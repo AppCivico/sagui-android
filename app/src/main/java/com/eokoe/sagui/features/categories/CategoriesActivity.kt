@@ -16,7 +16,6 @@ import com.eokoe.sagui.features.complaints.ComplaintsActivity
 import com.eokoe.sagui.features.surveys.list.CategoriesContract
 import com.eokoe.sagui.features.surveys.list.CategoriesPresenter
 import com.eokoe.sagui.features.surveys.list.SurveyListActivity
-import com.eokoe.sagui.services.upload_file.UploadFilesJobIntentService
 import kotlinx.android.synthetic.main.activity_categories.*
 
 
@@ -113,18 +112,14 @@ class CategoriesActivity : BaseActivityNavDrawer(), CategoryActionsDialog.OnActi
         })
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        super.onRestoreInstanceState(savedInstanceState)
-        if (savedInstanceState != null) {
-            categories = savedInstanceState.getParcelableArrayList(STATE_CATEGORIES)
-        }
-    }
-
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
+    override fun saveInstanceState(outState: Bundle) {
         if (categories != null) {
             outState.putParcelableArrayList(STATE_CATEGORIES, categories)
         }
+    }
+
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
+        categories = savedInstanceState.getParcelableArrayList(STATE_CATEGORIES)
     }
 
     companion object {

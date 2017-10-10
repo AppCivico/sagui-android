@@ -25,6 +25,14 @@ class EnterprisesFilterActivity : BaseActivity() {
         }
     }
 
+    override fun saveInstanceState(outState: Bundle) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+
     companion object {
         fun getIntent(context: Context) = Intent(context, EnterprisesFilterActivity::class.java)
     }

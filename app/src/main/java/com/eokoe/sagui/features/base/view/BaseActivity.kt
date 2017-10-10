@@ -151,4 +151,20 @@ abstract class BaseActivity : AppCompatActivity() {
                 .setItems(list, listener)
                 .create()
     }
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        saveInstanceState(outState)
+    }
+
+    abstract fun saveInstanceState(outState: Bundle)
+
+    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
+        super.onRestoreInstanceState(savedInstanceState)
+        if (savedInstanceState != null) {
+            restoreInstanceState(savedInstanceState)
+        }
+    }
+
+    abstract fun restoreInstanceState(savedInstanceState: Bundle)
 }

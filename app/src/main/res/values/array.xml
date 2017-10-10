@@ -8,7 +8,7 @@
     <string-array name="contribute_options">
         <item>Tirar foto</item>
         <item>Selecionar foto da galeria</item>
-        <!--<item>Gravar video</item>-->
-        <!--<item>Selecionar video da galeria</item>-->
+        <item>Gravar video</item>
+        <item>Selecionar video da galeria</item>
     </string-array>
 </resources>

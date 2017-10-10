@@ -100,15 +100,11 @@ class SurveyListActivity : BaseActivityNavDrawer(),
         })
     }
 
-    override fun onRestoreInstanceState(savedInstanceState: Bundle?) {
-        super.onRestoreInstanceState(savedInstanceState)
-        if (savedInstanceState != null) {
-            surveys = savedInstanceState.getParcelableArrayList(STATE_SURVEYS)
-        }
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
+        surveys = savedInstanceState.getParcelableArrayList(STATE_SURVEYS)
     }
 
-    override fun onSaveInstanceState(outState: Bundle) {
-        super.onSaveInstanceState(outState)
+    override fun saveInstanceState(outState: Bundle) {
         if (surveys != null) {
             outState.putParcelableArrayList(STATE_SURVEYS, surveys)
         }

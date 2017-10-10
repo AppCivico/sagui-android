@@ -126,7 +126,7 @@
         android:textSize="12sp"/>
 
     <com.eokoe.sagui.widgets.CustomTextView
-        android:id="@+id/tvDescription"
+        android:id="@+id/etDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignEnd="@id/tvCategoryName"

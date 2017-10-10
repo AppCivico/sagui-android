@@ -133,7 +133,7 @@
             app:tint="@color/colorPrimary"/>
 
         <com.eokoe.sagui.widgets.CustomTextView
-            android:id="@+id/tvDescription"
+            android:id="@+id/etDescription"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignEnd="@id/tvCategoryName"
@@ -152,7 +152,7 @@
             layout="@layout/divider_dark"
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:layout_below="@id/tvDescription"/>
+            android:layout_below="@id/etDescription"/>
 
         <com.eokoe.sagui.widgets.CustomButton
             android:id="@+id/btnConfirm"

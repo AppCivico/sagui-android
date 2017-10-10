@@ -20,6 +20,8 @@ class NotificationsActivity : BaseActivity(),
     override lateinit var presenter: NotificationContract.Presenter
     private lateinit var notificationsAdapter: NotificationsAdapter
 
+    private var notifications: List<Notification>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_notification)
@@ -44,10 +46,21 @@ class NotificationsActivity : BaseActivity(),
     }
 
     override fun loadNotifications(notifications: List<Notification>) {
+        this.notifications = notifications
         notificationsAdapter.items = notifications
     }
 
+    override fun saveInstanceState(outState: Bundle) {
+        outState.putParcelableArrayList(STATE_NOTIFICATIONS, ArrayList<Notification>(notifications))
+    }
+
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
+        notifications = savedInstanceState.getParcelableArrayList(STATE_NOTIFICATIONS)
+    }
+
     companion object {
+        private val STATE_NOTIFICATIONS = "STATE_NOTIFICATIONS"
+
         fun getIntent(context: Context) = Intent(context, NotificationsActivity::class.java)
     }
 }

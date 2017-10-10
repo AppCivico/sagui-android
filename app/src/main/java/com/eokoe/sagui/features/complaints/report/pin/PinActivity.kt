@@ -225,6 +225,16 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
         }
     }
 
+    override fun saveInstanceState(outState: Bundle) {
+        outState.putParcelable(STATE_LAT_LONG, latLong)
+        outState.putString(STATE_ADDRESS, address)
+    }
+
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
+        latLong = savedInstanceState.getParcelable(STATE_LAT_LONG)
+        address = savedInstanceState.getString(STATE_ADDRESS)
+    }
+
     companion object {
         private val REQUEST_PERMISSION_LOCATION = 1
         val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
@@ -232,6 +242,9 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
         val EXTRA_ADDRESS = "EXTRA_ADDRESS"
         val RESULT_LOCATION = "RESULT_LOCATION"
         val RESULT_ADDRESS = "RESULT_ADDRESS"
+
+        private val STATE_LAT_LONG = "STATE_LAT_LONG"
+        private val STATE_ADDRESS = "STATE_ADDRESS"
 
         fun getIntent(context: Context, enterprise: Enterprise, latLong: LatLong? = null, address: String? = null): Intent {
             val intent = Intent(context, PinActivity::class.java)

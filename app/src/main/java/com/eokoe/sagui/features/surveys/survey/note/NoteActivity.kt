@@ -4,7 +4,6 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Comment
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
@@ -79,6 +78,12 @@ class NoteActivity : BaseActivity(), NoteContract.View, ViewPresenter<NoteContra
                     else "Ocorreu um erro inexperado.\nTente novamente mais tarde"
                 }
                 .show(supportFragmentManager)
+    }
+
+    override fun saveInstanceState(outState: Bundle) {
+    }
+
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
     }
 
     companion object {

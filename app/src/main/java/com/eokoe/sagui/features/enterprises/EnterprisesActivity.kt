@@ -23,6 +23,8 @@ class EnterprisesActivity : BaseActivityNavDrawer(),
     override lateinit var presenter: EnterprisesContract.Presenter
     private lateinit var enterprisesAdapter: EnterprisesAdapter
 
+    private var enterprises: List<Enterprise>? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_enterprises)
@@ -50,13 +52,17 @@ class EnterprisesActivity : BaseActivityNavDrawer(),
 
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
-        enterprisesAdapter = EnterprisesAdapter(true)
+        enterprisesAdapter = EnterprisesAdapter(enterprises == null || enterprises!!.isEmpty())
         presenter = EnterprisesPresenter(SaguiModelImpl())
     }
 
     override fun init(savedInstanceState: Bundle?) {
         setupRecyclerView()
-        presenter.list()
+        if (enterprises == null || enterprises!!.isEmpty()) {
+            presenter.list()
+        } else {
+            load(enterprises!!)
+        }
     }
 
     private fun setupRecyclerView() {
@@ -76,6 +82,7 @@ class EnterprisesActivity : BaseActivityNavDrawer(),
     }
 
     override fun load(enterprises: List<Enterprise>) {
+        this.enterprises = enterprises
         enterprisesAdapter.items = enterprises
     }
 
@@ -100,8 +107,19 @@ class EnterprisesActivity : BaseActivityNavDrawer(),
         startActivity(CategoriesActivity.getIntent(this, enterprise))
     }
 
+    override fun saveInstanceState(outState: Bundle) {
+        outState.putParcelableArrayList(STATE_ENTERPRISES, ArrayList<Enterprise>(enterprises))
+    }
+
+    override fun restoreInstanceState(savedInstanceState: Bundle) {
+        enterprises = savedInstanceState.getParcelableArrayList(STATE_ENTERPRISES)
+    }
+
     companion object {
         val REQUEST_FILTER = 1
+
+        private val STATE_ENTERPRISES = "STATE_ENTERPRISES"
+
         fun getIntent(context: Context) = Intent(context, EnterprisesActivity::class.java)
     }
 }
