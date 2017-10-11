@@ -209,50 +209,41 @@ class ComplaintDetailsActivity : BaseActivity(),
                 } else {
                     requestCameraPermission(RequestCode.Permission.CAMERA_PICTURE.value)
                 }
-                ContributeOptions.GALLERY_PICTURE -> if (hasReadExternalStoragePermission()) {
-                    openImageGallery()
-                } else {
-                    requestReadExternalStoragePermission(RequestCode.Permission.PICTURE_STORAGE.value)
-                }
+                ContributeOptions.GALLERY_PICTURE -> openImageGallery()
                 ContributeOptions.RECORD_VIDEO -> if (hasCameraPermission()) {
                     recordVideo()
                 } else {
                     requestCameraPermission(RequestCode.Permission.CAMERA_VIDEO.value)
                 }
-                ContributeOptions.GALLERY_VIDEO -> if (hasReadExternalStoragePermission()) {
-                    openVideoGallery()
-                } else {
-                    requestCameraPermission(RequestCode.Permission.VIDEO_STORAGE.value)
-                }
-                ContributeOptions.AUDIO -> if (hasReadExternalStoragePermission()) {
-                    openAudioGallery()
-                } else {
-                    requestCameraPermission(RequestCode.Permission.AUDIO.value)
-                }
+                ContributeOptions.GALLERY_VIDEO -> openVideoGallery()
+                ContributeOptions.AUDIO -> openAudioGallery()
             }
             dialog.dismiss()
         }.show()
     }
 
     private fun openImageGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                .setType("image/*")
         if (intent.resolveActivity(packageManager) != null) {
             startActivityForResult(intent, RequestCode.Intent.GALLERY_PICTURE.value)
         }
     }
 
     private fun openVideoGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Video.Media.EXTERNAL_CONTENT_URI)
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                .setType("video/*")
         if (intent.resolveActivity(packageManager) != null) {
             startActivityForResult(intent, RequestCode.Intent.GALLERY_VIDEO.value)
         }
     }
 
     private fun openAudioGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                .setType("audio/*")
         if (intent.resolveActivity(packageManager) != null) {
             startActivityForResult(intent, RequestCode.Intent.AUDIO.value)
         }
@@ -263,7 +254,7 @@ class ComplaintDetailsActivity : BaseActivity(),
                 getExternalFilesDir(Environment.DIRECTORY_PICTURES),
                 generateFilename(Files.Extensions.JPG)
         )
-        val file = FileProvider.getUriForFile(this, Files.AUTHORITY, fileAttached)
+        val file = fileAttached!!.getUri(this)
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, file)
         grantUriRwPermissions(intent, file)
@@ -277,7 +268,7 @@ class ComplaintDetailsActivity : BaseActivity(),
                 getExternalFilesDir(Environment.DIRECTORY_MOVIES),
                 generateFilename(Files.Extensions.MP4)
         )
-        val file = FileProvider.getUriForFile(this, Files.AUTHORITY, fileAttached)
+        val file = fileAttached!!.getUri(this)
         val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, file)
         grantUriRwPermissions(intent, file)
@@ -328,7 +319,7 @@ class ComplaintDetailsActivity : BaseActivity(),
                 )
                 val tempFile = File.createTempFile(getString(R.string.app_name) + "_confirmation_", ".jpg")
                 uri.copyTo(this, tempFile)
-                FileUtil.compressImage(tempFile.toUri()?.getRealPath(this)!!, privateFile)
+                FileUtil.compressImage(tempFile.path, privateFile)
                 confirmation.files.add(Asset(localPath = privateFile.path, type = "image/*"))
                 openPreview = true
             }
@@ -403,14 +394,8 @@ class ComplaintDetailsActivity : BaseActivity(),
             RequestCode.Permission.CAMERA_PICTURE -> if (hasCameraPermission()) {
                 takePicture()
             }
-            RequestCode.Permission.PICTURE_STORAGE -> if (hasReadExternalStoragePermission()) {
-                openImageGallery()
-            }
             RequestCode.Permission.CAMERA_VIDEO -> if (hasCameraPermission()) {
                 recordVideo()
-            }
-            RequestCode.Permission.VIDEO_STORAGE -> if (hasReadExternalStoragePermission()) {
-                openVideoGallery()
             }
             RequestCode.Permission.AUDIO -> {
                 openAudioGallery()

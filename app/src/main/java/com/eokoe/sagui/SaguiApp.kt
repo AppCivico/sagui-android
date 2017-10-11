@@ -39,8 +39,7 @@ class SaguiApp : Application() {
     }
 
     private fun initServiceGenerator() {
-        val baseUrl = getManifestValue("apiBaseUrl")!!
-        ServiceGenerator.init(this, baseUrl)
+        ServiceGenerator.init(this, BuildConfig.API_BASE_URL)
     }
 
     private fun initRealm() {

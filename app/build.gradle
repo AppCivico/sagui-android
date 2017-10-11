@@ -22,11 +22,17 @@ android {
         versionName computeVersionName()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+
+        def filesAuthorityValue = applicationId + ".files"
+        def apiBaseUrl = System.getenv("SAGUI_API_BASE_URL") ?: API_BASE_URL
         manifestPlaceholders = [
-                apiBaseUrl: System.getenv("SAGUI_API_BASE_URL") ?: API_BASE_URL,
                 fabricApiKey: System.getenv("FABRIC_API_KEY") ?: FABRIC_API_KEY,
                 mapsApiKey: System.getenv("SAGUI_MAPS_API_KEY") ?: MAPS_API_KEY,
+                filesAuthority: filesAuthorityValue,
         ]
+        buildConfigField "String", "FILES_AUTHORITY", "\"${filesAuthorityValue}\""
+        buildConfigField "String", "API_BASE_URL", "\"${apiBaseUrl}\""
+
         multiDexEnabled true
     }
     kapt {

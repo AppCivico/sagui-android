@@ -4,12 +4,15 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.media.ThumbnailUtils
+import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.support.v4.app.ShareCompat
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Asset
 import com.eokoe.sagui.extensions.getRealPath
 import com.eokoe.sagui.extensions.show
+import com.eokoe.sagui.extensions.toAuthority
 import com.eokoe.sagui.features.base.view.BaseActivity
 import kotlinx.android.synthetic.main.activity_view_asset.*
 
@@ -59,17 +62,22 @@ class ShowAssetActivity : BaseActivity() {
                     // TODO remote thumbnail
                 }
                 ivPlay.setOnClickListener {
-                    /*val intent = Intent(Intent.ACTION_VIEW)
-                    intent.data = if (asset.isLocal) {
-                        val uri = FileProvider.getUriForFile(this, Files.AUTHORITY,
-                                asset.uri.toFile(this))
-                        grantUriReadPermissions(intent, uri)
-                        uri
+                    val uri: Uri?
+                    val intent: Intent
+                    if (asset.isLocal) {
+                        uri = asset.uri.toAuthority(this)
+                        intent = ShareCompat.IntentBuilder.from(this)
+                                .setType(asset.type)
+                                .setStream(uri)
+                                .intent
+                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     } else {
-                        asset.uri
+                        uri = asset.uri
+                        intent = Intent(Intent.ACTION_VIEW)
                     }
+                    intent.data = uri
                     intent.type = asset.type
-                    startActivity(intent)*/
+                    startActivity(intent)
                 }
                 ivPlay.show()
             } else {

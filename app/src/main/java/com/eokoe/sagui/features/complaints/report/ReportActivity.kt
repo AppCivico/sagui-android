@@ -112,20 +112,8 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                     requestCameraPermission(RequestCode.Permission.CAMERA.value)
                 }
             }
-            ItemType.INSERT_PHOTO_VIDEO -> {
-                if (hasReadExternalStoragePermission()) {
-                    openGallery()
-                } else {
-                    requestReadExternalStoragePermission(RequestCode.Permission.PICTURE_STORAGE.value)
-                }
-            }
-            ItemType.INSERT_AUDIO -> {
-                if (hasReadExternalStoragePermission()) {
-                    openAudioGallery()
-                } else {
-                    requestReadExternalStoragePermission(RequestCode.Permission.AUDIO.value)
-                }
-            }
+            ItemType.INSERT_PHOTO_VIDEO -> openGallery()
+            ItemType.INSERT_AUDIO -> openAudioGallery()
             ItemType.CATEGORY -> {
                 openCategories()
             }
@@ -200,7 +188,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 getExternalFilesDir(Environment.DIRECTORY_PICTURES),
                 filename
         )
-        val file = FileProvider.getUriForFile(this, Files.AUTHORITY, fileAttached)
+        val file = fileAttached!!.getUri(this)
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, file)
         grantUriRwPermissions(intent, file)
@@ -214,7 +202,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 getExternalFilesDir(Environment.DIRECTORY_MOVIES),
                 filename
         )
-        val file = FileProvider.getUriForFile(this, Files.AUTHORITY, fileAttached)
+        val file = fileAttached!!.getUri(this)
         val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
         grantUriRwPermissions(intent, file)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, file)
@@ -303,7 +291,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 )
                 val tempFile = File.createTempFile(getString(R.string.app_name) + "_complaint_", ".jpg")
                 uri.copyTo(this, tempFile)
-                FileUtil.compressImage(tempFile.toUri()?.getRealPath(this)!!, privateFile)
+                FileUtil.compressImage(tempFile.path, privateFile)
                 complaint.files.add(Asset(localPath = privateFile.path, type = "image/*"))
             }
             RequestCode.Intent.AUDIO -> if (resultCode == Activity.RESULT_OK && data != null) {
@@ -325,12 +313,6 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         when (RequestCode.Permission.fromInt(requestCode)) {
             RequestCode.Permission.CAMERA -> if (hasCameraPermission()) {
                 openCamera()
-            }
-            RequestCode.Permission.PICTURE_STORAGE -> if (hasReadExternalStoragePermission()) {
-                openGallery()
-            }
-            RequestCode.Permission.AUDIO -> if (hasReadExternalStoragePermission()) {
-                openAudioGallery()
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <paths>
     <files-path name="private_images" path="files/Pictures/" />
-    <external-path name="images" path="Android/data/com.eokoe.sagui/files/Pictures" />
+    <external-path name="images" path="Android/data/com.eokoe.sagui/files/Pictures/" />
 
     <files-path name="private_videos" path="files/Movies/" />
-    <external-path name="videos" path="Android/data/com.eokoe.sagui/files/Movies" />
+    <external-path name="videos" path="Android/data/com.eokoe.sagui/files/Movies/" />
 
     <files-path name="private_audio" path="files/Audio/" />
-    <external-path name="audio" path="Android/data/com.eokoe.sagui/files/Audio" />
+    <external-path name="audio" path="Android/data/com.eokoe.sagui/files/Audio/" />
 </paths>

@@ -92,10 +92,6 @@ abstract class BaseActivity : AppCompatActivity() {
 
     fun hasCameraPermission() = hasPermission(Manifest.permission.CAMERA)
 
-    fun hasReadExternalStoragePermission() =
-            Build.VERSION.SDK_INT < Build.VERSION_CODES.JELLY_BEAN ||
-                    hasPermission(Manifest.permission.READ_EXTERNAL_STORAGE)
-
     fun requestLocationPermission(@StringRes title: Int, @StringRes message: Int, requestCode: Int) {
         requestPermission(title, message, requestCode,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -106,17 +102,6 @@ abstract class BaseActivity : AppCompatActivity() {
         // TODO handle permission not granted
         if (!hasCameraPermission()) {
             requestPermission(requestCode, Manifest.permission.CAMERA)
-        }
-    }
-
-    @SuppressLint("InlinedApi")
-    fun requestReadExternalStoragePermission(requestCode: Int) {
-        // TODO handle permission not granted
-        if (!hasReadExternalStoragePermission()) {
-            requestPermission(
-                    requestCode,
-                    Manifest.permission.READ_EXTERNAL_STORAGE
-            )
         }
     }
 

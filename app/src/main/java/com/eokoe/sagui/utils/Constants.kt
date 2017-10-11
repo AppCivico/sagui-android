@@ -15,8 +15,6 @@ object Job {
 }
 
 object Files {
-    val AUTHORITY = BuildConfig.APPLICATION_ID + ".fileprovider"
-
     object Path {
         val IMAGE_PATH = "Pictures"
         val VIDEO_PATH = "Movies"

@@ -9,6 +9,7 @@ import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.webkit.MimeTypeMap
+import com.eokoe.sagui.BuildConfig
 import com.eokoe.sagui.utils.Files
 import java.io.File
 import java.io.FileOutputStream
@@ -24,6 +25,10 @@ fun Uri.toFile(context: Context): File? {
     return if (isLocal(path)) {
         return File(path)
     } else null
+}
+
+fun Uri.toAuthority(context: Context): Uri? {
+    return toFile(context)?.getUri(context)
 }
 
 fun Uri.getRealPath(context: Context): String? {
@@ -64,7 +69,7 @@ fun Uri.getRealPath(context: Context): String? {
 }
 
 val Uri.isLocalStorageDocument: Boolean
-    get() = Files.AUTHORITY == this.authority
+    get() = BuildConfig.FILES_AUTHORITY == this.authority
 
 val Uri.isExternalStorageDocument: Boolean
     get() = "com.android.externalstorage.documents" == authority
