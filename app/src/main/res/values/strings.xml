@@ -78,4 +78,5 @@
     <string name="record_audio">Gravar aúdio</string>
     <string name="record">Gravar</string>
     <string name="stop">Parar</string>
+    <string name="title_activity_help">Ajuda</string>
 </resources>

@@ -1,21 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.eokoe.sagui">
+          package="com.eokoe.sagui">
 
-    <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
-    <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.WAKE_LOCK" />
-    <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-permission android:name="android.permission.CAMERA"/>
+    <uses-permission android:name="android.permission.WAKE_LOCK"/>
+    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.RECORD_AUDIO"/>
 
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
-        android:maxSdkVersion="18" />
+        android:maxSdkVersion="18"/>
     <uses-permission
         android:name="android.permission.READ_EXTERNAL_STORAGE"
-        android:maxSdkVersion="18" />
+        android:maxSdkVersion="18"/>
 
     <application
         android:name=".SaguiApp"
@@ -27,11 +27,11 @@
 
         <meta-data
             android:name="io.fabric.ApiKey"
-            android:value="${fabricApiKey}" />
+            android:value="${fabricApiKey}"/>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="${mapsApiKey}" />
+            android:value="${mapsApiKey}"/>
 
         <activity
             android:name=".features.splash.SplashActivity"
@@ -40,92 +40,96 @@
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.SplashScreen">
             <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
+                <action android:name="android.intent.action.MAIN"/>
 
-                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
 
         <activity
             android:name=".features.enterprises.EnterprisesActivity"
             android:label="@string/title_activity_enterprises"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name=".features.enterprises.filter.EnterprisesFilterActivity"
-            android:label="@string/title_activity_enterprises_filter" />
+            android:label="@string/title_activity_enterprises_filter"/>
 
         <activity
             android:name=".features.categories.CategoriesActivity"
             android:label="@string/title_activity_dashboard"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name=".features.surveys.list.SurveyListActivity"
             android:label="@string/title_activity_categories"
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name=".features.surveys.survey.SurveyActivity"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"/>
 
         <activity
             android:name=".features.surveys.survey.note.NoteActivity"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar"
-            android:windowSoftInputMode="adjustResize" />
+            android:windowSoftInputMode="adjustResize"/>
 
         <activity
             android:name=".features.complaints.ComplaintsActivity"
             android:label=""
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name=".features.complaints.report.ReportActivity"
             android:label="@string/title_activity_report"
-            android:windowSoftInputMode="adjustPan" />
+            android:windowSoftInputMode="adjustPan"/>
 
         <activity
             android:name=".features.complaints.report.pin.PinActivity"
-            android:label="@string/title_activity_pin" />
+            android:label="@string/title_activity_pin"/>
 
         <activity
             android:name=".features.complaints.details.ComplaintDetailsActivity"
-            android:label="@string/title_activity_complaint_details" />
+            android:label="@string/title_activity_complaint_details"/>
 
         <activity
             android:name=".features.show_asset.ShowAssetActivity"
             android:label=""
-            android:theme="@style/AppTheme.NoActionBar" />
+            android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name=".features.notifications.NotificationsActivity"
-            android:label="@string/title_activity_notifications" />
+            android:label="@string/title_activity_notifications"/>
+
+        <activity
+            android:name=".features.help.HelpActivity"
+            android:label="@string/title_activity_help"/>
 
         <!-- Services -->
         <service
             android:name=".services.FetchAddressService"
-            android:exported="false" />
+            android:exported="false"/>
 
         <service android:name=".services.FCMService">
             <intent-filter>
-                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+                <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
 
         <!-- Job scheduler -->
         <service
             android:name=".services.JobSchedulerService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
 
         <service
             android:name=".services.upload_file.UploadFilesJobIntentService"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
+            android:permission="android.permission.BIND_JOB_SERVICE"/>
 
         <!-- Alarms -->
-        <receiver android:name=".receivers.UploadFilesRetryAlarm" />
+        <receiver android:name=".receivers.UploadFilesRetryAlarm"/>
 
         <!-- File provider -->
         <provider
@@ -135,7 +139,7 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/paths" />
+                android:resource="@xml/paths"/>
         </provider>
     </application>
 
