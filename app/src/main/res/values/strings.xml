@@ -75,4 +75,7 @@
     <string name="record_video">Gravar vídeo</string>
     <string name="select_video_from_gallery">Selecionar vídeo da galeria</string>
     <string name="notifications">Notificações</string>
+    <string name="record_audio">Gravar aúdio</string>
+    <string name="record">Gravar</string>
+    <string name="stop">Parar</string>
 </resources>

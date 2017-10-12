@@ -5,6 +5,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.view.MenuItem
 import com.eokoe.sagui.R
+import com.eokoe.sagui.data.entities.Asset
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.entities.Image
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
@@ -75,8 +76,8 @@ class EnterprisesActivity : BaseActivityNavDrawer(),
         }
         enterprisesAdapter.onImageClickListener = object : ImageAdapter.OnItemClickListener {
             override fun onItemClick(image: Image) {
-                val intent = ShowAssetActivity.getIntent(this@EnterprisesActivity,
-                        image.imagePath, "image/*", false)
+                val asset = Asset(remotePath = image.imagePath, type = "image/jpeg")
+                val intent = ShowAssetActivity.getIntent(this@EnterprisesActivity, asset)
                 startActivity(intent)
             }
         }

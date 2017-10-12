@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <Chronometer
+        android:id="@+id/chronometer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone"/>
+
+    <com.eokoe.sagui.widgets.CustomTextView
+        android:id="@+id/tvChronometer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:gravity="center_horizontal"
+        android:padding="16dp"
+        android:textSize="20sp"/>
+
+    <android.support.v7.widget.AppCompatImageButton
+        android:id="@+id/ibAudioAction"
+        style="@style/Button.Transparent"
+        android:layout_width="42dp"
+        android:layout_height="42dp"
+        android:layout_marginTop="16dp"
+        android:layout_toLeftOf="@id/tvChronometer"
+        android:layout_toStartOf="@id/tvChronometer"
+        android:background="?attr/selectableItemBackgroundBorderless"/>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_below="@id/tvChronometer"
+        android:background="@color/divider"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvChronometer"
+        android:layout_marginTop="1dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btnOk"
+            style="@style/Button.Transparent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="@string/record"/>
+
+        <View
+            android:id="@+id/hDivider"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/divider"/>
+
+        <Button
+            android:id="@+id/btnCancel"
+            style="@style/Button.Transparent"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:text="@string/cancel"/>
+    </LinearLayout>
+</RelativeLayout>

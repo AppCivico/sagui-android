@@ -12,7 +12,7 @@ import android.support.v7.app.AlertDialog
 import android.support.v7.widget.AppCompatCheckBox
 import android.view.ViewGroup
 import com.eokoe.sagui.R
-import kotlinx.android.synthetic.main.fragment_alertdialog.view.*
+import kotlinx.android.synthetic.main.dialog_alert.view.*
 
 /**
  * @author Pedro Silva
@@ -31,7 +31,7 @@ class AlertDialogFragment : DialogFragment() {
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val alertView = activity.layoutInflater.inflate(R.layout.fragment_alertdialog, null) as ViewGroup
+        val alertView = activity.layoutInflater.inflate(R.layout.dialog_alert, null) as ViewGroup
         alertView.message.text = arguments.getString(EXTRA_MESSAGE)
 
         val alertDialog = AlertDialog.Builder(context)
@@ -94,16 +94,14 @@ class AlertDialogFragment : DialogFragment() {
         var tag: String? = AlertDialogFragment::class.simpleName
 
         var title: String? = null
-            get() = field ?: context.getString(titleRes)
-
+            get() = field ?: getString(titleRes)
         var message: String? = null
-            get() = field ?: context.getString(messageRes)
+            get() = field ?: getString(messageRes)
 
         var positiveText: String? = null
-            get() = field ?: context.getString(positiveTextRes)
-
+            get() = field ?: getString(positiveTextRes)
         var negativeText: String? = null
-            get() = field ?: if (negativeTextRes != 0) context.getString(negativeTextRes) else null
+            get() = field ?: getString(negativeTextRes)
         var multiChoiceItems: Array<String>? = null
         var multiChoiceItemsSelected: BooleanArray? = null
 
@@ -117,12 +115,12 @@ class AlertDialogFragment : DialogFragment() {
         var negativeTextRes: Int = 0
 
         var cancelable: Boolean = false
-        var onConfirmClickListener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, which ->
-            dialog.dismiss()
-        }
-        var onCancelClickListener: DialogInterface.OnClickListener = DialogInterface.OnClickListener { dialog, which ->
-            dialog.dismiss()
-        }
+
+        var onConfirmClickListener: DialogInterface.OnClickListener =
+                DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() }
+        var onCancelClickListener: DialogInterface.OnClickListener =
+                DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() }
+
         var onDismissListener: DialogInterface.OnDismissListener? = null
         var onMultiChoiceClickListener: DialogInterface.OnMultiChoiceClickListener? = null
 
@@ -163,13 +161,19 @@ class AlertDialogFragment : DialogFragment() {
             }
         }
 
-        inline fun onMultiChoiceClickListener(items: Array<String>? = multiChoiceItems, selectedItems: BooleanArray? = null,
-                                              crossinline listener: (dialog: DialogInterface, index: Int, isChecked: Boolean) -> Unit) {
+        inline fun onMultiChoiceClickListener(
+                items: Array<String>? = multiChoiceItems,
+                selectedItems: BooleanArray? = null,
+                crossinline listener: (dialog: DialogInterface, index: Int, isChecked: Boolean) -> Unit
+        ) {
             multiChoiceItems = items
             multiChoiceItemsSelected = selectedItems
             onMultiChoiceClickListener = DialogInterface.OnMultiChoiceClickListener { dialog, index, isChecked ->
                 listener(dialog, index, isChecked)
             }
         }
+
+        private fun getString(@StringRes resId: Int) =
+                if (resId > 0) context.getString(resId) else null
     }
 }

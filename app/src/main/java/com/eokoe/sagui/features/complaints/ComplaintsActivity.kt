@@ -4,6 +4,7 @@ import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.location.Location
 import android.os.Bundle
 import com.eokoe.sagui.R
@@ -126,14 +127,6 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         }
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode == REQUEST_PERMISSION_LOCATION) {
-            requestLocation()
-            return
-        }
-        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
-    }
-
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == REQUEST_CREATE_REPORT) {
             if (resultCode == Activity.RESULT_OK) {
@@ -144,6 +137,15 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
             updateMarkers = resultCode == Activity.RESULT_OK
         }
         super.onActivityResult(requestCode, resultCode, data)
+    }
+
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        if (requestCode == REQUEST_PERMISSION_LOCATION && grantResults.isNotEmpty()
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+            requestLocation()
+            return
+        }
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
     // endregion
 

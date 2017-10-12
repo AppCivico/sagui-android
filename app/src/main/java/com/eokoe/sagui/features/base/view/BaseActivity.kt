@@ -1,13 +1,11 @@
 package com.eokoe.sagui.features.base.view
 
 import android.Manifest
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.support.annotation.StringRes
 import android.support.v4.app.ActivityCompat
@@ -92,6 +90,11 @@ abstract class BaseActivity : AppCompatActivity() {
 
     fun hasCameraPermission() = hasPermission(Manifest.permission.CAMERA)
 
+    fun hasRecordAudioPermission() = hasPermission(Manifest.permission.RECORD_AUDIO)
+
+    fun hasPermission(permission: String) =
+            ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+
     fun requestLocationPermission(@StringRes title: Int, @StringRes message: Int, requestCode: Int) {
         requestPermission(title, message, requestCode,
                 Manifest.permission.ACCESS_COARSE_LOCATION,
@@ -105,8 +108,12 @@ abstract class BaseActivity : AppCompatActivity() {
         }
     }
 
-    fun hasPermission(permission: String) =
-            ActivityCompat.checkSelfPermission(this, permission) == PackageManager.PERMISSION_GRANTED
+    fun requestRecordAudioPermission(requestCode: Int) {
+        // TODO handle permission not granted
+        if (!hasRecordAudioPermission()) {
+            requestPermission(requestCode, Manifest.permission.RECORD_AUDIO)
+        }
+    }
 
     fun requestPermission(@StringRes title: Int, @StringRes message: Int,
                           requestCode: Int, vararg permissions: String) {
@@ -168,16 +175,6 @@ abstract class BaseActivity : AppCompatActivity() {
                 .forEach {
                     grantUriPermission(it, file,
                             Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                }
-    }
-
-    fun grantUriReadPermissions(intent: Intent, file: Uri?) {
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-        val resInfoList = packageManager.queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY)
-        resInfoList
-                .map { it.activityInfo.packageName }
-                .forEach {
-                    grantUriPermission(it, file, Intent.FLAG_GRANT_READ_URI_PERMISSION)
                 }
     }
 }

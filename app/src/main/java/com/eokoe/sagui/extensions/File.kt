@@ -9,6 +9,9 @@ import java.io.File
 /**
  * @author Pedro Silva
  */
-fun File.getUri(context: Context): Uri {
-    return FileProvider.getUriForFile(context, BuildConfig.FILES_AUTHORITY, this)
-}
+fun File.getUri(context: Context, withAuthority: Boolean = true): Uri =
+        if (withAuthority) {
+            FileProvider.getUriForFile(context, BuildConfig.FILES_AUTHORITY, this)
+        } else {
+            Uri.fromFile(this)
+        }

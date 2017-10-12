@@ -7,7 +7,6 @@ import android.media.ThumbnailUtils
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
-import android.support.v4.app.ShareCompat
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Asset
 import com.eokoe.sagui.extensions.getRealPath
@@ -63,20 +62,14 @@ class ShowAssetActivity : BaseActivity() {
                 }
                 ivPlay.setOnClickListener {
                     val uri: Uri?
-                    val intent: Intent
+                    val intent = Intent(Intent.ACTION_VIEW)
                     if (asset.isLocal) {
                         uri = asset.uri.toAuthority(this)
-                        intent = ShareCompat.IntentBuilder.from(this)
-                                .setType(asset.type)
-                                .setStream(uri)
-                                .intent
                         intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
                     } else {
                         uri = asset.uri
-                        intent = Intent(Intent.ACTION_VIEW)
                     }
-                    intent.data = uri
-                    intent.type = asset.type
+                    intent.setDataAndType(uri, asset.type ?: contentResolver.getType(uri))
                     startActivity(intent)
                 }
                 ivPlay.show()
@@ -113,17 +106,6 @@ class ShowAssetActivity : BaseActivity() {
 
         fun getIntent(context: Context, asset: Asset, showSendButton: Boolean = false): Intent {
             val assets = ArrayList<Asset>()
-            assets.add(asset)
-            return getIntent(context, assets, 0, showSendButton)
-        }
-
-        fun getIntent(context: Context, path: String, type: String, isLocal: Boolean, showSendButton: Boolean = false): Intent {
-            val assets = ArrayList<Asset>()
-            val asset = if (isLocal) {
-                Asset(localPath = path, type = type)
-            } else {
-                Asset(remotePath = path, type = type)
-            }
             assets.add(asset)
             return getIntent(context, assets, 0, showSendButton)
         }

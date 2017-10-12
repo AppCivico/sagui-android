@@ -4,12 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
-import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.support.v4.content.FileProvider
 import android.view.Menu
 import android.view.MenuItem
 import com.eokoe.sagui.R
@@ -28,6 +26,7 @@ import com.eokoe.sagui.utils.FileUtil
 import com.eokoe.sagui.utils.Files
 import com.eokoe.sagui.utils.RequestCode
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
+import com.eokoe.sagui.widgets.dialog.AudioRecorderDialog
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
 import kotlinx.android.synthetic.main.activity_report.*
 import java.io.File
@@ -112,8 +111,12 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                     requestCameraPermission(RequestCode.Permission.CAMERA.value)
                 }
             }
-            ItemType.INSERT_PHOTO_VIDEO -> openGallery()
-            ItemType.INSERT_AUDIO -> openAudioGallery()
+            ItemType.INSERT_PHOTO_VIDEO -> openImageGallery()
+            ItemType.INSERT_AUDIO -> if (hasRecordAudioPermission()) {
+                recordAudio()
+            } else {
+                requestRecordAudioPermission(RequestCode.Permission.AUDIO.value)
+            }
             ItemType.CATEGORY -> {
                 openCategories()
             }
@@ -164,29 +167,33 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         }.show()
     }
 
-    private fun openGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI)
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    private fun openImageGallery() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                .setType("image/*")
         if (intent.resolveActivity(packageManager) != null) {
             startActivityForResult(intent, RequestCode.Intent.GALLERY_PICTURE.value)
         }
     }
 
-    private fun openAudioGallery() {
-        val intent = Intent(Intent.ACTION_PICK, MediaStore.Audio.Media.EXTERNAL_CONTENT_URI)
-        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    private fun openVideoGallery() {
+        val intent = Intent(Intent.ACTION_GET_CONTENT)
+                .addCategory(Intent.CATEGORY_OPENABLE)
+                .setType("video/*")
         if (intent.resolveActivity(packageManager) != null) {
-            startActivityForResult(intent, RequestCode.Intent.AUDIO.value)
+            startActivityForResult(intent, RequestCode.Intent.GALLERY_VIDEO.value)
         }
+    }
+
+    private fun recordAudio() {
+        AudioRecorderDialog.newInstance().show(supportFragmentManager)
     }
 
     // region Intents
     private fun takePictureIntent(): Intent {
-        val filename = resources.getString(R.string.app_name) +
-                "_complaint_" + System.currentTimeMillis() + ".jpg"
         fileAttached = File(
-                getExternalFilesDir(Environment.DIRECTORY_PICTURES),
-                filename
+                getExternalFilesDir(Environment.DIRECTORY_MOVIES),
+                generateFilename(Files.Extensions.JPG)
         )
         val file = fileAttached!!.getUri(this)
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
@@ -196,11 +203,9 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     }
 
     private fun recordVideoIntent(): Intent {
-        val filename = resources.getString(R.string.app_name) +
-                "_complaint_" + System.currentTimeMillis() + ".mp4"
         fileAttached = File(
                 getExternalFilesDir(Environment.DIRECTORY_MOVIES),
-                filename
+                generateFilename(Files.Extensions.MP4)
         )
         val file = fileAttached!!.getUri(this)
         val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
@@ -247,62 +252,36 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 complaint.location = data?.getParcelableExtra(PinActivity.RESULT_LOCATION)
                 complaint.address = data?.getStringExtra(PinActivity.RESULT_ADDRESS)
             }
+
             RequestCode.Intent.CAMERA_PICTURE -> if (resultCode == Activity.RESULT_OK && fileAttached?.exists() == true) {
-                val imagePath = File(filesDir, Files.Path.IMAGE_PATH)
-                val privateFile = File(
-                        imagePath,
-                        fileAttached!!.name
-                )
+                val privateFile = createNewFile(Files.Path.IMAGE_PATH, Files.Extensions.JPG)
                 val inputFilePath = Uri.fromFile(fileAttached).getRealPath(this)!!
                 FileUtil.compressImage(inputFilePath, privateFile)
-                val uriImage = data?.data ?: Uri.fromFile(fileAttached)
-                try {
-                    fileAttached?.delete()
-                    contentResolver.delete(uriImage, null, null)
-                } catch (error: Exception) {
-                    error.printStackTrace()
-                }
-                complaint.files.add(Asset(localPath = privateFile.path, type = "image/*"))
+                fileAttached?.delete()
+                addFileToComplaint(privateFile)
             }
+
             RequestCode.Intent.CAMERA_VIDEO -> if (resultCode == Activity.RESULT_OK && fileAttached?.exists() == true) {
-                val videoPath = File(filesDir, Files.Path.VIDEO_PATH)
-                val privateFile = File(
-                        videoPath,
-                        fileAttached!!.name
-                )
-                val uriVideo = data?.data ?: Uri.fromFile(fileAttached)
+                val privateFile = createNewFile(Files.Path.VIDEO_PATH, Files.Extensions.MP4)
                 fileAttached!!.copyTo(privateFile, true)
-                try {
-                    fileAttached?.delete()
-                    contentResolver.delete(uriVideo, null, null)
-                } catch (error: Exception) {
-                    error.printStackTrace()
-                }
-                complaint.files.add(Asset(localPath = privateFile.path, type = "video/*"))
+                fileAttached!!.delete()
+                addFileToComplaint(privateFile)
             }
+
             RequestCode.Intent.GALLERY_PICTURE -> if (resultCode == Activity.RESULT_OK && data != null) {
-                val uri = data.data
-                val imagePath = File(filesDir, Files.Path.IMAGE_PATH)
-                val filename = resources.getString(R.string.app_name) +
-                        "_complaint_" + System.currentTimeMillis() + ".jpg"
-                val privateFile = File(
-                        imagePath,
-                        filename
-                )
-                val tempFile = File.createTempFile(getString(R.string.app_name) + "_complaint_", ".jpg")
-                uri.copyTo(this, tempFile)
+                val privateFile = createNewFile(Files.Path.IMAGE_PATH, Files.Extensions.JPG)
+                val tempFile = File.createTempFile(
+                        getString(R.string.app_name) + "_complaint_", Files.Extensions.JPG)
+                data.data.copyTo(this, tempFile)
                 FileUtil.compressImage(tempFile.path, privateFile)
-                complaint.files.add(Asset(localPath = privateFile.path, type = "image/*"))
+                tempFile.delete()
+                addFileToComplaint(privateFile)
             }
+
             RequestCode.Intent.AUDIO -> if (resultCode == Activity.RESULT_OK && data != null) {
-                val uri = data.data
-                val audioPath = File(filesDir, Files.Path.AUDIO_PATH)
-                val privateFile = File(
-                        audioPath,
-                        "_complaint_" + System.currentTimeMillis()
-                )
-                uri.copyTo(this, privateFile)
-                complaint.files.add(Asset(localPath = privateFile.path, type = "audio/*"))
+                val privateFile = createNewFile(Files.Path.AUDIO_PATH)
+                data.data.copyTo(this, privateFile)
+                addFileToComplaint(privateFile)
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -310,9 +289,13 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
 
     @Suppress("NON_EXHAUSTIVE_WHEN")
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+        val permissionGranted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
         when (RequestCode.Permission.fromInt(requestCode)) {
-            RequestCode.Permission.CAMERA -> if (hasCameraPermission()) {
+            RequestCode.Permission.CAMERA -> if (permissionGranted) {
                 openCamera()
+            }
+            RequestCode.Permission.AUDIO -> if (permissionGranted) {
+                recordAudio()
             }
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
@@ -327,6 +310,18 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         if (fileAttached != null) {
             outState.putParcelable(STATE_FILE_ATTACHED, Uri.fromFile(fileAttached))
         }
+    }
+
+    private fun createNewFile(path: String, suffix: String = "") =
+            File(File(filesDir, path), generateFilename(suffix))
+
+    private fun generateFilename(suffix: String = "") =
+            resources.getString(R.string.app_name) +
+                    "_complaint_" + System.currentTimeMillis() + suffix
+
+    private fun addFileToComplaint(file: File) {
+        val type = contentResolver.getType(file.getUri(this))
+        complaint.files.add(Asset(localPath = file.path, type = type))
     }
 
     override fun restoreInstanceState(savedInstanceState: Bundle) {

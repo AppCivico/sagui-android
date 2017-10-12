@@ -22,7 +22,7 @@ open class Asset(
 
         @Expose
         @SerializedName("content_type")
-        var type: String = "",
+        var type: String? = null,
 
         var localPath: String? = null,
 
@@ -40,13 +40,9 @@ open class Asset(
         }
 
     var uri: Uri
-        get() {
-            return if (isLocal) {
-                Uri.parse(localPath)
-            } else {
-                Uri.parse(remotePath)
-            }
-        }
+        get() =
+            if (isLocal) Uri.parse(localPath)
+            else Uri.parse(remotePath)
         set(value) {
             localPath = value.toString()
         }
@@ -55,15 +51,15 @@ open class Asset(
         get() = localPath != null && File(localPath).exists()
 
     val isImage: Boolean
-        get() = type.matches("image/.+".toRegex())
+        get() = type?.matches("image/.+".toRegex()) == true
 
     val isVideo: Boolean
-        get() = type.matches("video/.+".toRegex())
+        get() = type?.matches("video/.+".toRegex()) == true
 
     val isAudio: Boolean
-        get() = type.matches("audio/.+".toRegex())
+        get() = type?.matches("audio/.+".toRegex()) == true
 
-            companion object {
+    companion object {
         @JvmField
         val CREATOR = PaperParcelAsset.CREATOR
     }

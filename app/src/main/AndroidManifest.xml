@@ -8,6 +8,7 @@
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <uses-permission
         android:name="android.permission.WRITE_EXTERNAL_STORAGE"
@@ -33,7 +34,7 @@
             android:value="${mapsApiKey}" />
 
         <activity
-            android:name="com.eokoe.sagui.features.splash.SplashActivity"
+            android:name=".features.splash.SplashActivity"
             android:label="@string/app_name"
             android:noHistory="true"
             android:screenOrientation="portrait"
@@ -46,7 +47,7 @@
         </activity>
 
         <activity
-            android:name="com.eokoe.sagui.features.enterprises.EnterprisesActivity"
+            android:name=".features.enterprises.EnterprisesActivity"
             android:label="@string/title_activity_enterprises"
             android:theme="@style/AppTheme.NoActionBar" />
 
@@ -55,39 +56,39 @@
             android:label="@string/title_activity_enterprises_filter" />
 
         <activity
-            android:name="com.eokoe.sagui.features.categories.CategoriesActivity"
+            android:name=".features.categories.CategoriesActivity"
             android:label="@string/title_activity_dashboard"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name="com.eokoe.sagui.features.surveys.list.SurveyListActivity"
+            android:name=".features.surveys.list.SurveyListActivity"
             android:label="@string/title_activity_categories"
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name="com.eokoe.sagui.features.surveys.survey.SurveyActivity"
+            android:name=".features.surveys.survey.SurveyActivity"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name="com.eokoe.sagui.features.surveys.survey.note.NoteActivity"
+            android:name=".features.surveys.survey.note.NoteActivity"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar"
             android:windowSoftInputMode="adjustResize" />
 
         <activity
-            android:name="com.eokoe.sagui.features.complaints.ComplaintsActivity"
+            android:name=".features.complaints.ComplaintsActivity"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar" />
 
         <activity
-            android:name="com.eokoe.sagui.features.complaints.report.ReportActivity"
+            android:name=".features.complaints.report.ReportActivity"
             android:label="@string/title_activity_report"
             android:windowSoftInputMode="adjustPan" />
 
         <activity
-            android:name="com.eokoe.sagui.features.complaints.report.pin.PinActivity"
+            android:name=".features.complaints.report.pin.PinActivity"
             android:label="@string/title_activity_pin" />
 
         <activity

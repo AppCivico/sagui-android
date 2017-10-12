@@ -3,6 +3,7 @@ package com.eokoe.sagui.features.surveys.survey
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.drawable.Animatable
 import android.location.Location
 import android.os.Bundle
@@ -189,7 +190,8 @@ class SurveyActivity : BaseActivity(),
     }
 
     override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        if (requestCode == REQUEST_PERMISSION_LOCATION) {
+        if (requestCode == REQUEST_PERMISSION_LOCATION && grantResults.isNotEmpty()
+                && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
             requestLocation()
             presenter.start()
             return
