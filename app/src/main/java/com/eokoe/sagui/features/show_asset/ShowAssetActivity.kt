@@ -8,6 +8,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
 import android.view.View
+import android.widget.Toast
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Asset
 import com.eokoe.sagui.extensions.show
@@ -107,7 +108,11 @@ class ShowAssetActivity : BaseActivity() {
                 uri = asset.uri
             }
             intent.setDataAndType(uri, asset.type ?: contentResolver.getType(uri))
-            startActivity(intent)
+            if (intent.resolveActivity(packageManager) != null) {
+                startActivity(intent)
+            } else {
+                Toast.makeText(this@ShowAssetActivity, "Falha ao tentar reproduzir a mídia", Toast.LENGTH_SHORT).show()
+            }
         }
     }
 }
