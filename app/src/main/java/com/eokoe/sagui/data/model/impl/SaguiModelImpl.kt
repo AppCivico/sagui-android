@@ -253,12 +253,11 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                     } else null
                 }
                 .flatMap {
+                    val service = ServiceGenerator.getService(SaguiService::class.java)
                     if (asset.parentType == Asset.ParentType.COMPLAINT) {
-                        ServiceGenerator.getService(SaguiService::class.java)
-                                .sendComplaintAsset(asset.parentId, it)
+                        service.sendComplaintAsset(asset.parentId, it)
                     } else {
-                        ServiceGenerator.getService(SaguiService::class.java)
-                                .sendConfirmationAsset(asset.parentId, it)
+                        service.sendConfirmationAsset(asset.parentId, it)
                     }
                 }
                 .map {
@@ -302,7 +301,8 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
     }
 
     override fun getComplaint(complaintId: String): Observable<Complaint> {
-        return ServiceGenerator.getService(SaguiService::class.java)
+        return ServiceGenerator
+                .getService(SaguiService::class.java)
                 .getComplaint(complaintId)
     }
 

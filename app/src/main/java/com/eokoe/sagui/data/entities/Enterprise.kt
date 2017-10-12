@@ -40,7 +40,7 @@ open class Enterprise(
         open var selected: Boolean = false,
 
         @Expose
-        open var images: RealmList<Image> = RealmList()
+        open var images: RealmList<Asset> = RealmList()
 ) : PaperParcelable, RealmObject() {
 
     val location: List<LatLng>?

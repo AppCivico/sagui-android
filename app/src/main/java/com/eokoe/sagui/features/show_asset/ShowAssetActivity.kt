@@ -97,7 +97,7 @@ class ShowAssetActivity : BaseActivity() {
     }
 
     inner class OpenMediaClickListener(val asset: Asset) : View.OnClickListener {
-        override fun onClick(p0: View?) {
+        override fun onClick(view: View) {
             val uri: Uri?
             val intent = Intent(Intent.ACTION_VIEW)
             if (asset.isLocal) {

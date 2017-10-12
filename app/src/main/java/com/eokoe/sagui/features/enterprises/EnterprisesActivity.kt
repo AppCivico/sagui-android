@@ -7,7 +7,6 @@ import android.view.MenuItem
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Asset
 import com.eokoe.sagui.data.entities.Enterprise
-import com.eokoe.sagui.data.entities.Image
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.friendlyMessage
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
@@ -75,9 +74,8 @@ class EnterprisesActivity : BaseActivityNavDrawer(),
             }
         }
         enterprisesAdapter.onImageClickListener = object : ImageAdapter.OnItemClickListener {
-            override fun onItemClick(image: Image) {
-                val asset = Asset(remotePath = image.imagePath, type = "image/jpeg")
-                val intent = ShowAssetActivity.getIntent(this@EnterprisesActivity, asset)
+            override fun onItemClick(image: Asset) {
+                val intent = ShowAssetActivity.getIntent(this@EnterprisesActivity, image)
                 startActivity(intent)
             }
         }

@@ -14,6 +14,7 @@ import java.io.File
 @PaperParcel
 open class Asset(
         @Expose
+        @SerializedName("id", alternate = arrayOf("image_id"))
         var id: String? = null,
 
         var parentId: String = "",
@@ -21,16 +22,17 @@ open class Asset(
         var parentTypeStr: String = "",
 
         @Expose
-        @SerializedName("content_type")
+        @SerializedName("content_type", alternate = arrayOf("image_content_type"))
         var type: String? = null,
 
         var localPath: String? = null,
 
         @Expose
-        @SerializedName("path")
+        @SerializedName("path", alternate = arrayOf("image_path"))
         var remotePath: String? = null,
 
         @Expose
+        @SerializedName("thumbnail", alternate = arrayOf("image_thumbnail"))
         var thumbnail: String? = null,
 
         var sent: Boolean = false

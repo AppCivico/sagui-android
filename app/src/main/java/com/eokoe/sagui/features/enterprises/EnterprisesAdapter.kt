@@ -54,7 +54,8 @@ class EnterprisesAdapter() : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHo
 
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(enterprise: Enterprise) {
-            itemView.imgEnterprise.setImageURI(enterprise.images.first()?.imagePath)
+            val cover = enterprise.images.first()
+            itemView.imgEnterprise.setImageURI(cover?.thumbnail ?: cover?.remotePath)
             itemView.tvEnterpriseName.text = enterprise.name
             itemView.tvLocation.text = enterprise.address
             itemView.tvQtyConfirmations.text = itemView.resources.getQuantityString(

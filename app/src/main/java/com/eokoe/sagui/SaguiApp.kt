@@ -3,9 +3,11 @@ package com.eokoe.sagui
 import android.app.Application
 import android.content.Context
 import android.support.multidex.MultiDex
-import com.eokoe.sagui.data.parcel.adapters.*
 import com.eokoe.sagui.data.net.ServiceGenerator
-import com.eokoe.sagui.extensions.getManifestValue
+import com.eokoe.sagui.data.parcel.adapters.AnswerListAdapter
+import com.eokoe.sagui.data.parcel.adapters.AssetListAdapter
+import com.eokoe.sagui.data.parcel.adapters.CommentListAdapter
+import com.eokoe.sagui.data.parcel.adapters.ConfirmationListAdapter
 import com.facebook.drawee.backends.pipeline.Fresco
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -21,7 +23,6 @@ import paperparcel.ProcessorConfig
                 Adapter(AnswerListAdapter::class),
                 Adapter(AssetListAdapter::class),
                 Adapter(ConfirmationListAdapter::class),
-                Adapter(ImageListAdapter::class),
                 Adapter(CommentListAdapter::class)
         )
 )

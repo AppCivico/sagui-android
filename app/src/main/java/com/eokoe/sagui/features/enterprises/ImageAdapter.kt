@@ -4,7 +4,7 @@ import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import com.eokoe.sagui.R
-import com.eokoe.sagui.data.entities.Image
+import com.eokoe.sagui.data.entities.Asset
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import com.eokoe.sagui.widgets.listeners.FrescoWidthControllerListener
 import kotlinx.android.synthetic.main.item_enterprise_image.view.*
@@ -15,7 +15,7 @@ import kotlinx.android.synthetic.main.item_enterprise_image.view.*
  * @author Pedro Silva
  * @since 25/09/17
  */
-class ImageAdapter(items: List<Image>) : RecyclerViewAdapter<Image, RecyclerView.ViewHolder>() {
+class ImageAdapter(items: List<Asset>) : RecyclerViewAdapter<Asset, RecyclerView.ViewHolder>() {
     init {
         this.items = items
     }
@@ -38,12 +38,12 @@ class ImageAdapter(items: List<Image>) : RecyclerViewAdapter<Image, RecyclerView
             }
         }
 
-        fun bind(image: Image) {
-            FrescoWidthControllerListener(itemView.ivEnterprise, image.imagePath)
+        fun bind(image: Asset) {
+            FrescoWidthControllerListener(itemView.ivEnterprise, image.thumbnail ?: image.remotePath)
         }
     }
 
     interface OnItemClickListener {
-        fun onItemClick(image: Image)
+        fun onItemClick(image: Asset)
     }
 }
