@@ -300,7 +300,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
                     }
                     multiChoiceItemsSelected = arrayListOf(allowNotifications).toBooleanArray()
                     onConfirmClickListener { dialog, _ ->
-                        //                        presenter.allowNotification(allowNotifications, insertedComplaintId!!)
+                        presenter.allowNotification(allowNotifications, insertedComplaintId!!)
                         dialog.dismiss()
                     }
                     onDismissListener {

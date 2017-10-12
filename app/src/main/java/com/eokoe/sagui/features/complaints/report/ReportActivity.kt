@@ -186,7 +186,15 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     }
 
     private fun recordAudio() {
-        AudioRecorderDialog.newInstance().show(supportFragmentManager)
+        AudioRecorderDialog
+                .newInstance { audioFile ->
+                    val privateFile = createNewFile(Files.Path.AUDIO_PATH, Files.Extensions.AMR)
+                    audioFile.copyTo(privateFile, true)
+                    audioFile.delete()
+                    addFileToComplaint(privateFile)
+                    reportAdapter.complaint = complaint
+                }
+                .show(supportFragmentManager)
     }
 
     // region Intents
@@ -253,7 +261,8 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 complaint.address = data?.getStringExtra(PinActivity.RESULT_ADDRESS)
             }
 
-            RequestCode.Intent.CAMERA_PICTURE -> if (resultCode == Activity.RESULT_OK && fileAttached?.exists() == true) {
+            RequestCode.Intent.CAMERA_PICTURE -> if (resultCode == Activity.RESULT_OK &&
+                    fileAttached?.exists() == true) {
                 val privateFile = createNewFile(Files.Path.IMAGE_PATH, Files.Extensions.JPG)
                 val inputFilePath = Uri.fromFile(fileAttached).getRealPath(this)!!
                 FileUtil.compressImage(inputFilePath, privateFile)
@@ -261,14 +270,16 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 addFileToComplaint(privateFile)
             }
 
-            RequestCode.Intent.CAMERA_VIDEO -> if (resultCode == Activity.RESULT_OK && fileAttached?.exists() == true) {
+            RequestCode.Intent.CAMERA_VIDEO -> if (resultCode == Activity.RESULT_OK &&
+                    fileAttached?.exists() == true) {
                 val privateFile = createNewFile(Files.Path.VIDEO_PATH, Files.Extensions.MP4)
                 fileAttached!!.copyTo(privateFile, true)
                 fileAttached!!.delete()
                 addFileToComplaint(privateFile)
             }
 
-            RequestCode.Intent.GALLERY_PICTURE -> if (resultCode == Activity.RESULT_OK && data != null) {
+            RequestCode.Intent.GALLERY_PICTURE -> if (resultCode == Activity.RESULT_OK &&
+                    data != null) {
                 val privateFile = createNewFile(Files.Path.IMAGE_PATH, Files.Extensions.JPG)
                 val tempFile = File.createTempFile(
                         getString(R.string.app_name) + "_complaint_", Files.Extensions.JPG)
@@ -288,8 +299,11 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     }
 
     @Suppress("NON_EXHAUSTIVE_WHEN")
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        val permissionGranted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
+                                            grantResults: IntArray) {
+        val permissionGranted = grantResults.isNotEmpty() &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED
+
         when (RequestCode.Permission.fromInt(requestCode)) {
             RequestCode.Permission.CAMERA -> if (permissionGranted) {
                 openCamera()
@@ -321,7 +335,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
 
     private fun addFileToComplaint(file: File) {
         val type = contentResolver.getType(file.getUri(this))
-        complaint.files.add(Asset(localPath = file.path, type = type))
+        complaint.files.add(Asset(localPath = file.absolutePath, type = type))
     }
 
     override fun restoreInstanceState(savedInstanceState: Bundle) {
@@ -348,7 +362,8 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                         .putExtra(EXTRA_ENTERPRISE, enterprise)
                         .putExtra(EXTRA_CATEGORY, category)
 
-        fun getIntent(context: Context, enterprise: Enterprise, categories: ArrayList<Category>): Intent =
+        fun getIntent(context: Context, enterprise: Enterprise,
+                      categories: ArrayList<Category>): Intent =
                 Intent(context, ReportActivity::class.java)
                         .putExtra(EXTRA_ENTERPRISE, enterprise)
                         .putExtra(EXTRA_CATEGORIES, categories)

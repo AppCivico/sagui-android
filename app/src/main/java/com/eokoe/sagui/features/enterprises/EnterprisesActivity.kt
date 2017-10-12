@@ -110,7 +110,9 @@ class EnterprisesActivity : BaseActivityNavDrawer(),
     }
 
     override fun saveInstanceState(outState: Bundle) {
-        outState.putParcelableArrayList(STATE_ENTERPRISES, ArrayList<Enterprise>(enterprises))
+        if (enterprises != null) {
+            outState.putParcelableArrayList(STATE_ENTERPRISES, ArrayList<Enterprise>(enterprises))
+        }
     }
 
     override fun restoreInstanceState(savedInstanceState: Bundle) {

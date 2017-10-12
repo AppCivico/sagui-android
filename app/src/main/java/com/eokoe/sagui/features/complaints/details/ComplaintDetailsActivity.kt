@@ -1,7 +1,6 @@
 package com.eokoe.sagui.features.complaints.details
 
 import android.app.Activity
-import android.app.Notification.EXTRA_NOTIFICATION_ID
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
@@ -9,7 +8,6 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Environment
 import android.provider.MediaStore
-import android.view.Menu
 import android.view.MenuItem
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Asset
@@ -73,7 +71,8 @@ class ComplaintDetailsActivity : BaseActivity(),
 
     override fun onBackPressed() {
         if (isFromNotification && complaint?.enterprise != null && complaint?.category != null) {
-            val intent = ComplaintsActivity.getIntent(this, complaint?.enterprise!!, complaint?.category!!, true)
+            val intent = ComplaintsActivity.getIntent(this, complaint?.enterprise!!,
+                    complaint?.category!!, true)
             startActivity(intent)
             finish()
             return
@@ -134,12 +133,14 @@ class ComplaintDetailsActivity : BaseActivity(),
                             message = "Deseja receber notificações sobre a reclamação?"
                             positiveText = "Sim"
                             negativeText = "Não"
-                            onConfirmClickListener{ dialog, _ ->
-                                FirebaseMessaging.getInstance().subscribeToTopic("complaint-${complaint!!.id}")
+                            onConfirmClickListener { dialog, _ ->
+                                FirebaseMessaging.getInstance()
+                                        .subscribeToTopic("complaint-${complaint!!.id}")
                                 dialog.dismiss()
                             }
                             onCancelClickListener { dialog, _ ->
-                                FirebaseMessaging.getInstance().unsubscribeFromTopic("complaint-${complaint!!.id}")
+                                FirebaseMessaging.getInstance()
+                                        .unsubscribeFromTopic("complaint-${complaint!!.id}")
                                 dialog.dismiss()
                             }
                         }
@@ -188,6 +189,7 @@ class ComplaintDetailsActivity : BaseActivity(),
             positiveTextRes = R.string.contribute
             negativeTextRes = R.string.no
             cancelable = true
+
             onConfirmClickListener { dialog, _ ->
                 openContributeDialog()
                 dialog.dismiss()
@@ -247,7 +249,15 @@ class ComplaintDetailsActivity : BaseActivity(),
     }
 
     private fun recordAudio() {
-        AudioRecorderDialog.newInstance().show(supportFragmentManager)
+        AudioRecorderDialog
+                .newInstance { audioFile ->
+                    val privateFile = createNewFile(Files.Path.AUDIO_PATH, Files.Extensions.AMR)
+                    audioFile.copyTo(privateFile, true)
+                    audioFile.delete()
+                    addFileToConfirmation(privateFile, false)
+                    presenter.updateConfirmation(confirmation)
+                }
+                .show(supportFragmentManager)
     }
 
     private fun takePicture() {
@@ -282,7 +292,8 @@ class ComplaintDetailsActivity : BaseActivity(),
         return AlertDialogFragment.create(this) {
             titleRes = R.string.error
             message = when (error.errorType) {
-                ErrorType.CONNECTION -> "Error de conexão.\nPor favor verifique sua internet e tente novamente"
+                ErrorType.CONNECTION ->
+                    "Error de conexão.\nPor favor verifique sua internet e tente novamente"
                 ErrorType.CUSTOM -> error.friendlyMessage
                 else -> "Ocorreu um erro inexperado.\nTente novamente mais tarde"
             }
@@ -292,7 +303,8 @@ class ComplaintDetailsActivity : BaseActivity(),
     @Suppress("NON_EXHAUSTIVE_WHEN")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (RequestCode.Intent.fromInt(requestCode)) {
-            RequestCode.Intent.CAMERA_PICTURE -> if (resultCode == Activity.RESULT_OK && fileAttached?.exists() == true) {
+            RequestCode.Intent.CAMERA_PICTURE -> if (resultCode == Activity.RESULT_OK &&
+                    fileAttached?.exists() == true) {
                 val privateFile = createNewFile(Files.Path.IMAGE_PATH, Files.Extensions.JPG)
                 val inputFilePath = Uri.fromFile(fileAttached).getRealPath(this)!!
                 FileUtil.compressImage(inputFilePath, privateFile)
@@ -300,7 +312,8 @@ class ComplaintDetailsActivity : BaseActivity(),
                 addFileToConfirmation(privateFile)
             }
 
-            RequestCode.Intent.GALLERY_PICTURE -> if (resultCode == Activity.RESULT_OK && data?.data != null) {
+            RequestCode.Intent.GALLERY_PICTURE -> if (resultCode == Activity.RESULT_OK &&
+                    data?.data != null) {
                 val privateFile = createNewFile(Files.Path.IMAGE_PATH, Files.Extensions.JPG)
                 val tempFile = File.createTempFile(
                         getString(R.string.app_name) + "_confirmation_", Files.Extensions.JPG)
@@ -310,20 +323,23 @@ class ComplaintDetailsActivity : BaseActivity(),
                 addFileToConfirmation(privateFile)
             }
 
-            RequestCode.Intent.CAMERA_VIDEO -> if (resultCode == Activity.RESULT_OK && fileAttached?.exists() == true) {
+            RequestCode.Intent.CAMERA_VIDEO -> if (resultCode == Activity.RESULT_OK &&
+                    fileAttached?.exists() == true) {
                 val privateFile = createNewFile(Files.Path.VIDEO_PATH, Files.Extensions.MP4)
                 fileAttached!!.copyTo(privateFile, true)
                 fileAttached!!.delete()
                 addFileToConfirmation(privateFile)
             }
 
-            RequestCode.Intent.GALLERY_VIDEO -> if (resultCode == Activity.RESULT_OK && data?.data != null) {
+            RequestCode.Intent.GALLERY_VIDEO -> if (resultCode == Activity.RESULT_OK &&
+                    data?.data != null) {
                 val privateFile = createNewFile(Files.Path.VIDEO_PATH, Files.Extensions.MP4)
                 data.data.copyTo(this, privateFile)
                 addFileToConfirmation(privateFile)
             }
 
-            RequestCode.Intent.AUDIO -> if (resultCode == Activity.RESULT_OK && data?.data != null) {
+            RequestCode.Intent.AUDIO -> if (resultCode == Activity.RESULT_OK &&
+                    data?.data != null) {
                 val privateFile = createNewFile(Files.Path.AUDIO_PATH)
                 data.data.copyTo(this, privateFile)
                 addFileToConfirmation(privateFile)
@@ -346,13 +362,13 @@ class ComplaintDetailsActivity : BaseActivity(),
             File(File(filesDir, path), generateFilename(suffix))
 
     private fun generateFilename(suffix: String) =
-        resources.getString(R.string.app_name) +
-                "_confirmation_" + System.currentTimeMillis() + suffix
+            resources.getString(R.string.app_name) +
+                    "_confirmation_" + System.currentTimeMillis() + suffix
 
-    private fun addFileToConfirmation(file: File) {
+    private fun addFileToConfirmation(file: File, preview: Boolean = true) {
         val type = contentResolver.getType(file.getUri(this))
-        confirmation.files.add(Asset(localPath = file.path, type = type))
-        openPreview = true
+        confirmation.files.add(Asset(localPath = file.absolutePath, type = type))
+        openPreview = preview
     }
 
     override fun onFilesSave(confirmation: Confirmation) {
@@ -362,8 +378,10 @@ class ComplaintDetailsActivity : BaseActivity(),
 
     // region Permissions
     @Suppress("NON_EXHAUSTIVE_WHEN")
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
-        val permissionGranted = grantResults.isNotEmpty() && grantResults[0] == PackageManager.PERMISSION_GRANTED
+    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>,
+                                            grantResults: IntArray) {
+        val permissionGranted = grantResults.isNotEmpty() &&
+                grantResults[0] == PackageManager.PERMISSION_GRANTED
         when (RequestCode.Permission.fromInt(requestCode)) {
             RequestCode.Permission.CAMERA_PICTURE -> if (permissionGranted) {
                 takePicture()
@@ -425,7 +443,8 @@ class ComplaintDetailsActivity : BaseActivity(),
                 Intent(context, ComplaintDetailsActivity::class.java)
                         .putExtra(EXTRA_COMPLAINT, complaint)
 
-        fun getIntent(context: Context, complaintId: String, notificationId: String, isFromNotification: Boolean = false): Intent =
+        fun getIntent(context: Context, complaintId: String, notificationId: String,
+                      isFromNotification: Boolean = false): Intent =
                 Intent(context, ComplaintDetailsActivity::class.java)
                         .putExtra(EXTRA_COMPLAINT_ID, complaintId)
                         .putExtra(EXTRA_NOTIFICATION_ID, notificationId)
