@@ -13,6 +13,7 @@ import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.features.categories.CategoriesActivity
 import com.eokoe.sagui.features.complaints.ComplaintsActivity
 import com.eokoe.sagui.features.enterprises.EnterprisesActivity
+import com.eokoe.sagui.features.help.HelpActivity
 import com.eokoe.sagui.features.notifications.NotificationsActivity
 
 /**
@@ -92,6 +93,7 @@ abstract class BaseActivityNavDrawer : BaseActivity(), NavigationView.OnNavigati
                 R.id.nav_settings -> {
                 }
                 R.id.nav_help -> {
+                    startActivity(HelpActivity.getIntent(this))
                 }
             }
             drawerLayout.closeDrawer(GravityCompat.START)

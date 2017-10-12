@@ -3,7 +3,6 @@ package com.eokoe.sagui.data.model.impl
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
-import android.net.Uri
 import android.text.TextUtils
 import com.eokoe.sagui.data.entities.*
 import com.eokoe.sagui.data.exceptions.SaguiException
@@ -244,21 +243,7 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
     }
 
     override fun sendAsset(asset: Asset): Observable<Asset> {
-        return Observable
-                .create<Uri> { emitter ->
-                    // TODO
-                    /*val options = BitmapFactory.Options()
-                    options.inJustDecodeBounds = true
-                    val bitmap = BitmapFactory.decodeFile(asset.uri.encodedPath, options)
-                    if (options.outWidth != -1 && options.outHeight != -1) {
-                        val bos = ByteArrayOutputStream()
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, 60, bos)
-                        val input = ByteArrayInputStream(bos.toByteArray())
-                    } else {
-                    }*/
-                    emitter.onNext(asset.uri)
-                    emitter.onComplete()
-                }
+        return Observable.just(asset.uri)
                 .map { uri ->
                     val file = uri.toFile(context!!)
                     if (file != null && file.exists()) {

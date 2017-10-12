@@ -1,13 +1,12 @@
 package com.eokoe.sagui.widgets.listeners
 
 import android.graphics.drawable.Animatable
-import com.eokoe.sagui.utils.LogUtil
 import com.facebook.drawee.backends.pipeline.Fresco
 import com.facebook.drawee.controller.BaseControllerListener
 import com.facebook.drawee.view.SimpleDraweeView
 import com.facebook.imagepipeline.image.ImageInfo
 
-class FrescoWidthControllerListener(private val draweeView: SimpleDraweeView, imagePath: String): BaseControllerListener<ImageInfo>() {
+class FrescoWidthControllerListener(private val draweeView: SimpleDraweeView, imagePath: String?): BaseControllerListener<ImageInfo>() {
     init {
         val controller = Fresco.newDraweeControllerBuilder()
                 .setUri(imagePath)

@@ -7,9 +7,9 @@ import android.media.ThumbnailUtils
 import android.net.Uri
 import android.os.Bundle
 import android.provider.MediaStore
+import android.view.View
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Asset
-import com.eokoe.sagui.extensions.getRealPath
 import com.eokoe.sagui.extensions.show
 import com.eokoe.sagui.extensions.toAuthority
 import com.eokoe.sagui.features.base.view.BaseActivity
@@ -20,9 +20,9 @@ import kotlinx.android.synthetic.main.activity_view_asset.*
  */
 class ShowAssetActivity : BaseActivity() {
 
-    lateinit var assets: List<Asset>
-    var showSendButton: Boolean = false
-    var currentPosition: Int = -1
+    private lateinit var assets: List<Asset>
+    private var showSendButton: Boolean = false
+    private var currentPosition: Int = -1
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -44,36 +44,21 @@ class ShowAssetActivity : BaseActivity() {
             fabSend.show()
         }
         val asset = assets[currentPosition]
-        if (asset.isImage) {
-            val path = if (!asset.isLocal) {
-                asset.remotePath
-            } else {
-                "file://" + asset.uri.getRealPath(this)
-            }
-            ivImage.setImageURI(path)
-        } else {
-            if (asset.isVideo) {
+        when {
+            asset.isImage -> ivImage.setImageURI(asset.uri.toString())
+            asset.isVideo -> {
                 if (asset.isLocal) {
                     val videoThumbnail = ThumbnailUtils.createVideoThumbnail(asset.uri.toString(),
                             MediaStore.Images.Thumbnails.FULL_SCREEN_KIND)
                     ivImage.setImageBitmap(videoThumbnail)
                 } else {
-                    // TODO remote thumbnail
+                    ivImage.setImageURI(asset.thumbnail)
                 }
-                ivPlay.setOnClickListener {
-                    val uri: Uri?
-                    val intent = Intent(Intent.ACTION_VIEW)
-                    if (asset.isLocal) {
-                        uri = asset.uri.toAuthority(this)
-                        intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
-                    } else {
-                        uri = asset.uri
-                    }
-                    intent.setDataAndType(uri, asset.type ?: contentResolver.getType(uri))
-                    startActivity(intent)
-                }
+                ivPlay.setOnClickListener(OpenMediaClickListener(asset))
                 ivPlay.show()
-            } else {
+            }
+            else -> {
+                ivAudio.setOnClickListener(OpenMediaClickListener(asset))
                 ivAudio.show()
             }
         }
@@ -108,6 +93,21 @@ class ShowAssetActivity : BaseActivity() {
             val assets = ArrayList<Asset>()
             assets.add(asset)
             return getIntent(context, assets, 0, showSendButton)
+        }
+    }
+
+    inner class OpenMediaClickListener(val asset: Asset) : View.OnClickListener {
+        override fun onClick(p0: View?) {
+            val uri: Uri?
+            val intent = Intent(Intent.ACTION_VIEW)
+            if (asset.isLocal) {
+                uri = asset.uri.toAuthority(this@ShowAssetActivity)
+                intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+            } else {
+                uri = asset.uri
+            }
+            intent.setDataAndType(uri, asset.type ?: contentResolver.getType(uri))
+            startActivity(intent)
         }
     }
 }

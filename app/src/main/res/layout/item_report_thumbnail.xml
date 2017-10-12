@@ -12,7 +12,8 @@
         android:id="@+id/ivThumbnail"
         android:layout_width="wrap_content"
         android:layout_height="80dp"
-        android:adjustViewBounds="true"/>
+        android:adjustViewBounds="true"
+        android:scaleType="centerInside"/>
 
     <android.support.v7.widget.AppCompatImageView
         android:id="@+id/ivPlay"

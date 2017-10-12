@@ -1,15 +1,66 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/bg_screen"
-    android:fitsSystemWindows="true">
+    android:fitsSystemWindows="true"
+    android:gravity="bottom">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rvReport"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_above="@+id/llInsertMedia"
+        android:layout_alignParentTop="true"
         app:layoutManager="LinearLayoutManager"/>
-</LinearLayout>
+
+    <LinearLayout
+        android:id="@id/llInsertMedia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorAccent"
+        android:orientation="horizontal">
+
+        <android.support.v7.widget.AppCompatImageButton
+            android:id="@+id/ibAddImage"
+            style="@style/Button.Transparent"
+            android:layout_width="0dp"
+            android:layout_height="62dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:onClick="addMedia"
+            android:padding="16dp"
+            android:scaleType="center"
+            app:srcCompat="@drawable/ic_photo_camera"/>
+
+        <android.support.v7.widget.AppCompatImageButton
+            android:id="@+id/ibAddVideo"
+            style="@style/Button.Transparent"
+            android:layout_width="0dp"
+            android:layout_height="62dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:onClick="addMedia"
+            android:padding="16dp"
+            android:scaleType="center"
+            app:srcCompat="@drawable/ic_video"/>
+
+        <android.support.v7.widget.AppCompatImageButton
+            android:id="@+id/ibAddAudio"
+            style="@style/Button.Transparent"
+            android:layout_width="0dp"
+            android:layout_height="62dp"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="1"
+            android:adjustViewBounds="true"
+            android:onClick="addMedia"
+            android:padding="16dp"
+            android:scaleType="center"
+            app:srcCompat="@drawable/ic_voice"/>
+    </LinearLayout>
+</RelativeLayout>

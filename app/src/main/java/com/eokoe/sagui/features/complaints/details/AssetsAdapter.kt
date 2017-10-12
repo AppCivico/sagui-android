@@ -1,5 +1,6 @@
 package com.eokoe.sagui.features.complaints.details
 
+import android.support.v7.content.res.AppCompatResources
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
@@ -9,6 +10,7 @@ import com.eokoe.sagui.extensions.hide
 import com.eokoe.sagui.extensions.show
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import com.eokoe.sagui.widgets.listeners.FrescoWidthControllerListener
+import com.facebook.drawee.drawable.ScalingUtils
 import kotlinx.android.synthetic.main.item_complaint_detail_asset.view.*
 
 /**
@@ -36,12 +38,24 @@ class AssetsAdapter : RecyclerViewAdapter<Asset, RecyclerView.ViewHolder>() {
         }
 
         fun bind(asset: Asset) {
+            val context = itemView.context
             itemView.ivPlay.hide()
+            itemView.ivThumbnail.hierarchy.setPlaceholderImage(null)
+            itemView.ivThumbnail.setImageURI("")
+
             when {
-                asset.isImage ->
-                    FrescoWidthControllerListener(itemView.ivThumbnail, asset.uri.toString())
-                else -> {
+                asset.isImage -> {
+                    FrescoWidthControllerListener(itemView.ivThumbnail,
+                            asset.thumbnail ?: asset.uri.toString())
+                }
+                asset.isVideo -> {
+                    FrescoWidthControllerListener(itemView.ivThumbnail, asset.thumbnail)
                     itemView.ivPlay.show()
+                }
+                else -> {
+                    val drawable = AppCompatResources.getDrawable(context, R.drawable.ic_audio)
+                    itemView.ivThumbnail.hierarchy.setPlaceholderImage(drawable,
+                            ScalingUtils.ScaleType.CENTER_INSIDE)
                 }
             }
         }

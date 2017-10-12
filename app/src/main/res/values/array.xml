@@ -1,14 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="camera_options">
-        <item>Tirar foto</item>
-        <item>Gravar video</item>
-    </string-array>
-
-    <string-array name="contribute_options">
+    <string-array name="image_options">
         <item>Tirar foto</item>
         <item>Selecionar foto da galeria</item>
-        <item>Gravar video</item>
-        <item>Selecionar video da galeria</item>
+    </string-array>
+
+    <string-array name="video_options">
+        <item>Gravar vídeo</item>
+        <item>Selecionar vídeo da galeria</item>
     </string-array>
 </resources>

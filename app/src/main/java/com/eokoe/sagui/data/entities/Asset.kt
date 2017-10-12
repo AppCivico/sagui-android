@@ -30,6 +30,9 @@ open class Asset(
         @SerializedName("path")
         var remotePath: String? = null,
 
+        @Expose
+        var thumbnail: String? = null,
+
         var sent: Boolean = false
 ) : PaperParcelable, RealmObject() {
 
@@ -41,7 +44,7 @@ open class Asset(
 
     var uri: Uri
         get() =
-            if (isLocal) Uri.parse(localPath)
+            if (isLocal) Uri.parse("file://" + localPath)
             else Uri.parse(remotePath)
         set(value) {
             localPath = value.toString()

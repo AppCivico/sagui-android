@@ -10,6 +10,7 @@ import android.os.Environment
 import android.provider.MediaStore
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Asset
 import com.eokoe.sagui.data.entities.Category
@@ -104,21 +105,20 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                         complaint.location, complaint.address)
                 startActivityForResult(intent, RequestCode.Intent.LOCATION.value)
             }
-            ItemType.CAMERA -> {
-                if (hasCameraPermission()) {
-                    openCamera()
-                } else {
-                    requestCameraPermission(RequestCode.Permission.CAMERA.value)
-                }
+            ItemType.CATEGORY -> {
+                openCategories()
             }
-            ItemType.INSERT_PHOTO_VIDEO -> openImageGallery()
-            ItemType.INSERT_AUDIO -> if (hasRecordAudioPermission()) {
+        }
+    }
+
+    fun addMedia(view: View) {
+        when (view.id) {
+            R.id.ibAddImage -> addImage()
+            R.id.ibAddVideo -> addVideo()
+            R.id.ibAddAudio -> if (hasRecordAudioPermission()) {
                 recordAudio()
             } else {
                 requestRecordAudioPermission(RequestCode.Permission.AUDIO.value)
-            }
-            ItemType.CATEGORY -> {
-                openCategories()
             }
         }
     }
@@ -138,19 +138,33 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
     // endregion
 
     // region Actions and intents
-    private fun openCamera() {
-        getAlertList(resources.getStringArray(R.array.camera_options)) { dialog, position ->
-            val intent: Intent
-            val requestCode: RequestCode.Intent
+    private fun addImage() {
+        getAlertList(resources.getStringArray(R.array.image_options)) { dialog, position ->
             if (position == 0) {
-                intent = takePictureIntent()
-                requestCode = RequestCode.Intent.CAMERA_PICTURE
+                if (hasCameraPermission()) {
+                    takePicture()
+                } else {
+                    requestCameraPermission(RequestCode.Permission.CAMERA_PICTURE.value)
+                    return@getAlertList
+                }
             } else {
-                intent = recordVideoIntent()
-                requestCode = RequestCode.Intent.CAMERA_VIDEO
+                openImageGallery()
             }
-            if (intent.resolveActivity(packageManager) != null) {
-                startActivityForResult(intent, requestCode.value)
+            dialog.dismiss()
+        }.show()
+    }
+
+    private fun addVideo() {
+        getAlertList(resources.getStringArray(R.array.video_options)) { dialog, position ->
+            if (position == 0) {
+                if (hasCameraPermission()) {
+                    recordVideo()
+                } else {
+                    requestCameraPermission(RequestCode.Permission.CAMERA_VIDEO.value)
+                    return@getAlertList
+                }
+            } else {
+                openVideoGallery()
             }
             dialog.dismiss()
         }.show()
@@ -171,24 +185,22 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         val intent = Intent(Intent.ACTION_GET_CONTENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("image/*")
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivityForResult(intent, RequestCode.Intent.GALLERY_PICTURE.value)
-        }
+
+        startActivityForResult(intent, RequestCode.Intent.GALLERY_PICTURE.value)
     }
 
     private fun openVideoGallery() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
                 .setType("video/*")
-        if (intent.resolveActivity(packageManager) != null) {
-            startActivityForResult(intent, RequestCode.Intent.GALLERY_VIDEO.value)
-        }
+
+        startActivityForResult(intent, RequestCode.Intent.GALLERY_VIDEO.value)
     }
 
     private fun recordAudio() {
         AudioRecorderDialog
                 .newInstance { audioFile ->
-                    val privateFile = createNewFile(Files.Path.AUDIO_PATH, Files.Extensions.AMR)
+                    val privateFile = createNewFile(Files.Path.AUDIO_PATH, Files.Extensions.AAC)
                     audioFile.copyTo(privateFile, true)
                     audioFile.delete()
                     addFileToComplaint(privateFile)
@@ -197,8 +209,7 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 .show(supportFragmentManager)
     }
 
-    // region Intents
-    private fun takePictureIntent(): Intent {
+    private fun takePicture() {
         fileAttached = File(
                 getExternalFilesDir(Environment.DIRECTORY_MOVIES),
                 generateFilename(Files.Extensions.JPG)
@@ -207,10 +218,13 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         val intent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, file)
         grantUriRwPermissions(intent, file)
-        return intent
+
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivityForResult(intent, RequestCode.Intent.CAMERA_PICTURE.value)
+        }
     }
 
-    private fun recordVideoIntent(): Intent {
+    private fun recordVideo() {
         fileAttached = File(
                 getExternalFilesDir(Environment.DIRECTORY_MOVIES),
                 generateFilename(Files.Extensions.MP4)
@@ -219,9 +233,11 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         val intent = Intent(MediaStore.ACTION_VIDEO_CAPTURE)
         grantUriRwPermissions(intent, file)
         intent.putExtra(MediaStore.EXTRA_OUTPUT, file)
-        return intent
+
+        if (intent.resolveActivity(packageManager) != null) {
+            startActivityForResult(intent, RequestCode.Intent.CAMERA_VIDEO.value)
+        }
     }
-    // endregion
     // endregion
 
     override fun showError(error: Throwable) {
@@ -284,8 +300,15 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 val tempFile = File.createTempFile(
                         getString(R.string.app_name) + "_complaint_", Files.Extensions.JPG)
                 data.data.copyTo(this, tempFile)
-                FileUtil.compressImage(tempFile.path, privateFile)
+                FileUtil.compressImage(tempFile.absolutePath, privateFile)
                 tempFile.delete()
+                addFileToComplaint(privateFile)
+            }
+
+            RequestCode.Intent.GALLERY_VIDEO -> if (resultCode == Activity.RESULT_OK &&
+                    data != null) {
+                val privateFile = createNewFile(Files.Path.VIDEO_PATH, Files.Extensions.MP4)
+                data.data.copyTo(this, privateFile)
                 addFileToComplaint(privateFile)
             }
 
@@ -305,8 +328,11 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 grantResults[0] == PackageManager.PERMISSION_GRANTED
 
         when (RequestCode.Permission.fromInt(requestCode)) {
-            RequestCode.Permission.CAMERA -> if (permissionGranted) {
-                openCamera()
+            RequestCode.Permission.CAMERA_PICTURE -> if (permissionGranted) {
+                takePicture()
+            }
+            RequestCode.Permission.CAMERA_VIDEO -> if (permissionGranted) {
+                recordVideo()
             }
             RequestCode.Permission.AUDIO -> if (permissionGranted) {
                 recordAudio()

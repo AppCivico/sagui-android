@@ -1,9 +1,6 @@
 package com.eokoe.sagui.features.complaints.report
 
-import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.Color
-import android.graphics.PorterDuff
 import android.media.ThumbnailUtils
 import android.provider.MediaStore
 import android.support.v7.content.res.AppCompatResources
@@ -60,7 +57,6 @@ class ThumbnailAdapter : RecyclerViewAdapter<Asset, RecyclerView.ViewHolder>() {
             } else {
                 itemView.ivPlay.hide()
                 val audioThumbnail = AppCompatResources.getDrawable(context, R.drawable.ic_audio)
-                audioThumbnail?.mutate()?.setColorFilter(Color.WHITE, PorterDuff.Mode.SRC_IN)
                 itemView.ivThumbnail.setImageDrawable(audioThumbnail)
             }
         }

@@ -22,7 +22,7 @@ object Files {
     object Extensions {
         val MP4 = ".mp4"
         val JPG = ".jpg"
-        val AMR = ".amr"
+        val AAC = ".aac"
         val NONE = ""
     }
 }

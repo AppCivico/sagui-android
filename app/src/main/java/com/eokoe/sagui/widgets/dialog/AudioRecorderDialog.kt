@@ -76,15 +76,15 @@ class AudioRecorderDialog private constructor() : DialogFragment() {
         if (!audioDir.exists()) {
             audioDir.mkdirs()
         }
-        return File.createTempFile(filename, Files.Extensions.AMR, audioDir)
+        return File.createTempFile(filename, Files.Extensions.AAC, audioDir)
     }
 
     private fun startRecord(view: ViewGroup) {
         recorder = MediaRecorder()
         recorder!!.setAudioSource(MediaRecorder.AudioSource.MIC)
-        recorder!!.setOutputFormat(MediaRecorder.OutputFormat.AMR_NB)
+        recorder!!.setOutputFormat(MediaRecorder.OutputFormat.MPEG_4)
         recorder!!.setOutputFile(audioFile.absolutePath)
-        recorder!!.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB)
+        recorder!!.setAudioEncoder(MediaRecorder.AudioEncoder.AAC)
 
         startedAt = SystemClock.elapsedRealtime()
         view.chronometer.base = startedAt

@@ -233,7 +233,7 @@ class ComplaintDetailsActivity : BaseActivity(),
     private fun openImageGallery() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
-                .setType("image/*")
+                .setType("image/jpeg")
         if (intent.resolveActivity(packageManager) != null) {
             startActivityForResult(intent, RequestCode.Intent.GALLERY_PICTURE.value)
         }
@@ -251,7 +251,7 @@ class ComplaintDetailsActivity : BaseActivity(),
     private fun recordAudio() {
         AudioRecorderDialog
                 .newInstance { audioFile ->
-                    val privateFile = createNewFile(Files.Path.AUDIO_PATH, Files.Extensions.AMR)
+                    val privateFile = createNewFile(Files.Path.AUDIO_PATH, Files.Extensions.AAC)
                     audioFile.copyTo(privateFile, true)
                     audioFile.delete()
                     addFileToConfirmation(privateFile, false)
@@ -303,6 +303,7 @@ class ComplaintDetailsActivity : BaseActivity(),
     @Suppress("NON_EXHAUSTIVE_WHEN")
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         when (RequestCode.Intent.fromInt(requestCode)) {
+
             RequestCode.Intent.CAMERA_PICTURE -> if (resultCode == Activity.RESULT_OK &&
                     fileAttached?.exists() == true) {
                 val privateFile = createNewFile(Files.Path.IMAGE_PATH, Files.Extensions.JPG)
@@ -318,7 +319,7 @@ class ComplaintDetailsActivity : BaseActivity(),
                 val tempFile = File.createTempFile(
                         getString(R.string.app_name) + "_confirmation_", Files.Extensions.JPG)
                 data.data.copyTo(this, tempFile)
-                FileUtil.compressImage(tempFile.path, privateFile)
+                FileUtil.compressImage(tempFile.absolutePath, privateFile)
                 tempFile.delete()
                 addFileToConfirmation(privateFile)
             }

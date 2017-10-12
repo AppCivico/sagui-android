@@ -42,12 +42,12 @@ class ReportAdapter(complaint: Complaint?, showCategories: Boolean = false) : Re
         items.add(Item(ItemType.DIVIDER))
         items.add(Item(ItemType.LOCATION, R.drawable.ic_location, R.string.occurrence_place))
         items.add(Item(ItemType.DIVIDER))
-        items.add(Item(ItemType.INSERT_PHOTO_VIDEO, R.drawable.ic_photo_black, R.string.insert_photo_video))
+        /*items.add(Item(ItemType.INSERT_PHOTO_VIDEO, R.drawable.ic_photo_black, R.string.insert_photo_video))
         items.add(Item(ItemType.DIVIDER))
         items.add(Item(ItemType.CAMERA, R.drawable.ic_photo_camera, R.string.camera))
         items.add(Item(ItemType.DIVIDER))
         items.add(Item(ItemType.INSERT_AUDIO, R.drawable.ic_audio, R.string.insert_audio))
-        items.add(Item(ItemType.DIVIDER))
+        items.add(Item(ItemType.DIVIDER))*/
         this.items = items
     }
 
