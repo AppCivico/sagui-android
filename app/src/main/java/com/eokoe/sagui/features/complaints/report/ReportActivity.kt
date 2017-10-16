@@ -22,9 +22,11 @@ import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.report.ReportAdapter.ItemType
 import com.eokoe.sagui.features.complaints.report.pin.PinActivity
+import com.eokoe.sagui.features.show_asset.ShowAssetActivity
 import com.eokoe.sagui.services.upload_file.UploadFilesJobIntentService
 import com.eokoe.sagui.utils.FileUtil
 import com.eokoe.sagui.utils.Files
+import com.eokoe.sagui.utils.LogUtil
 import com.eokoe.sagui.utils.RequestCode
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import com.eokoe.sagui.widgets.dialog.AudioRecorderDialog
@@ -37,8 +39,9 @@ import java.io.File
  * @author Pedro Silva
  * @since 25/09/17
  */
-class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
-        ReportContract.View, ViewPresenter<ReportContract.Presenter> {
+class ReportActivity : BaseActivity(),
+        ReportAdapter.OnItemClickListener, ThumbnailAdapter.OnItemClickListener,
+        ReportContract.View, ViewPresenter<ReportContract.Presenter>, View.OnClickListener {
 
     override lateinit var presenter: ReportContract.Presenter
     private lateinit var reportAdapter: ReportAdapter
@@ -80,13 +83,17 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
 
     override fun init(savedInstanceState: Bundle?) {
         setupRecyclerView()
+        ibAddImage.setOnClickListener(this)
+        ibAddVideo.setOnClickListener(this)
+        ibAddAudio.setOnClickListener(this)
     }
 
     private fun setupRecyclerView() {
         rvReport.setHasFixedSize(false)
         reportAdapter = ReportAdapter(complaint, categories != null)
-        rvReport.adapter = reportAdapter
         reportAdapter.onItemClickListener = this
+        reportAdapter.onAssetClickListener = this
+        rvReport.adapter = reportAdapter
         reportAdapter.titleChangeSubject.subscribe {
             complaint.title = it
         }
@@ -111,7 +118,26 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
         }
     }
 
-    fun addMedia(view: View) {
+    override fun onItemClick(file: Asset) {
+        getAlertList(arrayOf("Visualizar", "Remover")) { dialog, position ->
+            if (position == 0) {
+                val intent = ShowAssetActivity.getIntent(this@ReportActivity,
+                        complaint.files.toList(), complaint.files.indexOf(file))
+                startActivity(intent)
+            } else if (position == 1) {
+                try {
+                    file.uri.toFile(this)?.delete()
+                } catch (error: Exception) {
+                    LogUtil.error(this, error)
+                }
+                complaint.files.remove(file)
+                reportAdapter.complaint = complaint
+            }
+            dialog.dismiss()
+        }.show()
+    }
+
+    override fun onClick(view: View) {
         when (view.id) {
             R.id.ibAddImage -> addImage()
             R.id.ibAddVideo -> addVideo()
@@ -134,6 +160,17 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
             return true
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onBackPressed() {
+        complaint.files.forEach {
+            try {
+                it.uri.toFile(applicationContext)?.delete()
+            } catch (error: Exception) {
+                LogUtil.error(this, error)
+            }
+        }
+        super.onBackPressed()
     }
     // endregion
 
@@ -286,11 +323,16 @@ class ReportActivity : BaseActivity(), ReportAdapter.OnItemClickListener,
                 addFileToComplaint(privateFile)
             }
 
-            RequestCode.Intent.CAMERA_VIDEO -> if (resultCode == Activity.RESULT_OK &&
-                    fileAttached?.exists() == true) {
+            RequestCode.Intent.CAMERA_VIDEO -> if (resultCode == Activity.RESULT_OK) {
                 val privateFile = createNewFile(Files.Path.VIDEO_PATH, Files.Extensions.MP4)
-                fileAttached!!.copyTo(privateFile, true)
-                fileAttached!!.delete()
+                when {
+                    fileAttached?.exists() == true -> {
+                        fileAttached!!.copyTo(privateFile, true)
+                        fileAttached!!.delete()
+                    }
+                    data?.data != null -> data.data.copyTo(this, privateFile)
+                    else -> return
+                }
                 addFileToComplaint(privateFile)
             }
 
