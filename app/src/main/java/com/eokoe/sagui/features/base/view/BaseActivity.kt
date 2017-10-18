@@ -59,7 +59,7 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         if (requestCode == LocationHelper.REQUEST_GOOGLE_PLAY_RESOLVE_ERROR && this is ViewLocation) {
-            locationHelper.onActivityResult(resultCode, data)
+            locationHelper.onActivityResult(resultCode)
             return
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -120,7 +120,7 @@ abstract class BaseActivity : AppCompatActivity() {
         val alertDialog = AlertDialogFragment.create(this) {
             titleRes = title
             messageRes = message
-            onConfirmClickListener { dialog, which ->
+            onConfirmClickListener { _, _ ->
                 ActivityCompat.requestPermissions(this@BaseActivity, permissions, requestCode)
             }
         }

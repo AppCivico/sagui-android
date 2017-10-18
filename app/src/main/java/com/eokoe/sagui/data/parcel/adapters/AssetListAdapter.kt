@@ -11,7 +11,7 @@ import paperparcel.TypeAdapter
  */
 class AssetListAdapter : TypeAdapter<RealmList<Asset>> {
     override fun readFromParcel(source: Parcel): RealmList<Asset> {
-        val list: List<Asset> = ArrayList()
+        val list = ArrayList<Asset>()
         source.readTypedList(list, Asset.CREATOR)
         return RealmList(*list.toTypedArray())
     }

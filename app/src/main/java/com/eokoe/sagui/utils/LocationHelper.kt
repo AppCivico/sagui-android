@@ -1,7 +1,6 @@
 package com.eokoe.sagui.utils
 
 import android.app.Activity
-import android.content.Intent
 import android.content.IntentSender
 import android.location.Location
 import android.os.Bundle
@@ -71,7 +70,7 @@ class LocationHelper : GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnCo
         }
     }
 
-    fun onActivityResult(resultCode: Int, data: Intent?) {
+    fun onActivityResult(resultCode: Int) {
         resolvingGooglePlayError = false
         if (resultCode == Activity.RESULT_OK && googleApiClient != null
                 && googleApiClient!!.isConnecting && googleApiClient!!.isConnected) {
@@ -84,7 +83,7 @@ class LocationHelper : GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnCo
             if (result.hasResolution()) {
                 try {
                     resolvingGooglePlayError = true
-                    result.startResolutionForResult(activity, REQUEST_GOOGLE_PLAY_RESOLVE_ERROR!!)
+                    result.startResolutionForResult(activity, REQUEST_GOOGLE_PLAY_RESOLVE_ERROR)
                 } catch (error: IntentSender.SendIntentException) {
                     googleApiClient?.connect()
                 }

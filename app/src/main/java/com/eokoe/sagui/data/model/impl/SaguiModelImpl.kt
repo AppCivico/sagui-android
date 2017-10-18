@@ -79,12 +79,8 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
     override fun getSurveyList(category: Category): Observable<List<Survey>> =
             ServiceGenerator.getService(SaguiService::class.java)
                     .surveys(category.id)
-                    .flatMapIterable {
-                        return@flatMapIterable it
-                    }
-                    .filter {
-                        return@filter it.questions != null && it.questions.isNotEmpty()
-                    }
+                    .flatMapIterable { it }
+                    .filter { it.questions != null && it.questions.isNotEmpty() }
                     .toList()
                     .toObservable()
 
@@ -93,7 +89,7 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                 .sendAnswers(submissions.surveyId!!, submissions)
                 .map {
                     submissions.id = it.id
-                    return@map submissions
+                    submissions
                 }
     }
 
@@ -102,7 +98,7 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                 .saveComment(comment.submissionsId!!, comment)
                 .map {
                     comment.id = it.id
-                    return@map comment
+                    comment
                 }
     }
 
@@ -307,31 +303,11 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
     }
 
     override fun getAssetsPendingUpload(): Observable<List<Asset>> {
-        val complaintAssets = Observable
-                .create<List<HasFiles>> { emitter ->
-                    Realm.getDefaultInstance().use { realm ->
-                        val result = realm.where(Complaint::class.java)
-                                .equalTo("files.sent", false)
-                                .findAll()
-                        if (result != null && result.isNotEmpty()) {
-                            emitter.onNext(realm.copyFromRealm(result))
-                        }
-                        emitter.onComplete()
-                    }
-                }
-        val confirmationAssets = Observable
-                .create<List<HasFiles>> { emitter ->
-                    Realm.getDefaultInstance().use { realm ->
-                        val result = realm.where(Confirmation::class.java)
-                                .equalTo("files.sent", false)
-                                .findAll()
-                        if (result != null && result.isNotEmpty()) {
-                            emitter.onNext(realm.copyFromRealm(result))
-                        }
-                        emitter.onComplete()
-                    }
-                }
-        return Observable.merge(complaintAssets, confirmationAssets)
+        return Observable
+                .merge(
+                        pendingFilesFrom(Complaint::class.java),
+                        pendingFilesFrom(Confirmation::class.java)
+                )
                 .flatMapIterable { it }
                 .flatMapIterable { it.files }
                 .filter { !it.sent }
@@ -339,11 +315,23 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                 .toObservable()
     }
 
+    private fun <T : HasFiles> pendingFilesFrom(clazz: Class<T>): Observable<List<HasFiles>> {
+        return Observable.create<List<HasFiles>> { emitter ->
+            Realm.getDefaultInstance().use { realm ->
+                val result = realm.where(clazz)
+                        .equalTo("files.sent", false)
+                        .findAll()
+                if (result != null) {
+                    emitter.onNext(realm.copyFromRealm(result))
+                }
+                emitter.onComplete()
+            }
+        }
+    }
+
     override fun confirmationFiles(confirmation: Confirmation): Observable<Confirmation> {
         return Observable.just(confirmation.files)
-                .flatMapIterable { asset ->
-                    asset
-                }
+                .flatMapIterable { it }
                 .map { asset ->
                     asset.parentId = confirmation.id!!
                     asset.parentType = Asset.ParentType.CONFIRMATION

@@ -38,6 +38,6 @@ class LatLongTypeAdapter : TypeAdapter<LatLong>() {
     }
 
     companion object {
-        val INSTANCE = LatLongTypeAdapter().nullSafe()
+        val INSTANCE = LatLongTypeAdapter().nullSafe()!!
     }
 }

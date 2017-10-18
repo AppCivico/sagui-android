@@ -71,20 +71,21 @@ class ComplaintDetailsAdapter(complaint: Complaint?) : RecyclerViewAdapter<Compl
 
     inner class DetailsViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(complaint: Complaint) {
-            val context = itemView.context
-            val resources = context.resources
-            itemView.tvTitle.text = complaint.title
-            itemView.tvCategoryName.text = complaint.category?.name
-            itemView.tvLocation.text = complaint.address
-            itemView.tvQtyConfirmations.text = resources.getQuantityString(R.plurals.qty_confirmations,
-                    complaint.confirmations, complaint.confirmations)
-            val remain = complaint.numToBecameCause - complaint.confirmations
-            if (remain > 0) {
-                itemView.tvQtyRemain.text = resources.getQuantityString(R.plurals.qty_remain, remain, remain)
-            } else {
-                itemView.tvQtyRemain.setText(R.string.occurrence_already)
+            with(itemView) {
+                val resources = context.resources
+                tvTitle.text = complaint.title
+                tvCategoryName.text = complaint.category?.name
+                tvLocation.text = complaint.address
+                tvQtyConfirmations.text = resources.getQuantityString(R.plurals.qty_confirmations,
+                        complaint.confirmations, complaint.confirmations)
+                val remain = complaint.numToBecameCause - complaint.confirmations
+                if (remain > 0) {
+                    tvQtyRemain.text = resources.getQuantityString(R.plurals.qty_remain, remain, remain)
+                } else {
+                    tvQtyRemain.setText(R.string.occurrence_already)
+                }
+                etDescription.text = complaint.description
             }
-            itemView.etDescription.text = complaint.description
         }
     }
 
@@ -97,11 +98,13 @@ class ComplaintDetailsAdapter(complaint: Complaint?) : RecyclerViewAdapter<Compl
 
     inner class AssetsViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         init {
-            itemView.rvAssets.setHasFixedSize(true)
-            val assetsAdapter = AssetsAdapter()
-            assetsAdapter.onItemClickListener = onImageClickListener
-            itemView.rvAssets.adapter = assetsAdapter
-            itemView.rvAssets.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
+            with(itemView) {
+                rvAssets.setHasFixedSize(true)
+                val assetsAdapter = AssetsAdapter()
+                assetsAdapter.onItemClickListener = onImageClickListener
+                rvAssets.adapter = assetsAdapter
+                rvAssets.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            }
         }
 
         fun bind(assets: List<Asset>) {

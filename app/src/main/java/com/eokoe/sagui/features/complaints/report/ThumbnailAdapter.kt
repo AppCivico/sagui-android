@@ -1,5 +1,6 @@
 package com.eokoe.sagui.features.complaints.report
 
+import android.content.Context
 import android.graphics.BitmapFactory
 import android.media.ThumbnailUtils
 import android.provider.MediaStore
@@ -41,31 +42,31 @@ class ThumbnailAdapter : RecyclerViewAdapter<Asset, RecyclerView.ViewHolder>() {
         }
 
         fun bind(file: Asset) {
-            val context = itemView.context
-            val fileUri = file.uri.getRealPath(context)
-            val thumbnail = if (isImage(file)) {
-                val bitmap = BitmapFactory.decodeFile(fileUri)
-                val size = UnitUtils.dp2px(context, 100f).toInt()
-                itemView.ivPlay.hide()
-                ThumbnailUtils.extractThumbnail(bitmap, size, size)
-            } else {
-                itemView.ivPlay.show()
-                ThumbnailUtils.createVideoThumbnail(fileUri, MediaStore.Images.Thumbnails.MINI_KIND)
-            }
-            if (thumbnail != null) {
-                itemView.ivThumbnail.setImageBitmap(thumbnail)
-            } else {
-                itemView.ivPlay.hide()
-                val audioThumbnail = AppCompatResources.getDrawable(context, R.drawable.ic_audio)
-                itemView.ivThumbnail.setImageDrawable(audioThumbnail)
+            with(itemView) {
+                val fileUri = file.uri.getRealPath(context)
+                val thumbnail = if (isImage(context, file)) {
+                    val bitmap = BitmapFactory.decodeFile(fileUri)
+                    val size = UnitUtils.dp2px(context, 100f).toInt()
+                    ivPlay.hide()
+                    ThumbnailUtils.extractThumbnail(bitmap, size, size)
+                } else {
+                    ivPlay.show()
+                    ThumbnailUtils.createVideoThumbnail(fileUri, MediaStore.Images.Thumbnails.MINI_KIND)
+                }
+                if (thumbnail != null) {
+                    ivThumbnail.setImageBitmap(thumbnail)
+                } else {
+                    ivPlay.hide()
+                    val audioThumbnail = AppCompatResources.getDrawable(context, R.drawable.ic_audio)
+                    ivThumbnail.setImageDrawable(audioThumbnail)
+                }
             }
         }
 
-        private fun isImage(asset: Asset): Boolean {
+        private fun isImage(context: Context, asset: Asset): Boolean {
             return if (asset.type != null) {
                 asset.isImage
             } else {
-                val context = itemView.context
                 val fileUri = asset.uri.getRealPath(context)
                 val options = BitmapFactory.Options()
                 options.inJustDecodeBounds = true

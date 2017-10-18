@@ -11,7 +11,7 @@ import paperparcel.TypeAdapter
  */
 class AnswerListAdapter : TypeAdapter<RealmList<Answer>> {
     override fun readFromParcel(source: Parcel): RealmList<Answer> {
-        val list: List<Answer> = ArrayList()
+        val list = ArrayList<Answer>()
         source.readTypedList(list, Answer.CREATOR)
         return RealmList(*list.toTypedArray())
     }

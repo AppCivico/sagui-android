@@ -10,7 +10,6 @@ import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.webkit.MimeTypeMap
 import com.eokoe.sagui.BuildConfig
-import com.eokoe.sagui.utils.Files
 import java.io.File
 import java.io.FileOutputStream
 
@@ -22,14 +21,10 @@ import java.io.FileOutputStream
 
 fun Uri.toFile(context: Context): File? {
     val path = getRealPath(context) ?: path
-    return if (isLocal(path)) {
-        return File(path)
-    } else null
+    return if (isLocal(path)) File(path) else null
 }
 
-fun Uri.toAuthority(context: Context): Uri? {
-    return toFile(context)?.getUri(context)
-}
+fun Uri.toAuthority(context: Context) = toFile(context)?.getUri(context)
 
 fun Uri.getRealPath(context: Context): String? {
     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT && DocumentsContract.isDocumentUri(context, this)) {
@@ -111,21 +106,22 @@ fun Uri.getMimeType(context: Context): String {
 }
 
 fun Uri.copyTo(context: Context, file: File) {
-    context.contentResolver.openInputStream(this).use { inputStream ->
-        if (inputStream != null) {
-            if (!file.exists()) {
-                val parent = File(file.parent)
-                if (!parent.exists()) parent.mkdirs()
-                file.createNewFile()
-            }
-            FileOutputStream(file).use { outputStream ->
-                val buf = ByteArray(1024)
-                while (true) {
-                    val len = inputStream.read(buf)
-                    if (len != -1) outputStream.write(buf, 0, len)
-                    else break
+    context.contentResolver.openInputStream(this)
+            .use { inputStream ->
+                if (inputStream != null) {
+                    if (!file.exists()) {
+                        val parent = File(file.parent)
+                        if (!parent.exists()) parent.mkdirs()
+                        file.createNewFile()
+                    }
+                    FileOutputStream(file).use { outputStream ->
+                        val buf = ByteArray(1024)
+                        while (true) {
+                            val len = inputStream.read(buf)
+                            if (len != -1) outputStream.write(buf, 0, len)
+                            else break
+                        }
+                    }
                 }
             }
-        }
-    }
 }

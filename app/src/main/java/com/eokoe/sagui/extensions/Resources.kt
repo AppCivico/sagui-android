@@ -8,10 +8,9 @@ import android.content.res.Resources
  */
 val Resources.statusBarHeight: Int
     get() {
-        var result = 0
         val resourceId = getIdentifier("status_bar_height", "dimen", "android")
         if (resourceId > 0) {
-            result = getDimensionPixelSize(resourceId)
+            return getDimensionPixelSize(resourceId)
         }
-        return result
+        return 0
     }

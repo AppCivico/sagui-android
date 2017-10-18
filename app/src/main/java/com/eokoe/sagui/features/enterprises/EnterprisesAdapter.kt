@@ -54,23 +54,25 @@ class EnterprisesAdapter() : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHo
 
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(enterprise: Enterprise) {
-            val cover = enterprise.images.first()
-            itemView.imgEnterprise.setImageURI(cover?.thumbnail ?: cover?.remotePath)
-            itemView.tvEnterpriseName.text = enterprise.name
-            itemView.tvLocation.text = enterprise.address
-            itemView.tvQtyConfirmations.text = itemView.resources.getQuantityString(
-                    R.plurals.qty_complaints, enterprise.data.complaints, enterprise.data.complaints)
-            itemView.tvQtyCases.text = itemView.resources.getQuantityString(
-                    R.plurals.qty_causes, enterprise.data.cases, enterprise.data.cases)
-            itemView.setOnClickListener {
-                onItemClickListener?.onClick(enterprise)
-            }
-            if (enterprise.images.size > 0) {
-                itemView.rvImgEnterprise.setHasFixedSize(true)
-                val imageAdapter = ImageAdapter(enterprise.images)
-                imageAdapter.onItemClickListener = onImageClickListener
-                itemView.rvImgEnterprise.adapter = imageAdapter
-                itemView.rvImgEnterprise.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
+            with(itemView) {
+                val cover = enterprise.images.first()
+                imgEnterprise.setImageURI(cover?.thumbnail ?: cover?.remotePath)
+                tvEnterpriseName.text = enterprise.name
+                tvLocation.text = enterprise.address
+                tvQtyConfirmations.text = itemView.resources.getQuantityString(
+                        R.plurals.qty_complaints, enterprise.data.complaints, enterprise.data.complaints)
+                tvQtyCases.text = itemView.resources.getQuantityString(
+                        R.plurals.qty_causes, enterprise.data.cases, enterprise.data.cases)
+                setOnClickListener {
+                    onItemClickListener?.onClick(enterprise)
+                }
+                if (enterprise.images.size > 0) {
+                    rvImgEnterprise.setHasFixedSize(true)
+                    val imageAdapter = ImageAdapter(enterprise.images)
+                    imageAdapter.onItemClickListener = onImageClickListener
+                    rvImgEnterprise.adapter = imageAdapter
+                    rvImgEnterprise.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                }
             }
         }
     }

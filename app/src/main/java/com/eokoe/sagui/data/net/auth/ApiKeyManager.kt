@@ -8,5 +8,5 @@ interface ApiKeyManager {
     val deviceKey: String
     val hasApiKey: Boolean
     fun clearApiKey()
-    fun newApiKey(): String?
+    fun newApiKey(): String
 }

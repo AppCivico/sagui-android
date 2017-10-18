@@ -117,9 +117,9 @@ class AlertDialogFragment : DialogFragment() {
         var cancelable: Boolean = false
 
         var onConfirmClickListener: DialogInterface.OnClickListener =
-                DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() }
+                DialogInterface.OnClickListener { dialog, _ -> dialog.dismiss() }
         var onCancelClickListener: DialogInterface.OnClickListener =
-                DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() }
+                DialogInterface.OnClickListener { dialog, _ -> dialog.dismiss() }
 
         var onDismissListener: DialogInterface.OnDismissListener? = null
         var onMultiChoiceClickListener: DialogInterface.OnMultiChoiceClickListener? = null

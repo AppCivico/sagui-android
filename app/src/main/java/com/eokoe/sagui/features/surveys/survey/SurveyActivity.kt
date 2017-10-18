@@ -233,7 +233,7 @@ class SurveyActivity : BaseActivity(),
                     .subscribe {
                         btnNext.isEnabled = it.text().isNotEmpty()
                     }
-            viewAnswer.editText?.setOnEditorActionListener { v, actionId, event ->
+            viewAnswer.editText?.setOnEditorActionListener { _, actionId, _ ->
                 if (btnNext.isEnabled && (actionId == EditorInfo.IME_ACTION_NEXT || actionId == EditorInfo.IME_ACTION_DONE)) {
                     btnNext.performClick()
                     true

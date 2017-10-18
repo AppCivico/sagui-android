@@ -53,19 +53,24 @@ class CategoriesAdapter : RecyclerViewAdapter<Category, RecyclerView.ViewHolder>
 
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(category: Category) {
-            itemView.tvSymbol.text = category.symbol
-            itemView.tvCategoryName.text = category.name
-            itemView.setOnClickListener {
-                onItemClickListener?.onClick(category)
+            with(itemView) {
+                tvSymbol.text = category.symbol
+                tvCategoryName.text = category.name
+                setOnClickListener {
+                    onItemClickListener?.onClick(category)
+                }
             }
         }
     }
 
     inner class ErrorViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(error: String?, retryClickListener: OnRetryClickListener?) {
-            itemView.tvError.text = error
-            itemView.ivRefresh.setOnClickListener {
-                retryClickListener?.retry()
+            with(itemView) {
+                tvError.text = error
+                ivRefresh.setOnClickListener {
+                    retryClickListener?.retry()
+                }
+
             }
         }
     }

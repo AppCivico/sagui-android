@@ -11,7 +11,7 @@ import paperparcel.TypeAdapter
  */
 class CommentListAdapter : TypeAdapter<RealmList<Comment>> {
     override fun readFromParcel(source: Parcel): RealmList<Comment> {
-        val list: List<Comment> = ArrayList()
+        val list = ArrayList<Comment>()
         source.readTypedList(list, Comment.CREATOR)
         return RealmList(*list.toTypedArray())
     }

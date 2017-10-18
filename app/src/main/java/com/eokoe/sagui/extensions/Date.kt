@@ -6,10 +6,8 @@ import java.util.*
 /**
  * @author Pedro Silva
  */
-fun Date.format(pattern: String): String? {
-    return SimpleDateFormat(pattern, Locale.getDefault()).format(this)
-}
+fun Date.format(pattern: String): String? =
+        SimpleDateFormat(pattern, Locale.getDefault()).format(this)
 
-fun Date.fromString(pattern: String, date: String): Date? {
-    return SimpleDateFormat(pattern, Locale.getDefault()).parse(date)
-}
+fun Date.fromString(pattern: String, date: String): Date? =
+        SimpleDateFormat(pattern, Locale.getDefault()).parse(date)

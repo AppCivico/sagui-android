@@ -132,9 +132,11 @@ class ReportAdapter(complaint: Complaint?, showCategories: Boolean = false) : Re
 
     inner class ThumbnailsViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         init {
-            itemView.rvThumbnails.setHasFixedSize(true)
-            itemView.rvThumbnails.adapter = ThumbnailAdapter()
-            itemView.rvThumbnails.layoutManager = LinearLayoutManager(itemView.context, LinearLayoutManager.HORIZONTAL, false)
+            with(itemView) {
+                rvThumbnails.setHasFixedSize(true)
+                rvThumbnails.adapter = ThumbnailAdapter()
+                rvThumbnails.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            }
         }
 
         fun bind(assets: List<Asset>) {
@@ -152,11 +154,13 @@ class ReportAdapter(complaint: Complaint?, showCategories: Boolean = false) : Re
         }
 
         fun bind(item: Item) {
-            itemView.ivActionIcon.setImageResource(item.icon!!)
-            if (item.value == null) {
-                itemView.tvActionName.setText(item.actionName!!)
-            } else {
-                itemView.tvActionName.text = item.value as? String
+            with(itemView) {
+                ivActionIcon.setImageResource(item.icon!!)
+                if (item.value == null) {
+                    tvActionName.setText(item.actionName!!)
+                } else {
+                    tvActionName.text = item.value as? String
+                }
             }
         }
     }

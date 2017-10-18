@@ -8,6 +8,7 @@ import com.eokoe.sagui.data.model.SaguiModel
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.services.Retry
 import com.eokoe.sagui.utils.Job
+import com.eokoe.sagui.utils.LogUtil
 
 /**
  * @author Pedro Silva
@@ -31,19 +32,16 @@ class UploadFilesJobIntentService : JobIntentService() {
     override fun onHandleWork(intent: Intent) {
         saguiModel.getAssetsPendingUpload()
                 .flatMapIterable { it }
-                .flatMap { asset ->
-                    saguiModel.sendAsset(asset)
-                }
+                .flatMap { saguiModel.sendAsset(it) }
                 .filter { !it.sent }
                 .count()
                 .subscribe({ count ->
-                    if (count > 0) {
-                        retry.schedule(applicationContext)
-                    } else {
-                        retry.cancel(applicationContext)
-                    }
+                    val call =
+                            if (count > 0) retry::schedule
+                            else retry::cancel
+                    call(applicationContext)
                 }, { err ->
-                    err.printStackTrace()
+                    LogUtil.error(this, err)
                 })
     }
 

@@ -38,24 +38,25 @@ class AssetsAdapter : RecyclerViewAdapter<Asset, RecyclerView.ViewHolder>() {
         }
 
         fun bind(asset: Asset) {
-            val context = itemView.context
-            itemView.ivPlay.hide()
-            itemView.ivThumbnail.hierarchy.setPlaceholderImage(null)
-            itemView.ivThumbnail.setImageURI("")
+            with(itemView) {
+                ivPlay.hide()
+                ivThumbnail.hierarchy.setPlaceholderImage(null)
+                ivThumbnail.setImageURI("")
 
-            when {
-                asset.isImage -> {
-                    FrescoWidthControllerListener(itemView.ivThumbnail,
-                            asset.thumbnail ?: asset.uri.toString())
-                }
-                asset.isVideo -> {
-                    FrescoWidthControllerListener(itemView.ivThumbnail, asset.thumbnail)
-                    itemView.ivPlay.show()
-                }
-                else -> {
-                    val drawable = AppCompatResources.getDrawable(context, R.drawable.ic_audio)
-                    itemView.ivThumbnail.hierarchy.setPlaceholderImage(drawable,
-                            ScalingUtils.ScaleType.CENTER_INSIDE)
+                when {
+                    asset.isImage -> {
+                        FrescoWidthControllerListener(ivThumbnail,
+                                asset.thumbnail ?: asset.uri.toString())
+                    }
+                    asset.isVideo -> {
+                        FrescoWidthControllerListener(ivThumbnail, asset.thumbnail)
+                        ivPlay.show()
+                    }
+                    else -> {
+                        val drawable = AppCompatResources.getDrawable(context, R.drawable.ic_audio)
+                        ivThumbnail.hierarchy.setPlaceholderImage(drawable,
+                                ScalingUtils.ScaleType.CENTER_INSIDE)
+                    }
                 }
             }
         }

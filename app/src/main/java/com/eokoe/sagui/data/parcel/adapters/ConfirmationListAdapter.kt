@@ -11,7 +11,7 @@ import paperparcel.TypeAdapter
  */
 class ConfirmationListAdapter : TypeAdapter<RealmList<Confirmation>> {
     override fun readFromParcel(source: Parcel): RealmList<Confirmation> {
-        val list: List<Confirmation> = ArrayList()
+        val list = ArrayList<Confirmation>()
         source.readTypedList(list, Confirmation.CREATOR)
         return RealmList(*list.toTypedArray())
     }

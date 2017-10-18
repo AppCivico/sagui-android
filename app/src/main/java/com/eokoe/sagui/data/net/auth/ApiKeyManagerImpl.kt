@@ -20,6 +20,7 @@ class ApiKeyManagerImpl(
         val context: Context,
         private val baseUrl: String
 ) : ApiKeyManager {
+
     override val apiKey: String
         get() = CredentialValues.API_KEY.getString(context)
 
@@ -33,8 +34,8 @@ class ApiKeyManagerImpl(
         CredentialValues.API_KEY.remove(context)
     }
 
-    override fun newApiKey(): String? {
-        var accessToken: String? = null
+    override fun newApiKey(): String {
+        var accessToken = ""
         val gson = Gson()
         if (deviceKey.isEmpty()) {
             CredentialValues.DEVICE_KEY.putString(context, UUID.randomUUID().toString())
