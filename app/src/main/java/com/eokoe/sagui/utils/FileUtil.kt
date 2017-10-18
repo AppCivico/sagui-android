@@ -69,9 +69,8 @@ object FileUtil {
         val matrix = Matrix()
         matrix.setRotate(rotation, scaledBitmap.width.toFloat() / 2, scaledBitmap.height.toFloat() / 2)
         val rotatedBitmap = Bitmap.createBitmap(scaledBitmap, 0, 0, scaledBitmap.width, scaledBitmap.height, matrix, true)
-        scaledBitmap.recycle()
-
         rotatedBitmap.compress(Bitmap.CompressFormat.JPEG, 82, fos)
+        scaledBitmap.recycle()
         rotatedBitmap.recycle()
         fos.flush()
         fos.close()
