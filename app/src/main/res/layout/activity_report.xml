@@ -32,7 +32,6 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:adjustViewBounds="true"
-            android:onClick="addMedia"
             android:padding="16dp"
             android:scaleType="center"
             app:srcCompat="@drawable/ic_photo_camera"/>
@@ -45,7 +44,6 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:adjustViewBounds="true"
-            android:onClick="addMedia"
             android:padding="16dp"
             android:scaleType="center"
             app:srcCompat="@drawable/ic_video"/>
@@ -58,7 +56,6 @@
             android:layout_gravity="center_vertical"
             android:layout_weight="1"
             android:adjustViewBounds="true"
-            android:onClick="addMedia"
             android:padding="16dp"
             android:scaleType="center"
             app:srcCompat="@drawable/ic_voice"/>

@@ -24,6 +24,7 @@ import kotlinx.android.synthetic.main.item_report_title.view.*
 class ReportAdapter(complaint: Complaint?, showCategories: Boolean = false) : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewHolder>() {
 
     var onItemClickListener: OnItemClickListener? = null
+    var onAssetClickListener: ThumbnailAdapter.OnItemClickListener? = null
 
     val titleChangeSubject: PublishSubject<String> = PublishSubject.create()
     val descriptionChangeSubject: PublishSubject<String> = PublishSubject.create()
@@ -134,7 +135,13 @@ class ReportAdapter(complaint: Complaint?, showCategories: Boolean = false) : Re
         init {
             with(itemView) {
                 rvThumbnails.setHasFixedSize(true)
-                rvThumbnails.adapter = ThumbnailAdapter()
+                val adapter = ThumbnailAdapter()
+                adapter.onItemClickListener = object : ThumbnailAdapter.OnItemClickListener {
+                    override fun onItemClick(file: Asset) {
+                        onAssetClickListener?.onItemClick(file)
+                    }
+                }
+                rvThumbnails.adapter = adapter
                 rvThumbnails.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
             }
         }

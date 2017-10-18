@@ -42,25 +42,43 @@ class ThumbnailAdapter : RecyclerViewAdapter<Asset, RecyclerView.ViewHolder>() {
         }
 
         fun bind(file: Asset) {
-            with(itemView) {
-                val fileUri = file.uri.getRealPath(context)
-                val thumbnail = if (isImage(context, file)) {
-                    val bitmap = BitmapFactory.decodeFile(fileUri)
-                    val size = UnitUtils.dp2px(context, 100f).toInt()
-                    ivPlay.hide()
-                    ThumbnailUtils.extractThumbnail(bitmap, size, size)
-                } else {
-                    ivPlay.show()
-                    ThumbnailUtils.createVideoThumbnail(fileUri, MediaStore.Images.Thumbnails.MINI_KIND)
-                }
-                if (thumbnail != null) {
-                    ivThumbnail.setImageBitmap(thumbnail)
-                } else {
-                    ivPlay.hide()
-                    val audioThumbnail = AppCompatResources.getDrawable(context, R.drawable.ic_audio)
-                    ivThumbnail.setImageDrawable(audioThumbnail)
+            val context = itemView.context
+            val filePath = file.uri.getRealPath(context)
+            itemView.ivPlay.hide()
+            when {
+                file.isImage -> buildImageThumbnail(context, filePath!!)
+                file.isVideo -> buildVideoThumbnail(filePath!!)
+                file.isAudio -> buildAudioThumbnail(context)
+                else -> {
+                    if (isImage(context, file)) {
+                        buildImageThumbnail(context, filePath!!)
+                    } else if (!buildVideoThumbnail(filePath!!)) {
+                        buildAudioThumbnail(context)
+                    }
                 }
             }
+        }
+
+        private fun buildImageThumbnail(context: Context, path: String): Boolean {
+            val bitmap = BitmapFactory.decodeFile(path)
+            val size = UnitUtils.dp2px(context, 100f).toInt()
+            val thumbnail = ThumbnailUtils.extractThumbnail(bitmap, size, size)
+            itemView.ivThumbnail.setImageBitmap(thumbnail)
+            return thumbnail != null
+        }
+
+        private fun buildVideoThumbnail(path: String): Boolean {
+            val thumbnail = ThumbnailUtils.createVideoThumbnail(path, MediaStore.Images.Thumbnails.MINI_KIND)
+            itemView.ivThumbnail.setImageBitmap(thumbnail)
+            if (thumbnail != null) {
+                itemView.ivPlay.show()
+            }
+            return thumbnail != null
+        }
+
+        private fun buildAudioThumbnail(context: Context) {
+            val audioThumbnail = AppCompatResources.getDrawable(context, R.drawable.ic_audio)
+            itemView.ivThumbnail.setImageDrawable(audioThumbnail)
         }
 
         private fun isImage(context: Context, asset: Asset): Boolean {
