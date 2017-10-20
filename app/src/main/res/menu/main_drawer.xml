@@ -17,7 +17,8 @@
         <item
             android:id="@+id/nav_pending"
             android:icon="@drawable/ic_menu_pending"
-            android:title="Pendências"/>
+            android:title="Pendências"
+            android:visible="false"/>
         <item
             android:id="@+id/nav_none"
             android:title=""

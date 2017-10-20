@@ -10,6 +10,7 @@ import android.support.v4.app.DialogFragment
 import android.support.v4.app.FragmentManager
 import android.support.v7.app.AlertDialog
 import android.support.v7.widget.AppCompatCheckBox
+import android.text.method.LinkMovementMethod
 import android.view.ViewGroup
 import com.eokoe.sagui.R
 import kotlinx.android.synthetic.main.dialog_alert.view.*
@@ -32,7 +33,11 @@ class AlertDialogFragment : DialogFragment() {
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val alertView = activity.layoutInflater.inflate(R.layout.dialog_alert, null) as ViewGroup
-        alertView.message.text = arguments.getString(EXTRA_MESSAGE)
+        alertView.message.text = arguments.getCharSequence(EXTRA_MESSAGE)
+
+        if (arguments.getBoolean(EXTRA_HAS_LINK)) {
+            alertView.message.movementMethod = LinkMovementMethod.getInstance()
+        }
 
         val alertDialog = AlertDialog.Builder(context)
                 .setView(alertView)
@@ -86,6 +91,7 @@ class AlertDialogFragment : DialogFragment() {
         private val EXTRA_NEGATIVE_BUTTON = "EXTRA_NEGATIVE_BUTTON"
         private val EXTRA_MULTICHOICE_ITEMS = "EXTRA_MULTICHOICE_ITEMS"
         private val EXTRA_MULTICHOICE_ITEMS_SELECTED = "EXTRA_MULTICHOICE_ITEMS_SELECTED"
+        private val EXTRA_HAS_LINK = "EXTRA_HAS_LINK"
 
         fun create(context: Context, block: Builder.() -> Unit) = Builder(context).apply(block).build()
     }
@@ -95,7 +101,7 @@ class AlertDialogFragment : DialogFragment() {
 
         var title: String? = null
             get() = field ?: getString(titleRes)
-        var message: String? = null
+        var message: CharSequence? = null
             get() = field ?: getString(messageRes)
 
         var positiveText: String? = null
@@ -115,6 +121,7 @@ class AlertDialogFragment : DialogFragment() {
         var negativeTextRes: Int = 0
 
         var cancelable: Boolean = false
+        var hasLink: Boolean = false
 
         var onConfirmClickListener: DialogInterface.OnClickListener =
                 DialogInterface.OnClickListener { dialog, _ -> dialog.dismiss() }
@@ -129,11 +136,12 @@ class AlertDialogFragment : DialogFragment() {
             val args = Bundle()
             args.putString(EXTRA_TAG, tag)
             args.putString(EXTRA_TITLE, title)
-            args.putString(EXTRA_MESSAGE, message)
+            args.putCharSequence(EXTRA_MESSAGE, message)
             args.putString(EXTRA_POSITIVE_BUTTON, positiveText)
             args.putString(EXTRA_NEGATIVE_BUTTON, negativeText)
             args.putStringArray(EXTRA_MULTICHOICE_ITEMS, multiChoiceItems)
             args.putBooleanArray(EXTRA_MULTICHOICE_ITEMS_SELECTED, multiChoiceItemsSelected)
+            args.putBoolean(EXTRA_HAS_LINK, hasLink)
             frag.arguments = args
             frag.isCancelable = cancelable
             frag.onConfirmClickListener = onConfirmClickListener

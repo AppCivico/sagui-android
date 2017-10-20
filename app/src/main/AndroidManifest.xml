@@ -108,6 +108,10 @@
             android:name=".features.help.HelpActivity"
             android:label="@string/title_activity_help"/>
 
+        <activity
+            android:name=".features.help.faq.FaqActivity"
+            android:label="@string/title_activity_faq"/>
+
         <!-- Services -->
         <service
             android:name=".services.FetchAddressService"

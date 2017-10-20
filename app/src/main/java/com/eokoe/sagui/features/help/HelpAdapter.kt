@@ -13,11 +13,13 @@ import kotlinx.android.synthetic.main.item_help.view.*
  */
 class HelpAdapter : RecyclerViewAdapter<HelpAdapter.Item, HelpAdapter.ItemViewHolder>() {
 
+    var onItemClickListener: (ItemType) -> Unit = {}
+
     init {
         val items = ArrayList<Item>()
-        items.add(Item("Dúvidas frequentes"))
-        items.add(Item("Reportar problema"))
-        items.add(Item("Sobre"))
+        items.add(Item("Dúvidas frequentes", ItemType.FAQ))
+        items.add(Item("Contato", ItemType.CONTACT))
+        items.add(Item("Sobre", ItemType.ABOUT))
         this.items = items
     }
 
@@ -29,10 +31,22 @@ class HelpAdapter : RecyclerViewAdapter<HelpAdapter.Item, HelpAdapter.ItemViewHo
     }
 
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
+        init {
+            itemView.setOnClickListener {
+                if (adapterPosition >= 0) {
+                    onItemClickListener(getItem(adapterPosition).type)
+                }
+            }
+        }
+
         fun bind(item: Item) {
             itemView.tvTitle.text = item.title
         }
     }
 
-    class Item(val title: String)
+    class Item(val title: String, val type: ItemType)
+
+    enum class ItemType {
+        FAQ, CONTACT, ABOUT
+    }
 }
