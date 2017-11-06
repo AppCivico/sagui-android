@@ -10,7 +10,7 @@ import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.categories.CategoriesActivity
 import com.eokoe.sagui.features.enterprises.EnterprisesActivity
-import com.eokoe.sagui.services.upload_file.UploadFilesJobIntentService
+import com.eokoe.sagui.services.upload.UploadFilesJobIntentService
 
 class SplashActivity : BaseActivity(), SplashContract.View, ViewPresenter<SplashContract.Presenter> {
     private val SPLASH_TIME = 1500L

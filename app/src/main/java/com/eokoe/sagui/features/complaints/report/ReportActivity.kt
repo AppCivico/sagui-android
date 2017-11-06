@@ -22,8 +22,8 @@ import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.report.ReportAdapter.ItemType
 import com.eokoe.sagui.features.complaints.report.pin.PinActivity
-import com.eokoe.sagui.features.show_asset.ShowAssetActivity
-import com.eokoe.sagui.services.upload_file.UploadFilesJobIntentService
+import com.eokoe.sagui.features.asset.ShowAssetActivity
+import com.eokoe.sagui.services.upload.UploadFilesJobIntentService
 import com.eokoe.sagui.utils.FileUtil
 import com.eokoe.sagui.utils.Files
 import com.eokoe.sagui.utils.LogUtil

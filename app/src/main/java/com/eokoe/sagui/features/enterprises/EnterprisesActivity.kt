@@ -14,7 +14,7 @@ import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.categories.CategoriesActivity
 import com.eokoe.sagui.features.enterprises.filter.EnterprisesFilterActivity
-import com.eokoe.sagui.features.show_asset.ShowAssetActivity
+import com.eokoe.sagui.features.asset.ShowAssetActivity
 import kotlinx.android.synthetic.main.content_enterprises.*
 
 class EnterprisesActivity : BaseActivityNavDrawer(),

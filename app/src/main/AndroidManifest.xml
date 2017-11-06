@@ -96,13 +96,17 @@
             android:label="@string/title_activity_complaint_details"/>
 
         <activity
-            android:name=".features.show_asset.ShowAssetActivity"
+            android:name=".features.asset.ShowAssetActivity"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar"/>
 
         <activity
             android:name=".features.notifications.NotificationsActivity"
             android:label="@string/title_activity_notifications"/>
+
+        <activity
+            android:name=".features.pendencies.PendenciesActivity"
+            android:label="@string/title_activity_pendencies"/>
 
         <activity
             android:name=".features.help.HelpActivity"
@@ -129,7 +133,7 @@
             android:permission="android.permission.BIND_JOB_SERVICE"/>
 
         <service
-            android:name=".services.upload_file.UploadFilesJobIntentService"
+            android:name=".services.upload.UploadFilesJobIntentService"
             android:permission="android.permission.BIND_JOB_SERVICE"/>
 
         <!-- Alarms -->

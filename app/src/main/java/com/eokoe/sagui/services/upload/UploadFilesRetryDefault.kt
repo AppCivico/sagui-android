@@ -1,4 +1,4 @@
-package com.eokoe.sagui.services.upload_file
+package com.eokoe.sagui.services.upload
 
 import android.content.Context
 import com.eokoe.sagui.receivers.UploadFilesRetryAlarm

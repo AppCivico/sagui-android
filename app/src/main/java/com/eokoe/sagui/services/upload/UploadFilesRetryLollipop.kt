@@ -1,4 +1,4 @@
-package com.eokoe.sagui.services.upload_file
+package com.eokoe.sagui.services.upload
 
 import android.annotation.TargetApi
 import android.app.job.JobInfo
@@ -18,7 +18,8 @@ import com.eokoe.sagui.utils.Job
 class UploadFilesRetryLollipop : Retry {
     override fun schedule(context: Context) {
         val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
-        val builder = JobInfo.Builder(Job.UPLOAD_FILES_RETRY, ComponentName(context.packageName, JobSchedulerService::class.simpleName))
+        val builder = JobInfo.Builder(Job.UPLOAD_FILES_RETRY,
+                ComponentName(context.packageName, JobSchedulerService::class.java.name))
         builder.setRequiredNetworkType(JobInfo.NETWORK_TYPE_UNMETERED)
         jobScheduler.schedule(builder.build())
     }

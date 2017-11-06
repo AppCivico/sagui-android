@@ -4,7 +4,7 @@ import android.annotation.TargetApi
 import android.app.job.JobParameters
 import android.app.job.JobService
 import android.os.Build
-import com.eokoe.sagui.services.upload_file.UploadFilesJobIntentService
+import com.eokoe.sagui.services.upload.UploadFilesJobIntentService
 import com.eokoe.sagui.utils.Job
 
 /**

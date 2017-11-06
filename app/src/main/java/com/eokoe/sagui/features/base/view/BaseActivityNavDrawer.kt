@@ -15,6 +15,7 @@ import com.eokoe.sagui.features.complaints.ComplaintsActivity
 import com.eokoe.sagui.features.enterprises.EnterprisesActivity
 import com.eokoe.sagui.features.help.HelpActivity
 import com.eokoe.sagui.features.notifications.NotificationsActivity
+import com.eokoe.sagui.features.pendencies.PendenciesActivity
 
 /**
  * @author Pedro Silva
@@ -86,6 +87,7 @@ abstract class BaseActivityNavDrawer : BaseActivity(), NavigationView.OnNavigati
                     startActivity(NotificationsActivity.getIntent(this))
                 }
                 R.id.nav_pending -> {
+                    startActivity(PendenciesActivity.getIntent(this))
                 }
                 R.id.nav_change_development -> {
                     startActivityAndClearStack(EnterprisesActivity.getIntent(this))

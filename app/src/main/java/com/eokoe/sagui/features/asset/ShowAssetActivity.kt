@@ -1,4 +1,4 @@
-package com.eokoe.sagui.features.show_asset
+package com.eokoe.sagui.features.asset
 
 import android.app.Activity
 import android.content.Context

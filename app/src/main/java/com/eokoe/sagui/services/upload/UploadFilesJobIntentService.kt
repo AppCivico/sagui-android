@@ -1,4 +1,4 @@
-package com.eokoe.sagui.services.upload_file
+package com.eokoe.sagui.services.upload
 
 import android.content.Context
 import android.content.Intent
@@ -47,7 +47,8 @@ class UploadFilesJobIntentService : JobIntentService() {
 
     companion object {
         fun enqueueWork(context: Context) {
-            enqueueWork(context, UploadFilesJobIntentService::class.java, Job.UPLOAD_FILES, Intent(context, UploadFilesJobIntentService::class.java))
+            enqueueWork(context, UploadFilesJobIntentService::class.java, Job.UPLOAD_FILES,
+                    Intent(context, UploadFilesJobIntentService::class.java))
         }
     }
 }
