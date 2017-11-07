@@ -44,4 +44,6 @@ interface SaguiModel {
     fun listUnreadNotifications(): Observable<List<Notification>>
 
     fun markAsRead(notification: Notification): Observable<Notification>
+
+    fun listPendencies(): Observable<List<Pendency>>
 }

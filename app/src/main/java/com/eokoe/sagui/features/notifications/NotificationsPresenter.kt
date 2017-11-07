@@ -3,6 +3,7 @@ package com.eokoe.sagui.features.notifications
 import com.eokoe.sagui.data.entities.Notification
 import com.eokoe.sagui.data.model.SaguiModel
 import com.eokoe.sagui.features.base.presenter.BasePresenterImpl
+import com.eokoe.sagui.utils.LogUtil
 import io.reactivex.observers.DisposableObserver
 
 /**
@@ -25,7 +26,7 @@ class NotificationsPresenter constructor(private val saguiModel: SaguiModel)
         }
 
         override fun onError(error: Throwable) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+            LogUtil.error(this, error)
         }
     }
 }

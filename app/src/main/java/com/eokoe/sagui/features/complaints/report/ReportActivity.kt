@@ -284,7 +284,7 @@ class ReportActivity : BaseActivity(),
                     title = "Falha ao reportar problema"
                     message = if (error.errorType == ErrorType.CONNECTION)
                         "Por favor verifique sua internet e tente novamente"
-                    else "Ocorreu um erro inexperado.\nTente novamente mais tarde"
+                    else "Ops.. ocorreu um erro inexperado.\nTente novamente mais tarde"
                 }
                 .show(supportFragmentManager)
     }

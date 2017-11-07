@@ -413,4 +413,8 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
             }
         }
     }
+
+    override fun listPendencies(): Observable<List<Pendency>> {
+        return Observable.just(ArrayList())
+    }
 }
