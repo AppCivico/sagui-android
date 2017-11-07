@@ -14,6 +14,7 @@ import com.eokoe.sagui.extensions.toFile
 import io.reactivex.Observable
 import io.realm.Realm
 import io.realm.RealmList
+import io.realm.RealmModel
 import io.realm.RealmQuery
 import okhttp3.MediaType
 import okhttp3.MultipartBody
@@ -26,6 +27,23 @@ import kotlin.collections.ArrayList
  * @author Pedro Silva
  */
 class SaguiModelImpl(val context: Context? = null) : SaguiModel {
+
+    private fun <T : RealmModel> save(t: T, hasPk: Boolean = false): Observable<T> {
+        return Observable.create { emitter ->
+            Realm.getDefaultInstance().use { realm ->
+                try {
+                    realm.beginTransaction()
+                    if (hasPk) realm.insertOrUpdate(t)
+                    else realm.insert(t)
+                    realm.commitTransaction()
+                    emitter.onNext(t)
+                    emitter.onComplete()
+                } catch (error: Exception) {
+                    emitter.onError(error)
+                }
+            }
+        }
+    }
 
     override fun selectEnterprise(enterprise: Enterprise): Observable<Enterprise> {
         return Observable.create { emitter ->
@@ -40,7 +58,7 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                     if (enterprises.isNotEmpty()) {
                         enterprises.map { it.selected = it.id == enterprise.id }
                     } else {
-                        realm.insertOrUpdate(enterprise)
+                        realm.copyToRealmOrUpdate(enterprise)
                     }
                     realm.commitTransaction()
                     emitter.onNext(enterprise)
@@ -81,12 +99,37 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
                     .surveys(category.id)
                     .flatMapIterable { it }
                     .filter { it.questions != null && it.questions.isNotEmpty() }
+                    .flatMap { setHasAnswer(it) }
                     .toList()
                     .toObservable()
 
+    private fun setHasAnswer(survey: Survey): Observable<Survey> {
+        return Observable.create<Survey> { emitter ->
+            Realm.getDefaultInstance().use { realm ->
+                try {
+                    val result = realm.where(Submissions::class.java)
+                            .equalTo("surveyId", survey.id)
+                            .findFirst()
+                    survey.hasAnswer = result != null
+                    emitter.onNext(survey)
+                    emitter.onComplete()
+                } catch (error: Exception) {
+                    emitter.onError(error)
+                }
+            }
+        }
+    }
+
+    override fun hasAnswer(survey: Survey): Observable<Boolean> {
+        return setHasAnswer(survey).map { survey.hasAnswer }
+    }
+
     override fun sendAnswers(submissions: Submissions): Observable<Submissions> {
-        return ServiceGenerator.getService(SaguiService::class.java)
-                .sendAnswers(submissions.surveyId!!, submissions)
+        return save(submissions)
+                .flatMap {
+                    ServiceGenerator.getService(SaguiService::class.java)
+                            .sendAnswers(submissions.surveyId!!, submissions)
+                }
                 .map {
                     submissions.id = it.id
                     submissions

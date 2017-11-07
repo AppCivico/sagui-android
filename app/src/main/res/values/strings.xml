@@ -87,4 +87,6 @@
     <string name="title_activity_pendencies">Pendências</string>
     <string name="your_pendencies">SUAS PENDÊNCIAS</string>
     <string name="error_msg">Ihh, aconteceu um erro inesperado.\nToque para tentar novamente =/</string>
+    <string name="thanks">Obrigado!</string>
+    <string name="all_questions_answered">Você já respondeu todas as perguntas</string>
 </resources>

@@ -1,5 +1,6 @@
 package com.eokoe.sagui.features.surveys.list
 
+import android.graphics.Color
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
@@ -21,6 +22,13 @@ class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder> {
 
     constructor(isShowLoading: Boolean) : super() {
         this.isShowLoading = isShowLoading
+    }
+
+    fun markHasAnswered(id: String) {
+        items = items?.map {
+            it.hasAnswer = it.id == id || it.hasAnswer
+            it
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -54,9 +62,14 @@ class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder> {
 
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(survey: Survey) {
-            itemView.tvSurveyTitle.text = survey.name
-            itemView.setOnClickListener {
-                onItemClickListener?.onClick(survey)
+            with(itemView) {
+                if (survey.hasAnswer) {
+                    setBackgroundColor(Color.parseColor("#a7e7c5"))
+                }
+                tvSurveyTitle.text = survey.name
+                setOnClickListener {
+                    onItemClickListener?.onClick(survey)
+                }
             }
         }
     }

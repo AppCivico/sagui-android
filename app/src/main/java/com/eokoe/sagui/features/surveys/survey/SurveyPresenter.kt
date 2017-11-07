@@ -3,6 +3,7 @@ package com.eokoe.sagui.features.surveys.survey
 import com.eokoe.sagui.data.entities.*
 import com.eokoe.sagui.data.model.SaguiModel
 import com.eokoe.sagui.features.base.presenter.BasePresenterImpl
+import com.eokoe.sagui.utils.LogUtil
 import io.reactivex.Observable
 import io.reactivex.observers.DisposableObserver
 import io.realm.RealmList
@@ -25,7 +26,7 @@ class SurveyPresenter constructor(private val saguiModel: SaguiModel)
         questions = survey.questions
         total = questions!!.size
         currentQuestion = view?.currentProgress ?: 0
-        view?.updateProgress(currentQuestion, total)
+        exec(saguiModel.hasAnswer(survey), HasAnswerObserver())
     }
 
     override fun start() {
@@ -86,6 +87,25 @@ class SurveyPresenter constructor(private val saguiModel: SaguiModel)
                 answers = RealmList(*answers.toTypedArray())
         )
         return exec(saguiModel.sendAnswers(submissions), SendAnswersObserver())
+    }
+
+    inner class HasAnswerObserver : DisposableObserver<Boolean>() {
+        override fun onNext(hasAnswer: Boolean) {
+            if (!hasAnswer) {
+                view?.onAnswersNotExists()
+                view?.updateProgress(currentQuestion, total)
+            } else {
+                view?.onAnswersExists()
+                view?.updateProgress(total, total)
+            }
+        }
+
+        override fun onComplete() {
+        }
+
+        override fun onError(error: Throwable) {
+            LogUtil.error(this, error)
+        }
     }
 
     inner class SendAnswersObserver : DisposableObserver<Submissions>() {

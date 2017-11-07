@@ -149,6 +149,18 @@ class SurveyActivity : BaseActivity(),
         submissionsId = submissions.id
     }
 
+    override fun onAnswersExists() {
+        tvInfoTitle.setText(R.string.all_questions_answered)
+        tvInfoMsg.setText(R.string.thanks)
+        btnStart.disable()
+        btnStart.isClickable = false
+    }
+
+    override fun onAnswersNotExists() {
+        btnStart.enable()
+        btnStart.isClickable = true
+    }
+
     override fun showLoading() {
         progressDialog.show(supportFragmentManager)
     }

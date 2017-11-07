@@ -17,6 +17,9 @@ interface SurveyContract {
         fun updateProgress(index: Int, size: Int)
         fun finalize(answers: List<Answer>)
         fun answersSent(submissions: Submissions)
+
+        fun onAnswersExists()
+        fun onAnswersNotExists()
     }
 
     interface Presenter : BasePresenter<View> {

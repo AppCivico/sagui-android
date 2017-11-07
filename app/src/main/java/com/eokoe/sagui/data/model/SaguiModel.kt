@@ -17,6 +17,8 @@ interface SaguiModel {
 
     fun getSurveyList(category: Category): Observable<List<Survey>>
 
+    fun hasAnswer(survey: Survey): Observable<Boolean>
+
     fun sendAnswers(submissions: Submissions): Observable<Submissions>
 
     fun saveComment(comment: Comment): Observable<Comment>

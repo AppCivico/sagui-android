@@ -21,7 +21,9 @@ data class Survey(
         val categories: List<String>,
 
         @Expose
-        val questions: List<Question>? = null
+        val questions: List<Question>? = null,
+
+        var hasAnswer: Boolean = false
 ) : PaperParcelable {
 
     companion object {
