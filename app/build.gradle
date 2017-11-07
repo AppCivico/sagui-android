@@ -8,7 +8,7 @@ apply plugin: 'io.fabric'
 // App version
 ext.versionMajor = 0
 ext.versionMinor = 1
-ext.versionPatch = 4
+ext.versionPatch = 5
 ext.jenkinsBuildNumber = Integer.valueOf(System.env.BUILD_NUMBER ?: 0)
 
 android {
