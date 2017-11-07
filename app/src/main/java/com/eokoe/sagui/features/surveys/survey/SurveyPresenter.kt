@@ -90,7 +90,14 @@ class SurveyPresenter constructor(private val saguiModel: SaguiModel)
     }
 
     inner class HasAnswerObserver : DisposableObserver<Boolean>() {
+        var hasAnswer: Boolean = false
+
         override fun onNext(hasAnswer: Boolean) {
+            // TODO: pass `hasAnswer` to limit to 1 answer per user
+            this.hasAnswer = false //hasAnswer
+        }
+
+        override fun onComplete() {
             if (!hasAnswer) {
                 view?.onAnswersNotExists()
                 view?.updateProgress(currentQuestion, total)
@@ -98,9 +105,6 @@ class SurveyPresenter constructor(private val saguiModel: SaguiModel)
                 view?.onAnswersExists()
                 view?.updateProgress(total, total)
             }
-        }
-
-        override fun onComplete() {
         }
 
         override fun onError(error: Throwable) {

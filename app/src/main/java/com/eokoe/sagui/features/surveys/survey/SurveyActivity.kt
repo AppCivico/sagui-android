@@ -150,12 +150,10 @@ class SurveyActivity : BaseActivity(),
     }
 
     override fun onAnswersExists() {
-        onAnswersNotExists()
-        // TODO: remove answer limitation
-        /*tvInfoTitle.setText(R.string.all_questions_answered)
+        tvInfoTitle.setText(R.string.all_questions_answered)
         tvInfoMsg.setText(R.string.thanks)
         btnStart.disable()
-        btnStart.isClickable = false*/
+        btnStart.isClickable = false
     }
 
     override fun onAnswersNotExists() {
