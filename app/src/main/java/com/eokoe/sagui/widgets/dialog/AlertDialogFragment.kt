@@ -32,22 +32,22 @@ class AlertDialogFragment : DialogFragment() {
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val alertView = activity.layoutInflater.inflate(R.layout.dialog_alert, null) as ViewGroup
-        alertView.message.text = arguments.getCharSequence(EXTRA_MESSAGE)
+        val alertView = activity!!.layoutInflater.inflate(R.layout.dialog_alert, null) as ViewGroup
+        alertView.message.text = arguments!!.getCharSequence(EXTRA_MESSAGE)
 
-        if (arguments.getBoolean(EXTRA_HAS_LINK)) {
+        if (arguments!!.getBoolean(EXTRA_HAS_LINK)) {
             alertView.message.movementMethod = LinkMovementMethod.getInstance()
         }
 
-        val alertDialog = AlertDialog.Builder(context)
+        val alertDialog = AlertDialog.Builder(context!!)
                 .setView(alertView)
-                .setTitle(arguments.getString(EXTRA_TITLE))
+                .setTitle(arguments!!.getString(EXTRA_TITLE))
                 .setCancelable(isCancelable)
-                .setPositiveButton(arguments.getString(EXTRA_POSITIVE_BUTTON), onConfirmClickListener)
+                .setPositiveButton(arguments!!.getString(EXTRA_POSITIVE_BUTTON), onConfirmClickListener)
 
-        val multiChoiceItems = arguments.getStringArray(EXTRA_MULTICHOICE_ITEMS)
+        val multiChoiceItems = arguments!!.getStringArray(EXTRA_MULTICHOICE_ITEMS)
         if (multiChoiceItems != null) {
-            val checkedItems = arguments.getBooleanArray(EXTRA_MULTICHOICE_ITEMS_SELECTED)
+            val checkedItems = arguments!!.getBooleanArray(EXTRA_MULTICHOICE_ITEMS_SELECTED)
             multiChoiceItems.forEachIndexed { index, str ->
                 val checkbox = AppCompatCheckBox(context)
                 checkbox.text = str
@@ -60,7 +60,7 @@ class AlertDialogFragment : DialogFragment() {
             }
         }
 
-        val negativeText = arguments.getString(EXTRA_NEGATIVE_BUTTON)
+        val negativeText = arguments!!.getString(EXTRA_NEGATIVE_BUTTON)
         if (negativeText != null) {
             alertDialog.setNegativeButton(negativeText, onCancelClickListener)
         }
@@ -68,7 +68,7 @@ class AlertDialogFragment : DialogFragment() {
     }
 
     fun show(manager: FragmentManager) {
-        show(manager, arguments.getString(EXTRA_TAG))
+        show(manager, arguments!!.getString(EXTRA_TAG))
     }
 
     override fun onDestroyView() {

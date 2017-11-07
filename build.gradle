@@ -3,12 +3,13 @@
 buildscript {
     ext {
         kotlinVersion = '1.1.51'
-        realmVersion = '4.1.1'
+        realmVersion = '3.5.0'
     }
 
     repositories {
         jcenter()
         mavenCentral()
+        google()
         maven { url 'https://maven.fabric.io/public' }
     }
     dependencies {
@@ -24,9 +25,8 @@ allprojects {
     repositories {
         jcenter()
         mavenCentral()
-        maven { url "https://jitpack.io" }
+        google()
         maven { url 'https://maven.fabric.io/public' }
-        maven { url "https://maven.google.com" }
     }
 }
 
@@ -35,12 +35,18 @@ task clean(type: Delete) {
 }
 
 ext {
+    buildToolsVersion = '26.0.2'
+    compileSdkVersion = 26
+    minSdkVersion = 16
+    targetSdkVersion = 26
+
+    // App dependencies
     crashlyticsVersion = '2.6.8@aar'
     crashlyticsNdkVersion = '1.1.6@aar'
 
-    supportLibraryVersion = '26.1.0'
+    supportLibraryVersion = '27.0.0'
     constraintLayoutVersion = '1.0.2'
-    playServicesVersion = '11.4.0'
+    playServicesVersion = '11.4.2'
 
     rxJavaVersion = '2.1.2'
     rxKotlinVersion = '2.0.3'

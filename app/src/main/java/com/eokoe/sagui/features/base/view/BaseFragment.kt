@@ -12,7 +12,7 @@ import com.eokoe.sagui.features.base.presenter.BasePresenter
 abstract class BaseFragment: Fragment() {
 
     @Suppress("UNCHECKED_CAST")
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setUp(view, savedInstanceState)
         if (this is ViewPresenter<*>) {

@@ -20,7 +20,7 @@ class LoadingDialog : DialogLoadFragment<Any>() {
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
         val dialog = ProgressDialog(activity)
         dialog.setCancelable(isCancelable)
-        dialog.setMessage(arguments.getString(EXTRA_LOADING_MESSAGE))
+        dialog.setMessage(arguments!!.getString(EXTRA_LOADING_MESSAGE))
         return dialog
     }
 
