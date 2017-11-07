@@ -86,4 +86,5 @@
     <string name="faq_complaint">Apontamentos são alertas sobre irregularidades e violações causadas diretamente pelo empreendimento. Ao atingir um número determinado de contribuições, ele se torna uma causa, é comunicado ao responsável e deve ser respondido por ele.\n\nAo cadastrar um novo apontamento, é obrigatório o cadastro de um texto descritivo, título, categoria e localização. Caso um desses itens não seja preenchido na hora do envio, o apontamento ficará como uma pendência.\n\nAo final do cadastro, é possível optar por receber notificações sobre interações relacionadas a esse apontamento.\n\nCada usuário poderá contribuir uma única vez com o apontamento, colaborando ou não com mais fotos, vídeos ou áudios.</string>
     <string name="title_activity_pendencies">Pendências</string>
     <string name="your_pendencies">SUAS PENDÊNCIAS</string>
+    <string name="error_msg">Ihh, aconteceu um erro inesperado.\nToque para tentar novamente =/</string>
 </resources>

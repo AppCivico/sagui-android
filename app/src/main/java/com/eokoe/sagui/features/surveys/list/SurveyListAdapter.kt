@@ -63,9 +63,11 @@ class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder> {
 
     inner class ErrorViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(error: String?, retryClickListener: OnRetryClickListener?) {
-            itemView.tvError.text = error
-            itemView.ivRefresh.setOnClickListener {
-                retryClickListener?.retry()
+            with(itemView) {
+                tvError.text = error
+                setOnClickListener {
+                    retryClickListener?.retry()
+                }
             }
         }
     }
