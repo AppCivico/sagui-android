@@ -12,17 +12,18 @@ import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import com.eokoe.sagui.R
+import com.eokoe.sagui.R.string.category
 import com.eokoe.sagui.data.entities.Asset
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.*
+import com.eokoe.sagui.features.asset.ShowAssetActivity
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.report.ReportAdapter.ItemType
 import com.eokoe.sagui.features.complaints.report.pin.PinActivity
-import com.eokoe.sagui.features.asset.ShowAssetActivity
 import com.eokoe.sagui.services.upload.UploadFilesJobIntentService
 import com.eokoe.sagui.utils.FileUtil
 import com.eokoe.sagui.utils.Files
@@ -71,12 +72,16 @@ class ReportActivity : BaseActivity(),
         showBackButton()
         presenter = ReportPresenter(SaguiModelImpl())
         progressDialog = LoadingDialog.newInstance("Reportando problema")
-
+        val complaint: Complaint? = intent.extras?.getParcelable(EXTRA_COMPLAINT)
+        if (complaint != null) {
+            this.complaint = complaint
+        }
         enterprise = intent.extras?.getParcelable(EXTRA_ENTERPRISE)
-        complaint.enterpriseId = enterprise?.id
+        this.complaint.enterprise = enterprise
+        this.complaint.enterpriseId = enterprise?.id
         category = intent.extras?.getParcelable(EXTRA_CATEGORY)
-        if (complaint.category == null) {
-            complaint.category = category
+        if (this.complaint.category == null) {
+            this.complaint.category = category
         }
         categories = intent.extras?.getParcelableArrayList(EXTRA_CATEGORIES)
     }
@@ -289,6 +294,29 @@ class ReportActivity : BaseActivity(),
                 .show(supportFragmentManager)
     }
 
+    override fun isValidForm(): Boolean {
+        var msgErr = ""
+        if (complaint.description.isEmpty()) {
+            msgErr += "\t- Descrição\n"
+        }
+        if (complaint.title.isEmpty()) {
+            msgErr += "\t- Título\n"
+        }
+        if (complaint.category == null) {
+            msgErr += "\t- Categoria\n"
+        }
+        val isValid = msgErr.isEmpty()
+        if (!isValid) {
+            AlertDialogFragment
+                    .create(this) {
+                        title = "Falha ao reportar problema"
+                        message = "Preencha os seguintes campos:\n" + msgErr.substring(0, msgErr.length - 1)
+                    }
+                    .show(supportFragmentManager)
+        }
+        return isValid
+    }
+
     override fun onSaveSuccess(complaint: Complaint) {
         hideKeyboard()
         val data = Intent()
@@ -418,6 +446,7 @@ class ReportActivity : BaseActivity(),
         private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
         private val EXTRA_CATEGORIES = "EXTRA_CATEGORIES"
+        private val EXTRA_COMPLAINT = "EXTRA_COMPLAINT"
 
         val RESULT_COMPLAINT_ID = "RESULT_COMPLAINT_ID"
         val RESULT_LAT_LONG = "RESULT_LAT_LONG"
@@ -429,6 +458,12 @@ class ReportActivity : BaseActivity(),
                 Intent(context, ReportActivity::class.java)
                         .putExtra(EXTRA_ENTERPRISE, enterprise)
                         .putExtra(EXTRA_CATEGORY, category)
+
+        fun getIntent(context: Context, complaint: Complaint): Intent =
+                Intent(context, ReportActivity::class.java)
+                        .putExtra(EXTRA_ENTERPRISE, complaint.enterprise)
+                        .putExtra(EXTRA_CATEGORY, complaint.category)
+                        .putExtra(EXTRA_COMPLAINT, complaint)
 
         fun getIntent(context: Context, enterprise: Enterprise,
                       categories: ArrayList<Category>): Intent =

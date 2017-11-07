@@ -8,6 +8,7 @@ import com.eokoe.sagui.data.entities.Pendency
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
+import com.eokoe.sagui.features.complaints.report.ReportActivity
 import kotlinx.android.synthetic.main.activity_notification.*
 import kotlinx.android.synthetic.main.activity_pendencies.*
 
@@ -40,18 +41,15 @@ class PendenciesActivity : BaseActivity(),
         rvPendencies.setHasFixedSize(true)
         pendenciesAdapter.onItemClickListener = object : PendenciesAdapter.OnItemClickListener {
             override fun onItemClick(pendency: Pendency) {
-                TODO("not implemented")
+                val intent = ReportActivity.getIntent(this@PendenciesActivity, pendency.complaint)
+                startActivity(intent)
             }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        if (pendecies == null) {
-            presenter.list()
-        } else {
-            loadPendencies(pendecies!!)
-        }
+        presenter.list()
     }
 
     override fun loadPendencies(pendencies: List<Pendency>) {

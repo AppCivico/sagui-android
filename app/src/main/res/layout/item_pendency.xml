@@ -26,7 +26,7 @@
         app:tint="@color/colorAccent"/>
 
     <com.eokoe.sagui.widgets.CustomTextView
-        android:id="@+id/tvEvent"
+        android:id="@+id/tvTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_toEndOf="@id/ivIcon"
@@ -35,10 +35,10 @@
         tools:text="Enquete ainda não enviada"/>
 
     <com.eokoe.sagui.widgets.CustomTextView
-        android:id="@+id/tvMessage"
+        android:id="@+id/tvDescription"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@id/tvEvent"
+        android:layout_below="@id/tvTitle"
         android:layout_toEndOf="@id/ivIcon"
         android:layout_toRightOf="@id/ivIcon"
         android:textColor="@color/colorTextPrimary"

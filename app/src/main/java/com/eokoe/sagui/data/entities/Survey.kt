@@ -2,6 +2,7 @@ package com.eokoe.sagui.data.entities
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import io.realm.annotations.PrimaryKey
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
 

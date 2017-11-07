@@ -15,8 +15,10 @@ import paperparcel.PaperParcelable
 @PaperParcel
 open class Complaint(
 
-        @Expose
         @PrimaryKey
+        var pk: String = "",
+
+        @Expose
         var id: String? = null,
 
         @Expose

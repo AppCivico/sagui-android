@@ -252,9 +252,11 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         if (map != null) {
             clusterManager.clearItems()
             complaints.forEach {
-                clusterManager.addItem(ComplaintItem(it))
-                if (complaintSelected != null && it.id == complaintSelected) {
-                    populateDetails(it)
+                if (it.location != null) {
+                    clusterManager.addItem(ComplaintItem(it))
+                    if (complaintSelected != null && it.id == complaintSelected) {
+                        populateDetails(it)
+                    }
                 }
             }
             clusterManager.cluster()

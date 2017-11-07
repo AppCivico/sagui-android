@@ -147,6 +147,12 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
 
     override fun sendComplaint(complaint: Complaint): Observable<Complaint> {
         complaint.categoryId = complaint.category?.id
+        if (complaint.pk.isEmpty()) {
+            complaint.pk = UUID.randomUUID().toString()
+        }
+        if (complaint.location == null) {
+            return save(complaint, true)
+        }
         return ServiceGenerator.getService(SaguiService::class.java)
                 .saveComplaint(complaint)
                 .map {
@@ -458,6 +464,27 @@ class SaguiModelImpl(val context: Context? = null) : SaguiModel {
     }
 
     override fun listPendencies(): Observable<List<Pendency>> {
-        return Observable.just(ArrayList())
+        return Observable
+                .create<List<Complaint>> { emitter ->
+                    Realm.getDefaultInstance().use { realm ->
+                        try {
+                            val results = realm.where(Complaint::class.java)
+                                    .isNull("id")
+                                    .findAll()
+                            emitter.onNext(realm.copyFromRealm(results))
+                            emitter.onComplete()
+                        } catch (error: Exception) {
+                            emitter.onError(error)
+                        }
+                    }
+                }
+                .flatMapIterable { it }
+                .map { complaint ->
+                    Pendency(id = complaint.pk,
+                            message = "Você reportou um problema mas não informou o local.",
+                            complaint = complaint)
+                }
+                .toList()
+                .toObservable()
     }
 }

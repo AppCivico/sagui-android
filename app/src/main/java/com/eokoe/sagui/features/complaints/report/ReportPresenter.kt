@@ -14,8 +14,11 @@ class ReportPresenter constructor(private val saguiModel: SaguiModel)
     : ReportContract.Presenter, BasePresenterImpl<ReportContract.View>() {
 
     override fun saveComplaint(complaint: Complaint): Observable<Complaint> {
-        view?.showLoading()
-        return exec(saguiModel.sendComplaint(complaint), ComplaintObservable())
+        if (view?.isValidForm() == true) {
+            view?.showLoading()
+            return exec(saguiModel.sendComplaint(complaint), ComplaintObservable())
+        }
+        return Observable.empty()
     }
 
     inner class ComplaintObservable : DisposableObserver<Complaint>() {

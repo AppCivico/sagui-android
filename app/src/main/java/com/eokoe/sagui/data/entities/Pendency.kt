@@ -1,6 +1,5 @@
 package com.eokoe.sagui.data.entities
 
-import io.realm.RealmObject
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
 
@@ -9,10 +8,26 @@ import paperparcel.PaperParcelable
  */
 @PaperParcel
 open class Pendency(
-        var message: String = ""
-) : PaperParcelable, RealmObject() {
+        var id: String,
+
+        var typeStr: String = Type.COMPLAINT.name,
+
+        var message: String = "",
+
+        var complaint: Complaint
+) : PaperParcelable {
+    var type: Type
+        get() = Type.valueOf(typeStr)
+        set(value) {
+            typeStr = value.name
+        }
+
     companion object {
         @JvmField
         val CREATOR = PaperParcelPendency.CREATOR
+    }
+
+    enum class Type {
+        COMPLAINT
     }
 }

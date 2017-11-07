@@ -6,6 +6,7 @@ import android.view.ViewGroup
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Pendency
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
+import kotlinx.android.synthetic.main.item_pendency.view.*
 
 /**
  * @author Pedro Silva
@@ -50,7 +51,10 @@ class PendenciesAdapter : RecyclerViewAdapter<Pendency, RecyclerView.ViewHolder>
         }
 
         fun bind(pendency: Pendency) {
-            TODO("not implemented")
+            with(itemView) {
+                tvTitle.text = "Apontamento não enviado"
+                tvDescription.text = pendency.message
+            }
         }
     }
 
