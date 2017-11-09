@@ -18,11 +18,11 @@ import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.*
+import com.eokoe.sagui.features.asset.ShowAssetActivity
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.report.ReportAdapter.ItemType
 import com.eokoe.sagui.features.complaints.report.pin.PinActivity
-import com.eokoe.sagui.features.asset.ShowAssetActivity
 import com.eokoe.sagui.services.upload.UploadFilesJobIntentService
 import com.eokoe.sagui.utils.FileUtil
 import com.eokoe.sagui.utils.Files
@@ -69,8 +69,8 @@ class ReportActivity : BaseActivity(),
     // region Initialization and setup
     override fun setUp(savedInstanceState: Bundle?) {
         showBackButton()
-        presenter = ReportPresenter(SaguiModelImpl())
-        progressDialog = LoadingDialog.newInstance("Reportando problema")
+        presenter = ReportPresenter(SaguiModelImpl(this))
+        progressDialog = LoadingDialog.newInstance(getString(R.string.reporting_problem))
 
         enterprise = intent.extras?.getParcelable(EXTRA_ENTERPRISE)
         complaint.enterpriseId = enterprise?.id
@@ -119,7 +119,7 @@ class ReportActivity : BaseActivity(),
     }
 
     override fun onItemClick(file: Asset) {
-        getAlertList(arrayOf("Visualizar", "Remover")) { dialog, position ->
+        getAlertList(arrayOf(getString(R.string.visualize), getString(R.string.remove))) { dialog, position ->
             if (position == 0) {
                 val intent = ShowAssetActivity.getIntent(this@ReportActivity,
                         complaint.files.toList(), complaint.files.indexOf(file))

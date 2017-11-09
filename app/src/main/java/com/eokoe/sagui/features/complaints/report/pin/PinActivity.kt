@@ -70,11 +70,7 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
         latLong = intent?.extras?.getParcelable(EXTRA_LAT_LNG)
         address = intent?.extras?.getString(EXTRA_ADDRESS)
         enterprise = intent?.extras?.getParcelable(EXTRA_ENTERPRISE)
-        RxJavaPlugins.setErrorHandler {
-            if (it.message == "no_address_found") {
-                showBox()
-            }
-        }
+        RxJavaPlugins.setErrorHandler { if (it.message == "no_address_found") showBox() }
     }
 
     override fun init(savedInstanceState: Bundle?) {
@@ -82,7 +78,8 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
                 .map {
                     queueCount += it
                     return@map queueCount
-                }.filter { return@filter it >= 0 }
+                }
+                .filter { return@filter it >= 0 }
                 .subscribe {
                     queueCount = 0
                     llBoxAddress.showSlidingTop()
@@ -94,7 +91,6 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
                     tvAddress.text = address
                     showBox()
                 }
-        addressChangeSubject.onNext("OPA!")
         locationChangeSubject
                 .debounce(300, TimeUnit.MILLISECONDS)
                 .subscribeOn(Schedulers.io())
@@ -104,9 +100,11 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
                     latLong = it
                     if (Geocoder.isPresent()) {
                         hideBox()
-                        startService(FetchAddressService.getIntent(this, AddressResultReceiver(Handler()), it))
+                        startService(FetchAddressService.getIntent(this,
+                                AddressResultReceiver(Handler()), it))
                     } else {
-                        Toast.makeText(this, "no_geocoder_available", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(this, "no_geocoder_available",
+                                Toast.LENGTH_SHORT).show()
                     }
                 }, {
                     Toast.makeText(this@PinActivity, it.message, Toast.LENGTH_SHORT).show()
@@ -211,21 +209,21 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
 
-    private fun confirmLocation() {
-        if (latLong != null
-                && latLngBounds?.contains(LatLng(latLong!!.latitude, latLong!!.longitude)) == true) {
-            val intent = Intent()
-            intent.putExtra(RESULT_LOCATION, latLong)
-            intent.putExtra(RESULT_ADDRESS, address)
-            setResult(Activity.RESULT_OK, intent)
-            finish()
-        } else {
-            AlertDialogFragment.create(this) {
-                title = "Local não disponível"
-                message = "O local selecionado está fora da cobertura do empreendimento.\nPor favor, selecione outra localização."
-            }.show(supportFragmentManager)
-        }
-    }
+    private fun confirmLocation() =
+            if (latLong != null && latLngBounds?.contains(latLong!!.toLatLng()) == true) {
+                val intent = Intent()
+                intent.putExtra(RESULT_LOCATION, latLong)
+                intent.putExtra(RESULT_ADDRESS, address)
+                setResult(Activity.RESULT_OK, intent)
+                finish()
+            } else {
+                AlertDialogFragment
+                        .create(this) {
+                            titleRes = R.string.location_unavailable
+                            messageRes = R.string.selected_location_unavailable_message
+                        }
+                        .show(supportFragmentManager)
+            }
 
     override fun saveInstanceState(outState: Bundle) {
         outState.putParcelable(STATE_LAT_LONG, latLong)

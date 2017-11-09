@@ -8,6 +8,7 @@ import com.eokoe.sagui.data.parcel.adapters.AnswerListAdapter
 import com.eokoe.sagui.data.parcel.adapters.AssetListAdapter
 import com.eokoe.sagui.data.parcel.adapters.CommentListAdapter
 import com.eokoe.sagui.data.parcel.adapters.ConfirmationListAdapter
+import com.eokoe.sagui.di.AppInjector
 import com.facebook.drawee.backends.pipeline.Fresco
 import io.realm.Realm
 import io.realm.RealmConfiguration
@@ -32,6 +33,7 @@ class SaguiApp : Application() {
         initServiceGenerator()
         initRealm()
         Fresco.initialize(this)
+        AppInjector.init(this)
     }
 
     override fun attachBaseContext(base: Context) {

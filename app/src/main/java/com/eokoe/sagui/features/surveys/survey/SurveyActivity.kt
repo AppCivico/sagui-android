@@ -63,7 +63,7 @@ class SurveyActivity : BaseActivity(),
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
         showBackButton()
-        presenter = SurveyPresenter(SaguiModelImpl())
+        presenter = SurveyPresenter(SaguiModelImpl(this))
         progressDialog = LoadingDialog.newInstance(getString(R.string.sending_answers))
     }
 

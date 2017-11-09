@@ -12,7 +12,6 @@ import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.entities.LatLong
-import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.invisibleSlidingBottom
 import com.eokoe.sagui.extensions.isVisible
 import com.eokoe.sagui.extensions.setup
@@ -35,6 +34,7 @@ import com.google.maps.android.clustering.Cluster
 import com.google.maps.android.clustering.ClusterManager
 import kotlinx.android.synthetic.main.activity_complaints.*
 import kotlinx.android.synthetic.main.content_box_complaint_details.*
+import org.koin.android.ext.android.inject
 
 
 /**
@@ -46,7 +46,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         ClusterManager.OnClusterClickListener<ComplaintItem>,
         ClusterManager.OnClusterItemClickListener<ComplaintItem> {
 
-    override lateinit var presenter: ComplaintsContract.Presenter
+    override val presenter by inject<ComplaintsContract.Presenter>()
 
     private var map: GoogleMap? = null
     override var locationHelper = LocationHelper()
@@ -89,7 +89,6 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
         categories = intent.extras?.getParcelableArrayList(EXTRA_CATEGORIES)
         isFromNotification = intent.extras.getBoolean(EXTRA_IS_FROM_NOTIFICATION)
         title = enterprise?.name
-        presenter = ComplaintsPresenter(SaguiModelImpl())
         mapFragment = supportFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
     }
 
@@ -329,6 +328,8 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
     }
 
     companion object {
+        val TAG = ComplaintsActivity::class.simpleName!!
+
         private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
         private val EXTRA_CATEGORIES = "EXTRA_CATEGORIES"

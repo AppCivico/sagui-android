@@ -25,7 +25,7 @@ import kotlin.collections.ArrayList
 /**
  * @author Pedro Silva
  */
-class SaguiModelImpl(val context: Context? = null) : SaguiModel {
+class SaguiModelImpl(val context: Context) : SaguiModel {
 
     override fun selectEnterprise(enterprise: Enterprise): Observable<Enterprise> {
         return Observable.create { emitter ->

@@ -31,7 +31,7 @@ class SplashActivity : BaseActivity(), SplashContract.View, ViewPresenter<Splash
 
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
-        presenter = SplashPresenter(SaguiModelImpl())
+        presenter = SplashPresenter(SaguiModelImpl(this))
     }
 
     override fun init(savedInstanceState: Bundle?) {

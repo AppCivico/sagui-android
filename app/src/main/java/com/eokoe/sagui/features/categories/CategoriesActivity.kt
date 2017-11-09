@@ -7,16 +7,15 @@ import android.support.v7.widget.GridLayoutManager
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Enterprise
-import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.friendlyMessage
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.ComplaintsActivity
 import com.eokoe.sagui.features.surveys.list.CategoriesContract
-import com.eokoe.sagui.features.surveys.list.CategoriesPresenter
 import com.eokoe.sagui.features.surveys.list.SurveyListActivity
 import kotlinx.android.synthetic.main.activity_categories.*
+import org.koin.android.ext.android.inject
 
 
 /**
@@ -26,8 +25,8 @@ import kotlinx.android.synthetic.main.activity_categories.*
 class CategoriesActivity : BaseActivityNavDrawer(), CategoryActionsDialog.OnActionClickListener,
         CategoriesContract.View, ViewPresenter<CategoriesContract.Presenter> {
 
-    private lateinit var categoriesAdapter: CategoriesAdapter
-    override lateinit var presenter: CategoriesContract.Presenter
+    private val categoriesAdapter by inject<CategoriesAdapter>()
+    override val presenter by inject<CategoriesContract.Presenter>()
 
     private var categoryActionsDialog: CategoryActionsDialog? = null
 
@@ -38,8 +37,7 @@ class CategoriesActivity : BaseActivityNavDrawer(), CategoryActionsDialog.OnActi
 
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
-        presenter = CategoriesPresenter(SaguiModelImpl())
-        categoriesAdapter = CategoriesAdapter(categories == null)
+        categoriesAdapter.isShowLoading = categories == null
         enterprise = intent.extras.getParcelable(EXTRA_ENTERPRISE)
     }
 
@@ -123,6 +121,7 @@ class CategoriesActivity : BaseActivityNavDrawer(), CategoryActionsDialog.OnActi
     }
 
     companion object {
+        val TAG = CategoriesActivity::class.simpleName!!
         private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val STATE_CATEGORIES = "STATE_CATEGORIES"
 

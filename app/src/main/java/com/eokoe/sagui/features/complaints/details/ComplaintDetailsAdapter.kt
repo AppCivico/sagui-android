@@ -18,7 +18,7 @@ import kotlinx.android.synthetic.main.item_complaint_detail_comment.view.*
  * @author Pedro Silva
  * @since 05/10/17
  */
-class ComplaintDetailsAdapter(complaint: Complaint?) : RecyclerViewAdapter<ComplaintDetailsAdapter.Item, RecyclerView.ViewHolder>() {
+class ComplaintDetailsAdapter : RecyclerViewAdapter<ComplaintDetailsAdapter.Item, RecyclerView.ViewHolder>() {
     var complaint: Complaint? = null
         set(value) {
             field = value
@@ -26,17 +26,13 @@ class ComplaintDetailsAdapter(complaint: Complaint?) : RecyclerViewAdapter<Compl
         }
     var onImageClickListener: AssetsAdapter.OnItemClickListener? = null
 
-    init {
-        this.complaint = complaint
-    }
-
     private fun setupItems() {
         val items = ArrayList<Item>()
         if (complaint != null) {
             items.add(Item(ItemType.HEADER, R.string.explain_complaint))
             items.add(Item(ItemType.DETAILS))
             items.add(Item(ItemType.ASSETS))
-            if (complaint?.comments?.size ?: 0 > 0) {
+            if (complaint?.comments?.isNotEmpty() == true) {
                 items.add(Item(ItemType.COMMENT_HEADER))
                 complaint?.comments?.forEach {
                     items.add(Item(ItemType.COMMENT, it))
@@ -91,8 +87,10 @@ class ComplaintDetailsAdapter(complaint: Complaint?) : RecyclerViewAdapter<Compl
 
     inner class CommentViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(comment: Comment) {
-            itemView.tvCommentDate.text = comment.createdAt?.format("dd.MM.yyyy")
-            itemView.tvComment.text = comment.content
+            with(itemView) {
+                tvCommentDate.text = comment.createdAt?.format("dd.MM.yyyy")
+                tvComment.text = comment.content
+            }
         }
     }
 
@@ -112,17 +110,14 @@ class ComplaintDetailsAdapter(complaint: Complaint?) : RecyclerViewAdapter<Compl
         }
     }
 
-    inner class HeaderViewHolder(view: View): TextViewHolder(view, R.id.tvExplainComplaint) {
+    inner class HeaderViewHolder(view: View) : TextViewHolder(view, R.id.tvExplainComplaint) {
         fun bind(complaint: Complaint?) {
             val explainComplaint = itemView.context.getString(R.string.explain_complaint, complaint?.numToBecameCause)
             super.bind(explainComplaint)
         }
     }
 
-    class Item(
-            val type: ItemType,
-            val value: Any? = null
-    )
+    class Item(val type: ItemType, val value: Any? = null)
 
     enum class ItemType {
         HEADER, DETAILS, COMMENT_HEADER, COMMENT, ASSETS, LOADING;

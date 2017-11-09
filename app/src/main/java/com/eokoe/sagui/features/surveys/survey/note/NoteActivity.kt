@@ -33,7 +33,7 @@ class NoteActivity : BaseActivity(), NoteContract.View, ViewPresenter<NoteContra
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
         showBackButton()
-        presenter = NotePresenter(SaguiModelImpl())
+        presenter = NotePresenter(SaguiModelImpl(this))
         progressDialog = LoadingDialog.newInstance(getString(R.string.sending_note))
     }
 
@@ -44,7 +44,6 @@ class NoteActivity : BaseActivity(), NoteContract.View, ViewPresenter<NoteContra
                 hideKeyboard(textNote.editText!!)
                 presenter.sendNote(Comment(submissionsId = surveyId, content = textNote.editText!!.text.toString()))
             } else {
-//                Toast.makeText(this, "Informe as observações", Toast.LENGTH_SHORT).show()
                 AlertDialogFragment
                         .create(this) {
                             title = "Atenção"

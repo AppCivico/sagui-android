@@ -84,7 +84,8 @@ class ShowAssetActivity : BaseActivity() {
 
         private val STATE_CURRENT_POSITION = "STATE_CURRENT_POSITION"
 
-        fun getIntent(context: Context, assets: List<Asset>, currentPosition: Int = 0, showSendButton: Boolean = false): Intent =
+        fun getIntent(context: Context, assets: List<Asset>, currentPosition: Int = 0,
+                      showSendButton: Boolean = false): Intent =
                 Intent(context, ShowAssetActivity::class.java)
                         .putExtra(EXTRA_ASSETS, ArrayList<Asset>(assets))
                         .putExtra(EXTRA_SHOW_SEND_BUTTON, showSendButton)
@@ -111,7 +112,8 @@ class ShowAssetActivity : BaseActivity() {
             if (intent.resolveActivity(packageManager) != null) {
                 startActivity(intent)
             } else {
-                Toast.makeText(this@ShowAssetActivity, "Falha ao tentar reproduzir a mídia", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@ShowAssetActivity,
+                        "Falha ao tentar reproduzir a mídia", Toast.LENGTH_SHORT).show()
             }
         }
     }

@@ -14,12 +14,11 @@ import com.eokoe.sagui.data.entities.Asset
 import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Confirmation
 import com.eokoe.sagui.data.entities.ContributeOptions
-import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.*
+import com.eokoe.sagui.features.asset.ShowAssetActivity
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.ComplaintsActivity
-import com.eokoe.sagui.features.asset.ShowAssetActivity
 import com.eokoe.sagui.services.upload.UploadFilesJobIntentService
 import com.eokoe.sagui.utils.FileUtil
 import com.eokoe.sagui.utils.Files
@@ -29,6 +28,7 @@ import com.eokoe.sagui.widgets.dialog.AudioRecorderDialog
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
 import com.google.firebase.messaging.FirebaseMessaging
 import kotlinx.android.synthetic.main.activity_complaint_details.*
+import org.koin.android.ext.android.inject
 import java.io.File
 
 /**
@@ -38,19 +38,19 @@ import java.io.File
 class ComplaintDetailsActivity : BaseActivity(),
         ConfirmContract.View, ViewPresenter<ConfirmContract.Presenter> {
 
-    override lateinit var presenter: ConfirmContract.Presenter
+    override val presenter by inject<ConfirmContract.Presenter>()
+    private val detailsAdapter by inject<ComplaintDetailsAdapter>()
+    private lateinit var loadingDialog: LoadingDialog
 
     private var complaint: Complaint? = null
     private var complaintId: String? = null
     private var confirmation = Confirmation()
-    private lateinit var loadingDialog: LoadingDialog
     private var isConfirmed: Boolean = false
     private var notificationId: String? = null
     private var isFromNotification: Boolean = false
     private var fileAttached: File? = null
     private var openPreview: Boolean = false
     private var updateConfirmation: Boolean = false
-    private lateinit var detailsAdapter: ComplaintDetailsAdapter
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,17 +91,15 @@ class ComplaintDetailsActivity : BaseActivity(),
         isFromNotification = intent.extras.getBoolean(EXTRA_IS_FROM_NOTIFICATION)
         complaintId = intent.extras.getString(EXTRA_COMPLAINT_ID)
         notificationId = intent.extras.getString(EXTRA_NOTIFICATION_ID)
-        presenter = ConfirmPresenter(SaguiModelImpl())
         loadingDialog = LoadingDialog.newInstance(getString(R.string.loading_confirm_complaint))
         btnConfirm.setOnClickListener {
-            //openContributeDialog()
             getConfirmDialog().show(supportFragmentManager)
         }
     }
 
     override fun init(savedInstanceState: Bundle?) {
         rvComplaintDetails.setHasFixedSize(true)
-        detailsAdapter = ComplaintDetailsAdapter(complaint)
+        detailsAdapter.complaint = complaint
         detailsAdapter.onImageClickListener = object : AssetsAdapter.OnItemClickListener {
             override fun onItemClick(asset: Asset) {
                 val intent = ShowAssetActivity.getIntent(this@ComplaintDetailsActivity, asset)
@@ -119,20 +117,15 @@ class ComplaintDetailsActivity : BaseActivity(),
         }
     }
 
-    /*override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menuInflater.inflate(R.menu.notifications, menu)
-        return true
-    }*/
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_notifications -> {
                 AlertDialogFragment
                         .create(this) {
-                            title = "Notificações"
-                            message = "Deseja receber notificações sobre a reclamação?"
-                            positiveText = "Sim"
-                            negativeText = "Não"
+                            titleRes = R.string.notifications
+                            messageRes = R.string.allow_complaint_notification
+                            positiveTextRes = R.string.yes
+                            negativeTextRes = R.string.no
                             onConfirmClickListener { dialog, _ ->
                                 FirebaseMessaging.getInstance()
                                         .subscribeToTopic("complaint-${complaint!!.id}")
@@ -165,7 +158,6 @@ class ComplaintDetailsActivity : BaseActivity(),
     }
 
     override fun showError(error: Throwable) {
-        hideLoading()
         getErrorDialog(error).show(supportFragmentManager)
     }
 
@@ -210,21 +202,15 @@ class ComplaintDetailsActivity : BaseActivity(),
             when (ContributeOptions.fromPosition(position)) {
                 ContributeOptions.GALLERY_PICTURE -> openImageGallery()
                 ContributeOptions.GALLERY_VIDEO -> openVideoGallery()
-                ContributeOptions.AUDIO -> if (hasRecordAudioPermission()) {
-                    recordAudio()
-                } else {
-                    requestRecordAudioPermission(RequestCode.Permission.AUDIO.value)
-                }
-                ContributeOptions.TAKE_PICTURE -> if (hasCameraPermission()) {
-                    takePicture()
-                } else {
-                    requestCameraPermission(RequestCode.Permission.CAMERA_PICTURE.value)
-                }
-                ContributeOptions.RECORD_VIDEO -> if (hasCameraPermission()) {
-                    recordVideo()
-                } else {
-                    requestCameraPermission(RequestCode.Permission.CAMERA_VIDEO.value)
-                }
+                ContributeOptions.AUDIO ->
+                    if (hasRecordAudioPermission()) recordAudio()
+                    else requestRecordAudioPermission(RequestCode.Permission.AUDIO.value)
+                ContributeOptions.TAKE_PICTURE ->
+                    if (hasCameraPermission()) takePicture()
+                    else requestCameraPermission(RequestCode.Permission.CAMERA_PICTURE.value)
+                ContributeOptions.RECORD_VIDEO ->
+                    if (hasCameraPermission()) recordVideo()
+                    else requestCameraPermission(RequestCode.Permission.CAMERA_VIDEO.value)
             }
             dialog.dismiss()
         }.show()
@@ -233,7 +219,7 @@ class ComplaintDetailsActivity : BaseActivity(),
     private fun openImageGallery() {
         val intent = Intent(Intent.ACTION_GET_CONTENT)
                 .addCategory(Intent.CATEGORY_OPENABLE)
-                .setType("image/jpeg")
+                .setType("image/*")
         if (intent.resolveActivity(packageManager) != null) {
             startActivityForResult(intent, RequestCode.Intent.GALLERY_PICTURE.value)
         }
@@ -355,7 +341,8 @@ class ComplaintDetailsActivity : BaseActivity(),
     }
 
     private fun openPreview() {
-        val intent = ShowAssetActivity.getIntent(this, confirmation.files, showSendButton = true)
+        val intent = ShowAssetActivity.getIntent(this, confirmation.files,
+                showSendButton = true)
         startActivityForResult(intent, RequestCode.Intent.PREVIEW_ASSET.value)
     }
 
@@ -363,8 +350,8 @@ class ComplaintDetailsActivity : BaseActivity(),
             File(File(filesDir, path), generateFilename(suffix))
 
     private fun generateFilename(suffix: String) =
-            resources.getString(R.string.app_name) +
-                    "_confirmation_" + System.currentTimeMillis() + suffix
+            resources.getString(R.string.app_name) + "_confirmation_" +
+                    System.currentTimeMillis() + suffix
 
     private fun addFileToConfirmation(file: File, preview: Boolean = true) {
         val type = contentResolver.getType(file.getUri(this))
@@ -383,16 +370,11 @@ class ComplaintDetailsActivity : BaseActivity(),
                                             grantResults: IntArray) {
         val permissionGranted = grantResults.isNotEmpty() &&
                 grantResults[0] == PackageManager.PERMISSION_GRANTED
+
         when (RequestCode.Permission.fromInt(requestCode)) {
-            RequestCode.Permission.CAMERA_PICTURE -> if (permissionGranted) {
-                takePicture()
-            }
-            RequestCode.Permission.CAMERA_VIDEO -> if (permissionGranted) {
-                recordVideo()
-            }
-            RequestCode.Permission.AUDIO -> if (permissionGranted) {
-                recordAudio()
-            }
+            RequestCode.Permission.CAMERA_PICTURE -> if (permissionGranted) takePicture()
+            RequestCode.Permission.CAMERA_VIDEO -> if (permissionGranted) recordVideo()
+            RequestCode.Permission.AUDIO -> if (permissionGranted) recordAudio()
         }
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
     }
@@ -428,6 +410,8 @@ class ComplaintDetailsActivity : BaseActivity(),
     }
 
     companion object {
+        val TAG = ComplaintDetailsActivity::class.simpleName!!
+
         private val EXTRA_COMPLAINT = "EXTRA_COMPLAINT"
         private val EXTRA_COMPLAINT_ID = "EXTRA_COMPLAINT_ID"
         private val EXTRA_IS_FROM_NOTIFICATION = "EXTRA_IS_FROM_NOTIFICATION"

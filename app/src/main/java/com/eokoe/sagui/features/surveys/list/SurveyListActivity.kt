@@ -54,7 +54,7 @@ class SurveyListActivity : BaseActivityNavDrawer(),
         enterprise = intent.extras.getParcelable(EXTRA_ENTERPRISE)
         category = intent.extras.getParcelable(EXTRA_CATEGORY)
 
-        presenter = SurveyListPresenter(SaguiModelImpl())
+        presenter = SurveyListPresenter(SaguiModelImpl(this))
         surveyListAdapter = SurveyListAdapter(surveys == null)
     }
 

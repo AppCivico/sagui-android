@@ -4,10 +4,10 @@ import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Confirmation
 import com.eokoe.sagui.data.entities.Notification
 import com.eokoe.sagui.data.model.SaguiModel
+import com.eokoe.sagui.features.base.DefaultObserver
 import com.eokoe.sagui.features.base.EmptyObserver
 import com.eokoe.sagui.features.base.presenter.BasePresenterImpl
 import io.reactivex.Observable
-import io.reactivex.observers.DisposableObserver
 
 /**
  * @author Pedro Silva
@@ -19,54 +19,32 @@ class ConfirmPresenter constructor(private val saguiModel: SaguiModel)
         return exec(saguiModel.confirmationFiles(confirmation), ConfirmationFilesObserver())
     }
 
-    override fun confirmComplaint(confirmation: Confirmation): Observable<Confirmation> {
-        view?.showLoading()
-        return exec(saguiModel.confirmComplaint(confirmation), ConfirmationObserver())
-    }
+    override fun confirmComplaint(confirmation: Confirmation) =
+            exec(saguiModel.confirmComplaint(confirmation), ConfirmationObserver())
 
-    override fun getComplaint(id: String): Observable<Complaint> {
-        return exec(saguiModel.getComplaint(id), ComplaintObserver())
-    }
+    override fun getComplaint(id: String) =
+            exec(saguiModel.getComplaint(id), ComplaintObserver())
 
-    override fun markAsRead(notificationId: String): Observable<Notification> {
-        return exec(saguiModel.markAsRead(Notification(id = notificationId)), EmptyObserver())
-    }
+    override fun markAsRead(notificationId: String) =
+            exec(saguiModel.markAsRead(Notification(id = notificationId)), EmptyObserver())
 
-    inner class ComplaintObserver : DisposableObserver<Complaint>() {
-        override fun onNext(complaint: Complaint) {
-            view?.onLoadComplaint(complaint)
+    inner class ComplaintObserver : DefaultObserver<Complaint>(view) {
+        override fun onSuccess(result: Complaint?) {
+            if (result != null) view?.onLoadComplaint(result)
         }
 
-        override fun onComplete() {}
-
-        override fun onError(e: Throwable) {}
+        override fun onShowLoading() {}
     }
 
-    inner class ConfirmationObserver : DisposableObserver<Confirmation>() {
-        override fun onNext(confirmation: Confirmation) {
-            view?.onComplaintConfirmed(confirmation)
-        }
-
-        override fun onComplete() {
-            view?.hideLoading()
-        }
-
-        override fun onError(error: Throwable) {
-            view?.showError(error)
+    inner class ConfirmationObserver : DefaultObserver<Confirmation>(view) {
+        override fun onSuccess(result: Confirmation?) {
+            if (result != null) view?.onComplaintConfirmed(result)
         }
     }
 
-    inner class ConfirmationFilesObserver : DisposableObserver<Confirmation>() {
-        override fun onNext(confirmation: Confirmation) {
-            view?.onFilesSave(confirmation)
-        }
-
-        override fun onComplete() {
-            view?.hideLoading()
-        }
-
-        override fun onError(error: Throwable) {
-            view?.showError(error)
+    inner class ConfirmationFilesObserver : DefaultObserver<Confirmation>(view) {
+        override fun onSuccess(result: Confirmation?) {
+            if (result != null) view?.onFilesSave(result)
         }
     }
 }

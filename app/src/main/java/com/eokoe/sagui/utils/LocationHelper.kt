@@ -1,5 +1,6 @@
 package com.eokoe.sagui.utils
 
+import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.IntentSender
 import android.location.Location
@@ -49,6 +50,7 @@ class LocationHelper : GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnCo
         googleApiClient = null
     }
 
+    @SuppressLint("MissingPermission")
     private fun getLocation(listener: OnLocationReceivedListener) {
         val locationRequest = LocationRequest()
         locationRequest.priority = LocationRequest.PRIORITY_BALANCED_POWER_ACCURACY

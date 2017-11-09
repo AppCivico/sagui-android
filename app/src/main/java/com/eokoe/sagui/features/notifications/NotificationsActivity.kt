@@ -31,7 +31,7 @@ class NotificationsActivity : BaseActivity(),
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
         showBackButton()
-        presenter = NotificationsPresenter(SaguiModelImpl())
+        presenter = NotificationsPresenter(SaguiModelImpl(this))
     }
 
     override fun init(savedInstanceState: Bundle?) {

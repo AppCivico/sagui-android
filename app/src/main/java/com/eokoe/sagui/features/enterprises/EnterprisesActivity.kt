@@ -9,12 +9,12 @@ import com.eokoe.sagui.data.entities.Asset
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.friendlyMessage
+import com.eokoe.sagui.features.asset.ShowAssetActivity
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.categories.CategoriesActivity
 import com.eokoe.sagui.features.enterprises.filter.EnterprisesFilterActivity
-import com.eokoe.sagui.features.asset.ShowAssetActivity
 import kotlinx.android.synthetic.main.content_enterprises.*
 
 class EnterprisesActivity : BaseActivityNavDrawer(),
@@ -53,7 +53,7 @@ class EnterprisesActivity : BaseActivityNavDrawer(),
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
         enterprisesAdapter = EnterprisesAdapter(enterprises == null || enterprises!!.isEmpty())
-        presenter = EnterprisesPresenter(SaguiModelImpl())
+        presenter = EnterprisesPresenter(SaguiModelImpl(this))
     }
 
     override fun init(savedInstanceState: Bundle?) {

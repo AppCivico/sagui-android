@@ -14,15 +14,9 @@ import kotlinx.android.synthetic.main.item_error.view.*
  * @author Pedro Silva
  * @since 16/08/17
  */
-class CategoriesAdapter : RecyclerViewAdapter<Category, RecyclerView.ViewHolder> {
+class CategoriesAdapter : RecyclerViewAdapter<Category, RecyclerView.ViewHolder>() {
 
     var onItemClickListener: OnItemClickListener? = null
-
-    constructor() : super()
-
-    constructor(isShowLoading: Boolean) : super() {
-        this.isShowLoading = isShowLoading
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             when (viewType) {
