@@ -9,7 +9,6 @@ import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.report.ReportActivity
-import kotlinx.android.synthetic.main.activity_notification.*
 import kotlinx.android.synthetic.main.activity_pendencies.*
 
 /**
@@ -32,7 +31,7 @@ class PendenciesActivity : BaseActivity(),
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
         showBackButton()
-        presenter = PendenciesPresenter(SaguiModelImpl())
+        presenter = PendenciesPresenter(SaguiModelImpl(this))
     }
 
     override fun init(savedInstanceState: Bundle?) {
