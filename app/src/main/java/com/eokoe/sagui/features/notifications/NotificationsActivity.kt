@@ -49,7 +49,11 @@ class NotificationsActivity : BaseActivity(),
 
     override fun onResume() {
         super.onResume()
-        presenter.list()
+        if (notifications == null) {
+            presenter.list()
+        } else {
+            loadNotifications(notifications!!)
+        }
     }
 
     override fun loadNotifications(notifications: List<Notification>) {

@@ -29,6 +29,7 @@ class SurveyListActivity : BaseActivityNavDrawer(),
     private var surveys: ArrayList<Survey>? = null
 
     private var showAlertCongratulations = false
+    private var lastId: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -45,6 +46,9 @@ class SurveyListActivity : BaseActivityNavDrawer(),
                         message = "Obrigado pela contribuição!"
                     }
                     .show(supportFragmentManager)
+
+            surveyListAdapter.markHasAnswered(lastId!!)
+            lastId = null
         }
     }
 
@@ -73,6 +77,7 @@ class SurveyListActivity : BaseActivityNavDrawer(),
         rvSurveys.setHasFixedSize(true)
         surveyListAdapter.onItemClickListener = object : SurveyListAdapter.OnItemClickListener {
             override fun onClick(survey: Survey) {
+                lastId = survey.id
                 startActivityForResult(SurveyActivity.getIntent(this@SurveyListActivity, category!!, survey), REQUEST_SURVEY_ANSWER)
             }
         }
@@ -102,11 +107,13 @@ class SurveyListActivity : BaseActivityNavDrawer(),
 
     override fun restoreInstanceState(savedInstanceState: Bundle) {
         surveys = savedInstanceState.getParcelableArrayList(STATE_SURVEYS)
+        lastId = savedInstanceState.getString(STATE_SURVEY_CLICKED)
     }
 
     override fun saveInstanceState(outState: Bundle) {
         if (surveys != null) {
             outState.putParcelableArrayList(STATE_SURVEYS, surveys)
+            outState.putString(STATE_SURVEY_CLICKED, lastId)
         }
     }
 
@@ -114,6 +121,8 @@ class SurveyListActivity : BaseActivityNavDrawer(),
         if (requestCode == REQUEST_SURVEY_ANSWER) {
             if (resultCode == Activity.RESULT_OK) {
                 showAlertCongratulations = true
+            } else {
+                lastId = null
             }
         }
         super.onActivityResult(requestCode, resultCode, data)
@@ -123,6 +132,7 @@ class SurveyListActivity : BaseActivityNavDrawer(),
         private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
         private val STATE_SURVEYS = "STATE_SURVEYS"
+        private val STATE_SURVEY_CLICKED = "STATE_SURVEY_CLICKED"
         private val REQUEST_SURVEY_ANSWER = 1
 
         fun getIntent(context: Context, enterprise: Enterprise, category: Category): Intent {

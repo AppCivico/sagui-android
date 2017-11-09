@@ -1,9 +1,12 @@
 package com.eokoe.sagui.features.surveys.list
 
+import android.graphics.Color
+import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import com.eokoe.sagui.R
+import com.eokoe.sagui.R.id.tvSurveyTitle
 import com.eokoe.sagui.data.entities.Survey
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import kotlinx.android.synthetic.main.item_error.view.*
@@ -21,6 +24,13 @@ class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder> {
 
     constructor(isShowLoading: Boolean) : super() {
         this.isShowLoading = isShowLoading
+    }
+
+    fun markHasAnswered(id: String) {
+        items = items?.map {
+            it.hasAnswer = it.id == id || it.hasAnswer
+            it
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
@@ -54,18 +64,27 @@ class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder> {
 
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(survey: Survey) {
-            itemView.tvSurveyTitle.text = survey.name
-            itemView.setOnClickListener {
-                onItemClickListener?.onClick(survey)
+            with(itemView) {
+                val bgColor = ContextCompat.getColor(context,
+                        if (!survey.hasAnswer) R.color.bg_survey
+                        else R.color.bg_survey_answered
+                )
+                setBackgroundColor(bgColor)
+                tvSurveyTitle.text = survey.name
+                setOnClickListener {
+                    onItemClickListener?.onClick(survey)
+                }
             }
         }
     }
 
     inner class ErrorViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(error: String?, retryClickListener: OnRetryClickListener?) {
-            itemView.tvError.text = error
-            itemView.ivRefresh.setOnClickListener {
-                retryClickListener?.retry()
+            with(itemView) {
+                tvError.text = error
+                setOnClickListener {
+                    retryClickListener?.retry()
+                }
             }
         }
     }

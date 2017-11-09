@@ -14,6 +14,7 @@ interface ReportContract {
     interface View : ViewLoading, ViewError {
         fun onSaveSuccess(complaint: Complaint)
         fun uploadAssets()
+        fun isValidForm(): Boolean
     }
 
     interface Presenter : BasePresenter<View> {

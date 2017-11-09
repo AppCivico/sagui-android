@@ -17,6 +17,8 @@ interface SaguiModel {
 
     fun getSurveyList(category: Category): Observable<List<Survey>>
 
+    fun hasAnswer(survey: Survey): Observable<Boolean>
+
     fun sendAnswers(submissions: Submissions): Observable<Submissions>
 
     fun saveComment(comment: Comment): Observable<Comment>
@@ -44,4 +46,6 @@ interface SaguiModel {
     fun listUnreadNotifications(): Observable<List<Notification>>
 
     fun markAsRead(notification: Notification): Observable<Notification>
+
+    fun listPendencies(): Observable<List<Pendency>>
 }

@@ -40,16 +40,16 @@ class AudioRecorderDialog private constructor() : DialogFragment() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         retainInstance = true
-        maxDuration = arguments.getLong(EXTRA_MAX_DURATION)
+        maxDuration = arguments!!.getLong(EXTRA_MAX_DURATION)
 
         audioFile = createAudioFile(getString(R.string.app_name) + "_audio_")
     }
 
     @SuppressLint("InflateParams")
     override fun onCreateDialog(savedInstanceState: Bundle?): Dialog {
-        val dialogView = activity.layoutInflater.inflate(R.layout.dialog_audiorecorder, null) as ViewGroup
+        val dialogView = activity!!.layoutInflater.inflate(R.layout.dialog_audiorecorder, null) as ViewGroup
 
-        val dialog = AlertDialog.Builder(context)
+        val dialog = AlertDialog.Builder(context!!)
                 .setView(dialogView)
                 .setTitle(getString(R.string.record_audio))
 
@@ -72,7 +72,7 @@ class AudioRecorderDialog private constructor() : DialogFragment() {
     }
 
     private fun createAudioFile(filename: String): File {
-        val audioDir = File(context.filesDir, Files.Path.AUDIO_PATH)
+        val audioDir = File(context!!.filesDir, Files.Path.AUDIO_PATH)
         if (!audioDir.exists()) {
             audioDir.mkdirs()
         }
@@ -129,7 +129,7 @@ class AudioRecorderDialog private constructor() : DialogFragment() {
         val timer = Timer()
         timer.scheduleAtFixedRate(object : TimerTask() {
             override fun run() {
-                activity.runOnUiThread {
+                activity!!.runOnUiThread {
                     if (player != null && player!!.isPlaying) {
                         val tv = view.tvChronometer
                         tv.post {
@@ -202,7 +202,7 @@ class AudioRecorderDialog private constructor() : DialogFragment() {
                         listener: (File) -> Unit = {}): AudioRecorderDialog {
             val dialog = AudioRecorderDialog()
             dialog.arguments = Bundle()
-            dialog.arguments.putLong(EXTRA_MAX_DURATION, maxDuration)
+            dialog.arguments!!.putLong(EXTRA_MAX_DURATION, maxDuration)
             dialog.isCancelable = false
             dialog.onSendClickListener = listener
             return dialog

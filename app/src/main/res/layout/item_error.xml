@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:clickable="true"
     android:gravity="center"
     android:orientation="vertical"
     android:padding="16dp">
@@ -12,22 +13,24 @@
         android:id="@+id/tvError"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="24dp"
-        android:gravity="center_horizontal"/>
+        android:gravity="center_horizontal"
+        android:textSize="24sp"
+        tools:text="Error" />
 
     <android.support.v7.widget.AppCompatImageButton
-        android:id="@+id/ivRefresh"
+        android:id="@+id/ivIcon"
         style="@style/Widget.AppCompat.Button.Borderless"
         android:layout_width="96dp"
         android:layout_height="wrap_content"
+        android:layout_margin="24dp"
         android:adjustViewBounds="true"
-        android:background="?attr/selectableItemBackgroundBorderless"
-        android:tint="@color/colorTextSecondary"
-        app:srcCompat="@drawable/ic_refresh"/>
+        android:clickable="false"
+        android:scaleType="fitCenter"
+        app:srcCompat="@drawable/ic_robot_error" />
 
     <com.eokoe.sagui.widgets.CustomTextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:gravity="center_horizontal"
-        android:text="Tentar novamente"/>
+        android:text="@string/error_msg" />
 </LinearLayout>

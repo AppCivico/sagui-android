@@ -61,10 +61,9 @@ class CategoriesAdapter : RecyclerViewAdapter<Category, RecyclerView.ViewHolder>
         fun bind(error: String?, retryClickListener: OnRetryClickListener?) {
             with(itemView) {
                 tvError.text = error
-                ivRefresh.setOnClickListener {
+                setOnClickListener {
                     retryClickListener?.retry()
                 }
-
             }
         }
     }

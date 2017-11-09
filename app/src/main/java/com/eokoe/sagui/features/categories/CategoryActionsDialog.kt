@@ -27,9 +27,9 @@ class CategoryActionsDialog : BoxDialog() {
         return inflater.inflate(R.layout.dialog_category_actions, parent, false)
     }
 
-    override fun onViewCreated(view: View?, savedInstanceState: Bundle?) {
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        category = arguments.getParcelable(EXTRA_CATEGORY)
+        category = arguments!!.getParcelable(EXTRA_CATEGORY)
         tvCategoryName.text = category.name
 
         llAnswerSurvey.setOnClickListener {

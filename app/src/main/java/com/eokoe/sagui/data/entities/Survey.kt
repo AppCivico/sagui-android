@@ -2,6 +2,7 @@ package com.eokoe.sagui.data.entities
 
 import com.google.gson.annotations.Expose
 import com.google.gson.annotations.SerializedName
+import io.realm.annotations.PrimaryKey
 import paperparcel.PaperParcel
 import paperparcel.PaperParcelable
 
@@ -21,7 +22,9 @@ data class Survey(
         val categories: List<String>,
 
         @Expose
-        val questions: List<Question>? = null
+        val questions: List<Question>? = null,
+
+        var hasAnswer: Boolean = false
 ) : PaperParcelable {
 
     companion object {
