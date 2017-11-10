@@ -5,11 +5,11 @@ import android.content.Intent
 import android.os.Bundle
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Notification
-import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.details.ComplaintDetailsActivity
 import kotlinx.android.synthetic.main.activity_notification.*
+import org.koin.android.ext.android.inject
 
 /**
  * @author Pedro Silva
@@ -18,8 +18,8 @@ import kotlinx.android.synthetic.main.activity_notification.*
 class NotificationsActivity : BaseActivity(),
         ViewPresenter<NotificationContract.Presenter>, NotificationContract.View {
 
-    override lateinit var presenter: NotificationContract.Presenter
-    private lateinit var notificationsAdapter: NotificationsAdapter
+    override val presenter by inject<NotificationContract.Presenter>()
+    private val notificationsAdapter by inject<NotificationsAdapter>()
 
     private var notifications: List<Notification>? = null
 
@@ -31,11 +31,9 @@ class NotificationsActivity : BaseActivity(),
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
         showBackButton()
-        presenter = NotificationsPresenter(SaguiModelImpl(this))
     }
 
     override fun init(savedInstanceState: Bundle?) {
-        notificationsAdapter = NotificationsAdapter()
         rvNotifications.adapter = notificationsAdapter
         rvNotifications.setHasFixedSize(true)
         notificationsAdapter.onItemClickListener = object : NotificationsAdapter.OnItemClickListener {
@@ -70,6 +68,8 @@ class NotificationsActivity : BaseActivity(),
     }
 
     companion object {
+        val TAG = NotificationsActivity::class.simpleName!!
+
         private val STATE_NOTIFICATIONS = "STATE_NOTIFICATIONS"
 
         fun getIntent(context: Context) = Intent(context, NotificationsActivity::class.java)

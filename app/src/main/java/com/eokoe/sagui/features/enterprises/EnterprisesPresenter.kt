@@ -2,9 +2,8 @@ package com.eokoe.sagui.features.enterprises
 
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.SaguiModel
+import com.eokoe.sagui.features.base.DefaultObserver
 import com.eokoe.sagui.features.base.presenter.BasePresenterImpl
-import io.reactivex.Observable
-import io.reactivex.observers.DisposableObserver
 
 /**
  * @author Pedro Silva
@@ -16,34 +15,20 @@ class EnterprisesPresenter constructor(private val saguiModel: SaguiModel)
     override fun setEnterprise(enterprise: Enterprise) =
             exec(saguiModel.selectEnterprise(enterprise), SaveEnterpriseObserver())
 
-    override fun list(): Observable<List<Enterprise>> {
-        view?.showLoading()
-        return exec(saguiModel.getEnterprises(), EnterprisesObserver())
-    }
+    override fun list() = exec(saguiModel.getEnterprises(), EnterprisesObserver())
 
-    inner class EnterprisesObserver : DisposableObserver<List<Enterprise>>() {
-        override fun onNext(enterprises: List<Enterprise>) {
-            view?.load(enterprises)
-        }
-
-        override fun onComplete() {
-            view?.hideLoading()
-        }
-
-        override fun onError(error: Throwable) {
-            view?.showError(error)
+    inner class EnterprisesObserver : DefaultObserver<List<Enterprise>>(view) {
+        override fun onSuccess(result: List<Enterprise>?) {
+            if (result != null) {
+                view?.load(result)
+            }
         }
     }
 
-    inner class SaveEnterpriseObserver : DisposableObserver<Enterprise>() {
-        override fun onNext(enterprise: Enterprise) {
-            view?.navigateToDashboard(enterprise)
-        }
-
-        override fun onComplete() {
-        }
-
-        override fun onError(error: Throwable) {
+    inner class SaveEnterpriseObserver
+        : DefaultObserver<Enterprise>(view, omitLoading = true, omitError = true) {
+        override fun onSuccess(result: Enterprise?) {
+            view?.navigateToDashboard(result!!)
         }
     }
 }

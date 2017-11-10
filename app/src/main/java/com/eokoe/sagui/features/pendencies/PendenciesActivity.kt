@@ -5,11 +5,11 @@ import android.content.Intent
 import android.os.Bundle
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Pendency
-import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.report.ReportActivity
 import kotlinx.android.synthetic.main.activity_pendencies.*
+import org.koin.android.ext.android.inject
 
 /**
  * @author Pedro Silva
@@ -18,8 +18,8 @@ import kotlinx.android.synthetic.main.activity_pendencies.*
 class PendenciesActivity : BaseActivity(),
         ViewPresenter<PendenciesContract.Presenter>, PendenciesContract.View {
 
-    override lateinit var presenter: PendenciesContract.Presenter
-    private lateinit var pendenciesAdapter: PendenciesAdapter
+    override val presenter by inject<PendenciesContract.Presenter>()
+    private val pendenciesAdapter by inject<PendenciesAdapter>()
 
     private var pendecies: List<Pendency>? = null
 
@@ -31,11 +31,9 @@ class PendenciesActivity : BaseActivity(),
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
         showBackButton()
-        presenter = PendenciesPresenter(SaguiModelImpl(this))
     }
 
     override fun init(savedInstanceState: Bundle?) {
-        pendenciesAdapter = PendenciesAdapter()
         rvPendencies.adapter = pendenciesAdapter
         rvPendencies.setHasFixedSize(true)
         pendenciesAdapter.onItemClickListener = object : PendenciesAdapter.OnItemClickListener {
@@ -65,6 +63,7 @@ class PendenciesActivity : BaseActivity(),
     }
 
     companion object {
+        val TAG = PendenciesActivity::class.simpleName!!
         private val STATE_PENDENCIES = "STATE_PENDENCIES"
 
         fun getIntent(context: Context) = Intent(context, PendenciesActivity::class.java)

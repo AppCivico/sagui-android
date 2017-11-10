@@ -17,7 +17,6 @@ import android.widget.RadioGroup
 import android.widget.TextView
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.*
-import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.*
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewLocation
@@ -35,6 +34,7 @@ import com.facebook.imagepipeline.request.ImageRequest
 import com.jakewharton.rxbinding2.widget.RxTextView
 import kotlinx.android.synthetic.main.activity_questions.*
 import kotlinx.android.synthetic.main.content_questions.*
+import org.koin.android.ext.android.inject
 
 
 /**
@@ -45,7 +45,7 @@ class SurveyActivity : BaseActivity(),
         SurveyContract.View, ViewPresenter<SurveyContract.Presenter>,
         ViewLocation, LocationHelper.OnLocationReceivedListener {
 
-    override lateinit var presenter: SurveyContract.Presenter
+    override val presenter by inject<SurveyContract.Presenter>()
     private lateinit var progressDialog: LoadingDialog
     private var submissionsId: String? = null
     private var location: LatLong? = null
@@ -63,7 +63,6 @@ class SurveyActivity : BaseActivity(),
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
         showBackButton()
-        presenter = SurveyPresenter(SaguiModelImpl(this))
         progressDialog = LoadingDialog.newInstance(getString(R.string.sending_answers))
     }
 
@@ -331,6 +330,8 @@ class SurveyActivity : BaseActivity(),
     }
 
     companion object {
+        val TAG = SurveyActivity::class.simpleName!!
+
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
         private val EXTRA_SURVEY = "EXTRA_SURVEY"
         private val STATE_CURRENT_PROGRESS = "STATE_CURRENT_PROGRESS"

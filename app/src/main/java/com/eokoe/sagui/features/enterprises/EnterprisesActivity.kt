@@ -7,7 +7,6 @@ import android.view.MenuItem
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Asset
 import com.eokoe.sagui.data.entities.Enterprise
-import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.friendlyMessage
 import com.eokoe.sagui.features.asset.ShowAssetActivity
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
@@ -16,12 +15,13 @@ import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.categories.CategoriesActivity
 import com.eokoe.sagui.features.enterprises.filter.EnterprisesFilterActivity
 import kotlinx.android.synthetic.main.content_enterprises.*
+import org.koin.android.ext.android.inject
 
 class EnterprisesActivity : BaseActivityNavDrawer(),
         ViewPresenter<EnterprisesContract.Presenter>, EnterprisesContract.View {
 
-    override lateinit var presenter: EnterprisesContract.Presenter
-    private lateinit var enterprisesAdapter: EnterprisesAdapter
+    override val presenter by inject<EnterprisesContract.Presenter>()
+    private val enterprisesAdapter by inject<EnterprisesAdapter>()
 
     private var enterprises: List<Enterprise>? = null
 
@@ -52,8 +52,7 @@ class EnterprisesActivity : BaseActivityNavDrawer(),
 
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
-        enterprisesAdapter = EnterprisesAdapter(enterprises == null || enterprises!!.isEmpty())
-        presenter = EnterprisesPresenter(SaguiModelImpl(this))
+        enterprisesAdapter.isShowLoading = enterprises == null || enterprises!!.isEmpty()
     }
 
     override fun init(savedInstanceState: Bundle?) {
@@ -118,6 +117,7 @@ class EnterprisesActivity : BaseActivityNavDrawer(),
     }
 
     companion object {
+        val TAG = EnterprisesActivity::class.simpleName!!
         val REQUEST_FILTER = 1
 
         private val STATE_ENTERPRISES = "STATE_ENTERPRISES"

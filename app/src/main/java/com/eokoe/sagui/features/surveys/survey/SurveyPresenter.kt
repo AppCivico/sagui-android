@@ -2,16 +2,15 @@ package com.eokoe.sagui.features.surveys.survey
 
 import com.eokoe.sagui.data.entities.*
 import com.eokoe.sagui.data.model.SaguiModel
+import com.eokoe.sagui.features.base.DefaultObserver
 import com.eokoe.sagui.features.base.presenter.BasePresenterImpl
-import com.eokoe.sagui.utils.LogUtil
 import io.reactivex.Observable
-import io.reactivex.observers.DisposableObserver
 import io.realm.RealmList
 
 /**
  * @author Pedro Silva
  */
-class SurveyPresenter constructor(private val saguiModel: SaguiModel)
+class SurveyPresenter(private val saguiModel: SaguiModel)
     : SurveyContract.Presenter, BasePresenterImpl<SurveyContract.View>() {
 
     private var questions: List<Question>? = null
@@ -71,16 +70,9 @@ class SurveyPresenter constructor(private val saguiModel: SaguiModel)
         answer(questionId, Answer(value = answer))
     }
 
-    private fun getAnswer(index: Int): Answer? {
-        return if (answers.size > index) {
-            answers[index]
-        } else {
-            null
-        }
-    }
+    private fun getAnswer(index: Int) = if (answers.size > index) answers[index] else null
 
     override fun sendAnswers(answers: List<Answer>, location: LatLong?): Observable<Submissions> {
-        view?.showLoading()
         val submissions = Submissions(
                 surveyId = surveyId,
                 location = location,
@@ -89,16 +81,9 @@ class SurveyPresenter constructor(private val saguiModel: SaguiModel)
         return exec(saguiModel.sendAnswers(submissions), SendAnswersObserver())
     }
 
-    inner class HasAnswerObserver : DisposableObserver<Boolean>() {
-        var hasAnswer: Boolean = false
-
-        override fun onNext(hasAnswer: Boolean) {
-            // TODO: pass `hasAnswer` to limit to 1 answer per user
-            this.hasAnswer = false //hasAnswer
-        }
-
-        override fun onComplete() {
-            if (!hasAnswer) {
+    inner class HasAnswerObserver : DefaultObserver<Boolean>(view) {
+        override fun onSuccess(result: Boolean?) {
+            if (!result!!) {
                 view?.onAnswersNotExists()
                 view?.updateProgress(currentQuestion, total)
             } else {
@@ -107,22 +92,16 @@ class SurveyPresenter constructor(private val saguiModel: SaguiModel)
             }
         }
 
-        override fun onError(error: Throwable) {
-            LogUtil.error(this, error)
+        // FIXME: remove this method to limit to 1 answer per user
+        override fun onComplete() {
+            onSuccess(false)
+            onHideLoading()
         }
     }
 
-    inner class SendAnswersObserver : DisposableObserver<Submissions>() {
-        override fun onNext(submissions: Submissions) {
-            view?.answersSent(submissions)
-        }
-
-        override fun onComplete() {
-            view?.hideLoading()
-        }
-
-        override fun onError(error: Throwable) {
-            view?.showError(error)
+    inner class SendAnswersObserver : DefaultObserver<Submissions>(view) {
+        override fun onSuccess(result: Submissions?) {
+            view?.answersSent(result!!)
         }
     }
 }

@@ -8,7 +8,6 @@ import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.entities.Survey
-import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.friendlyMessage
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
@@ -16,6 +15,7 @@ import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.surveys.survey.SurveyActivity
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import kotlinx.android.synthetic.main.activity_survey_list.*
+import org.koin.android.ext.android.inject
 
 /**
  * @author Pedro Silva
@@ -24,8 +24,8 @@ import kotlinx.android.synthetic.main.activity_survey_list.*
 class SurveyListActivity : BaseActivityNavDrawer(),
         SurveyListContract.View, ViewPresenter<SurveyListContract.Presenter> {
 
-    private lateinit var surveyListAdapter: SurveyListAdapter
-    override lateinit var presenter: SurveyListContract.Presenter
+    override val presenter by inject<SurveyListContract.Presenter>()
+    private val surveyListAdapter by inject<SurveyListAdapter>()
     private var surveys: ArrayList<Survey>? = null
 
     private var showAlertCongratulations = false
@@ -57,9 +57,7 @@ class SurveyListActivity : BaseActivityNavDrawer(),
         showBackButton()
         enterprise = intent.extras.getParcelable(EXTRA_ENTERPRISE)
         category = intent.extras.getParcelable(EXTRA_CATEGORY)
-
-        presenter = SurveyListPresenter(SaguiModelImpl(this))
-        surveyListAdapter = SurveyListAdapter(surveys == null)
+        surveyListAdapter.isShowLoading = surveys == null
     }
 
     override fun init(savedInstanceState: Bundle?) {
@@ -129,6 +127,8 @@ class SurveyListActivity : BaseActivityNavDrawer(),
     }
 
     companion object {
+        val TAG = SurveyListActivity::class.simpleName!!
+
         private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
         private val STATE_SURVEYS = "STATE_SURVEYS"

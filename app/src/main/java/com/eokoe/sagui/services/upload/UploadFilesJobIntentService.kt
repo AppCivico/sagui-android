@@ -6,6 +6,8 @@ import android.os.Build
 import android.support.v4.app.JobIntentService
 import com.eokoe.sagui.data.model.SaguiModel
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
+import com.eokoe.sagui.data.net.ServiceGenerator
+import com.eokoe.sagui.data.net.services.SaguiService
 import com.eokoe.sagui.services.Retry
 import com.eokoe.sagui.utils.Job
 import com.eokoe.sagui.utils.LogUtil
@@ -21,7 +23,7 @@ class UploadFilesJobIntentService : JobIntentService() {
 
     override fun onCreate() {
         super.onCreate()
-        saguiModel = SaguiModelImpl(applicationContext)
+        saguiModel = SaguiModelImpl(applicationContext, ServiceGenerator.getService(SaguiService::class.java))
         retry = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             UploadFilesRetryLollipop()
         } else {

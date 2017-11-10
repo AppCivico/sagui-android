@@ -13,12 +13,15 @@ import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.help.faq.FaqActivity
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import kotlinx.android.synthetic.main.activity_help.*
+import org.koin.android.ext.android.inject
 
 /**
  * @author Pedro Silva
  * @since 12/10/17
  */
 class HelpActivity : BaseActivity() {
+
+    private val helpAdapter by inject<HelpAdapter>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,7 +34,6 @@ class HelpActivity : BaseActivity() {
 
     override fun init(savedInstanceState: Bundle?) {
         rvHelp.setHasFixedSize(true)
-        val helpAdapter = HelpAdapter()
         helpAdapter.onItemClickListener = this::onItemClick
         rvHelp.adapter = helpAdapter
     }
@@ -105,6 +107,8 @@ class HelpActivity : BaseActivity() {
     override fun restoreInstanceState(savedInstanceState: Bundle) {}
 
     companion object {
+        val TAG = HelpActivity::class.simpleName!!
+
         fun getIntent(context: Context) = Intent(context, HelpActivity::class.java)
     }
 }

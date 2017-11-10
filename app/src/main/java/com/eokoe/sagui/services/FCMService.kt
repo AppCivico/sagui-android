@@ -7,6 +7,8 @@ import android.support.v4.app.NotificationCompat
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Notification
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
+import com.eokoe.sagui.data.net.ServiceGenerator
+import com.eokoe.sagui.data.net.services.SaguiService
 import com.eokoe.sagui.extensions.fromString
 import com.eokoe.sagui.features.complaints.details.ComplaintDetailsActivity
 import com.eokoe.sagui.utils.DATE_FORMAT
@@ -37,7 +39,7 @@ class FCMService : FirebaseMessagingService() {
     }
 
     private fun saveNotification(notification: Notification) {
-        SaguiModelImpl(this)
+        SaguiModelImpl(this, ServiceGenerator.getService(SaguiService::class.java))
                 .saveNotification(notification)
                 .subscribe({
                     showNotification(notification)

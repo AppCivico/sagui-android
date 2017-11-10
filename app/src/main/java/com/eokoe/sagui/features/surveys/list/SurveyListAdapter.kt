@@ -1,12 +1,10 @@
 package com.eokoe.sagui.features.surveys.list
 
-import android.graphics.Color
 import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
 import com.eokoe.sagui.R
-import com.eokoe.sagui.R.id.tvSurveyTitle
 import com.eokoe.sagui.data.entities.Survey
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import kotlinx.android.synthetic.main.item_error.view.*
@@ -16,15 +14,9 @@ import kotlinx.android.synthetic.main.item_survey.view.*
  * @author Pedro Silva
  * @since 16/08/17
  */
-class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder> {
+class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder>() {
 
     var onItemClickListener: OnItemClickListener? = null
-
-    constructor() : super()
-
-    constructor(isShowLoading: Boolean) : super() {
-        this.isShowLoading = isShowLoading
-    }
 
     fun markHasAnswered(id: String) {
         items = items?.map {

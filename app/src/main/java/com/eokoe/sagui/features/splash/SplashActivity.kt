@@ -5,19 +5,18 @@ import android.os.Bundle
 import android.os.Handler
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Enterprise
-import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.categories.CategoriesActivity
 import com.eokoe.sagui.features.enterprises.EnterprisesActivity
 import com.eokoe.sagui.services.upload.UploadFilesJobIntentService
+import org.koin.android.ext.android.inject
 
 class SplashActivity : BaseActivity(), SplashContract.View, ViewPresenter<SplashContract.Presenter> {
-    private val SPLASH_TIME = 1500L
     private var mHandler: Handler? = null
     private var mSplashRunnable: Runnable? = null
 
-    override lateinit var presenter: SplashContract.Presenter
+    override val presenter by inject<SplashContract.Presenter>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,11 +26,6 @@ class SplashActivity : BaseActivity(), SplashContract.View, ViewPresenter<Splash
     override fun onResume() {
         super.onResume()
         mHandler?.postDelayed(mSplashRunnable, SPLASH_TIME)
-    }
-
-    override fun setUp(savedInstanceState: Bundle?) {
-        super.setUp(savedInstanceState)
-        presenter = SplashPresenter(SaguiModelImpl(this))
     }
 
     override fun init(savedInstanceState: Bundle?) {
@@ -72,5 +66,10 @@ class SplashActivity : BaseActivity(), SplashContract.View, ViewPresenter<Splash
 
     override fun restoreInstanceState(savedInstanceState: Bundle) {
 
+    }
+
+    companion object {
+        val TAG = SplashActivity::class.simpleName!!
+        private val SPLASH_TIME = 1500L
     }
 }

@@ -14,14 +14,10 @@ import kotlinx.android.synthetic.main.item_error.view.*
  * @author Pedro Silva
  * @since 29/08/17
  */
-class EnterprisesAdapter() : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHolder>() {
+class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHolder>() {
 
     var onItemClickListener: OnItemClickListener? = null
     var onImageClickListener: ImageAdapter.OnItemClickListener? = null
-
-    constructor(isShowLoading: Boolean) : this() {
-        this.isShowLoading = isShowLoading
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             when (viewType) {

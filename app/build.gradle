@@ -54,7 +54,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion"
     compile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
-    compile 'com.android.support:multidex:1.0.1'
+    compile "com.android.support:multidex:$multidexVersion"
 
     compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true
@@ -69,7 +69,7 @@ dependencies {
 
     compile "com.google.android.gms:play-services-location:$playServicesVersion"
     compile "com.google.android.gms:play-services-maps:$playServicesVersion"
-    compile 'com.google.maps.android:android-maps-utils:0.5+'
+    compile "com.google.maps.android:android-maps-utils:$mapUtilsVersion"
 //    compile "com.google.firebase:firebase-core:$playServicesVersion"
     compile "com.google.firebase:firebase-messaging:$playServicesVersion"
 

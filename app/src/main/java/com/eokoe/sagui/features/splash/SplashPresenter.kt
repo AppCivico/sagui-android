@@ -2,8 +2,8 @@ package com.eokoe.sagui.features.splash
 
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.model.SaguiModel
+import com.eokoe.sagui.features.base.DefaultObserver
 import com.eokoe.sagui.features.base.presenter.BasePresenterImpl
-import io.reactivex.observers.DisposableObserver
 
 /**
  * @author Pedro Silva
@@ -12,25 +12,15 @@ import io.reactivex.observers.DisposableObserver
 class SplashPresenter(private val saguiModel: SaguiModel)
     : BasePresenterImpl<SplashContract.View>(), SplashContract.Presenter {
 
-    override fun getEnterprise() =
-            exec(saguiModel.getSelectedEnterprise(), EnterpriseObserver())
+    override fun getEnterprise() = exec(saguiModel.getSelectedEnterprise(), EnterpriseObserver())
 
-    inner class EnterpriseObserver : DisposableObserver<Enterprise>() {
-        var enterprise: Enterprise? = null
-        override fun onNext(enterprise: Enterprise) {
-            this.enterprise = enterprise
-        }
-
-        override fun onComplete() {
-            if (enterprise != null) {
-                view?.setEnterprise(enterprise!!)
+    inner class EnterpriseObserver : DefaultObserver<Enterprise>(view) {
+        override fun onSuccess(result: Enterprise?) {
+            if (result != null) {
+                view?.setEnterprise(result)
             } else {
                 view?.onEmptyEnterprise()
             }
-        }
-
-        override fun onError(e: Throwable) {
-            TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
         }
     }
 }

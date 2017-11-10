@@ -21,39 +21,20 @@ import kotlinx.android.synthetic.main.item_report_title.view.*
  * @author Pedro Silva
  * @since 25/09/17
  */
-class ReportAdapter(complaint: Complaint?, showCategories: Boolean = false) : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewHolder>() {
+class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewHolder>() {
 
     var onItemClickListener: OnItemClickListener? = null
     var onAssetClickListener: ThumbnailAdapter.OnItemClickListener? = null
 
     val titleChangeSubject: PublishSubject<String> = PublishSubject.create()
     val descriptionChangeSubject: PublishSubject<String> = PublishSubject.create()
-
-    init {
-        val items = ArrayList<Item>()
-        items.add(Item(ItemType.DESCRIPTION))
-        items.add(Item(ItemType.DIVIDER))
-        items.add(Item(ItemType.THUMBNAILS, value = ArrayList<Asset>()))
-        items.add(Item(ItemType.DIVIDER))
-        items.add(Item(ItemType.TITLE))
-        if (showCategories) {
-            items.add(Item(ItemType.DIVIDER))
-            items.add(Item(ItemType.CATEGORY, R.drawable.ic_category, R.string.category, complaint?.category?.name))
-        }
-        items.add(Item(ItemType.DIVIDER))
-        items.add(Item(ItemType.LOCATION, R.drawable.ic_location, R.string.occurrence_place))
-        items.add(Item(ItemType.DIVIDER))
-        /*items.add(Item(ItemType.INSERT_PHOTO_VIDEO, R.drawable.ic_photo_black, R.string.insert_photo_video))
-        items.add(Item(ItemType.DIVIDER))
-        items.add(Item(ItemType.CAMERA, R.drawable.ic_photo_camera, R.string.camera))
-        items.add(Item(ItemType.DIVIDER))
-        items.add(Item(ItemType.INSERT_AUDIO, R.drawable.ic_audio, R.string.insert_audio))
-        items.add(Item(ItemType.DIVIDER))*/
-        this.items = items
-    }
+    var showCategories = false
 
     var complaint: Complaint? = null
         set(complaint) {
+            if (items == null || items!!.isEmpty()) {
+                initItems()
+            }
             field = complaint
             items?.forEachIndexed { index, item ->
                 when {
@@ -72,6 +53,23 @@ class ReportAdapter(complaint: Complaint?, showCategories: Boolean = false) : Re
                 }
             }
         }
+
+    private fun initItems() {
+        val items = ArrayList<Item>()
+        items.add(Item(ItemType.DESCRIPTION))
+        items.add(Item(ItemType.DIVIDER))
+        items.add(Item(ItemType.THUMBNAILS, value = ArrayList<Asset>()))
+        items.add(Item(ItemType.DIVIDER))
+        items.add(Item(ItemType.TITLE))
+        if (showCategories) {
+            items.add(Item(ItemType.DIVIDER))
+            items.add(Item(ItemType.CATEGORY, R.drawable.ic_category, R.string.category, complaint?.category?.name))
+        }
+        items.add(Item(ItemType.DIVIDER))
+        items.add(Item(ItemType.LOCATION, R.drawable.ic_location, R.string.occurrence_place))
+        items.add(Item(ItemType.DIVIDER))
+        this.items = items
+    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) =
             when (ItemType.fromPosition(viewType)) {
@@ -101,10 +99,10 @@ class ReportAdapter(complaint: Complaint?, showCategories: Boolean = false) : Re
         init {
             RxTextView.textChangeEvents(itemView.etTitle)
                     .skipInitialValue()
-                    .map { return@map it.text().toString() }
+                    .map { it.text().toString() }
                     .map {
                         complaint?.title = it
-                        return@map it
+                        it
                     }
                     .subscribe(titleChangeSubject)
         }
@@ -118,10 +116,10 @@ class ReportAdapter(complaint: Complaint?, showCategories: Boolean = false) : Re
         init {
             RxTextView.textChangeEvents(itemView.etDescription)
                     .skipInitialValue()
-                    .map { return@map it.text().toString() }
+                    .map { it.text().toString() }
                     .map {
                         complaint?.description = it
-                        return@map it
+                        it
                     }
                     .subscribe(descriptionChangeSubject)
         }
@@ -142,7 +140,8 @@ class ReportAdapter(complaint: Complaint?, showCategories: Boolean = false) : Re
                     }
                 }
                 rvThumbnails.adapter = adapter
-                rvThumbnails.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                rvThumbnails.layoutManager = LinearLayoutManager(context,
+                        LinearLayoutManager.HORIZONTAL, false)
             }
         }
 

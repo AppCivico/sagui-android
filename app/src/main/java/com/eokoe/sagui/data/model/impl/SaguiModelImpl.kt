@@ -7,7 +7,6 @@ import android.text.TextUtils
 import com.eokoe.sagui.data.entities.*
 import com.eokoe.sagui.data.exceptions.SaguiException
 import com.eokoe.sagui.data.model.SaguiModel
-import com.eokoe.sagui.data.net.ServiceGenerator
 import com.eokoe.sagui.data.net.services.SaguiService
 import com.eokoe.sagui.extensions.getMimeType
 import com.eokoe.sagui.extensions.toFile
@@ -26,7 +25,10 @@ import kotlin.collections.ArrayList
 /**
  * @author Pedro Silva
  */
-class SaguiModelImpl(val context: Context) : SaguiModel {
+class SaguiModelImpl(
+        private val context: Context,
+        private val saguiService: SaguiService
+) : SaguiModel {
 
     private fun <T : RealmModel> save(t: T, hasPk: Boolean = false): Observable<T> {
         return Observable.create { emitter ->
@@ -88,15 +90,12 @@ class SaguiModelImpl(val context: Context) : SaguiModel {
         }
     }
 
-    override fun getEnterprises() =
-            ServiceGenerator.getService(SaguiService::class.java).enterprises()
+    override fun getEnterprises() = saguiService.enterprises()
 
-    override fun getCategories(enterprise: Enterprise) =
-            ServiceGenerator.getService(SaguiService::class.java).categories(enterprise.id)
+    override fun getCategories(enterprise: Enterprise) = saguiService.categories(enterprise.id)
 
     override fun getSurveyList(category: Category): Observable<List<Survey>> =
-            ServiceGenerator.getService(SaguiService::class.java)
-                    .surveys(category.id)
+            saguiService.surveys(category.id)
                     .flatMapIterable { it }
                     .filter { it.questions != null && it.questions.isNotEmpty() }
                     .flatMap { setHasAnswer(it) }
@@ -120,16 +119,12 @@ class SaguiModelImpl(val context: Context) : SaguiModel {
         }
     }
 
-    override fun hasAnswer(survey: Survey): Observable<Boolean> {
-        return setHasAnswer(survey).map { survey.hasAnswer }
-    }
+    override fun hasAnswer(survey: Survey): Observable<Boolean> =
+            setHasAnswer(survey).map { survey.hasAnswer }
 
     override fun sendAnswers(submissions: Submissions): Observable<Submissions> {
         return save(submissions)
-                .flatMap {
-                    ServiceGenerator.getService(SaguiService::class.java)
-                            .sendAnswers(submissions.surveyId!!, submissions)
-                }
+                .flatMap { saguiService.sendAnswers(submissions.surveyId!!, submissions) }
                 .map {
                     submissions.id = it.id
                     submissions
@@ -137,8 +132,7 @@ class SaguiModelImpl(val context: Context) : SaguiModel {
     }
 
     override fun saveComment(comment: Comment): Observable<Comment> {
-        return ServiceGenerator.getService(SaguiService::class.java)
-                .saveComment(comment.submissionsId!!, comment)
+        return saguiService.saveComment(comment.submissionsId!!, comment)
                 .map {
                     comment.id = it.id
                     comment
@@ -150,11 +144,9 @@ class SaguiModelImpl(val context: Context) : SaguiModel {
         if (complaint.pk.isEmpty()) {
             complaint.pk = UUID.randomUUID().toString()
         }
-        if (complaint.location == null) {
-            return save(complaint, true)
-        }
-        return ServiceGenerator.getService(SaguiService::class.java)
-                .saveComplaint(complaint)
+        return if (complaint.location == null)
+            save(complaint, true)
+        else saguiService.saveComplaint(complaint)
                 .map {
                     complaint.id = it.id
                     complaint.files.map {
@@ -182,8 +174,7 @@ class SaguiModelImpl(val context: Context) : SaguiModel {
     }
 
     override fun listComplaints(enterprise: Enterprise, category: Category?): Observable<List<Complaint>> {
-        val complaintsApi = ServiceGenerator.getService(SaguiService::class.java)
-                .getComplaints(enterprise.id, category?.id)
+        val complaintsApi = saguiService.getComplaints(enterprise.id, category?.id)
 
         val complaintsDB = Observable.create<List<Complaint>> { emitter ->
             Realm.getDefaultInstance().use { realm ->
@@ -215,8 +206,7 @@ class SaguiModelImpl(val context: Context) : SaguiModel {
                     }
                 }
                 .flatMap {
-                    ServiceGenerator.getService(SaguiService::class.java)
-                            .confirmComplaint(it)
+                    saguiService.confirmComplaint(it)
                 }
                 .map {
                     confirmation.id = it.id
@@ -262,7 +252,7 @@ class SaguiModelImpl(val context: Context) : SaguiModel {
                 if (!Geocoder.isPresent()) {
                     throw Exception("no_geocoder_available")
                 }
-                val geocoder = Geocoder(context!!, Locale.getDefault())
+                val geocoder = Geocoder(context, Locale.getDefault())
                 val addresses: List<Address>? = geocoder.getFromLocation(
                         latLong.latitude, latLong.longitude, 1)
                 if (addresses == null || addresses.isEmpty())
@@ -290,7 +280,7 @@ class SaguiModelImpl(val context: Context) : SaguiModel {
     override fun sendAsset(asset: Asset): Observable<Asset> {
         return Observable.just(asset.uri)
                 .map { uri ->
-                    val file = uri.toFile(context!!)
+                    val file = uri.toFile(context)
                     if (file != null && file.exists()) {
                         val mimeType = uri.getMimeType(context)
                         val requestFile = RequestBody.create(MediaType.parse(mimeType), file)
@@ -298,11 +288,10 @@ class SaguiModelImpl(val context: Context) : SaguiModel {
                     } else null
                 }
                 .flatMap {
-                    val service = ServiceGenerator.getService(SaguiService::class.java)
                     if (asset.parentType == Asset.ParentType.COMPLAINT) {
-                        service.sendComplaintAsset(asset.parentId, it)
+                        saguiService.sendComplaintAsset(asset.parentId, it)
                     } else {
-                        service.sendConfirmationAsset(asset.parentId, it)
+                        saguiService.sendConfirmationAsset(asset.parentId, it)
                     }
                 }
                 .map {
@@ -345,11 +334,8 @@ class SaguiModelImpl(val context: Context) : SaguiModel {
                 }
     }
 
-    override fun getComplaint(complaintId: String): Observable<Complaint> {
-        return ServiceGenerator
-                .getService(SaguiService::class.java)
-                .getComplaint(complaintId)
-    }
+    override fun getComplaint(complaintId: String) =
+            saguiService.getComplaint(complaintId)
 
     override fun getAssetsPendingUpload(): Observable<List<Asset>> {
         return Observable
@@ -408,9 +394,7 @@ class SaguiModelImpl(val context: Context) : SaguiModel {
                 }
                 .toList()
                 .toObservable()
-                .flatMap {
-                    Observable.just(confirmation)
-                }
+                .flatMap { Observable.just(confirmation) }
     }
 
     override fun saveNotification(notification: Notification): Observable<Notification> {

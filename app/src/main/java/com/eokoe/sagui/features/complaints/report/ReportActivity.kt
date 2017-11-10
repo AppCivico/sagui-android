@@ -16,7 +16,6 @@ import com.eokoe.sagui.data.entities.Asset
 import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Enterprise
-import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.*
 import com.eokoe.sagui.features.asset.ShowAssetActivity
 import com.eokoe.sagui.features.base.view.BaseActivity
@@ -32,6 +31,7 @@ import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import com.eokoe.sagui.widgets.dialog.AudioRecorderDialog
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
 import kotlinx.android.synthetic.main.activity_report.*
+import org.koin.android.ext.android.inject
 import java.io.File
 
 
@@ -43,8 +43,8 @@ class ReportActivity : BaseActivity(),
         ReportAdapter.OnItemClickListener, ThumbnailAdapter.OnItemClickListener,
         ReportContract.View, ViewPresenter<ReportContract.Presenter>, View.OnClickListener {
 
-    override lateinit var presenter: ReportContract.Presenter
-    private lateinit var reportAdapter: ReportAdapter
+    override val presenter by inject<ReportContract.Presenter>()
+    private val reportAdapter by inject<ReportAdapter>()
     private lateinit var progressDialog: LoadingDialog
 
     private var complaint = Complaint()
@@ -69,7 +69,6 @@ class ReportActivity : BaseActivity(),
     // region Initialization and setup
     override fun setUp(savedInstanceState: Bundle?) {
         showBackButton()
-        presenter = ReportPresenter(SaguiModelImpl(this))
         progressDialog = LoadingDialog.newInstance(getString(R.string.reporting_problem))
         val complaint: Complaint? = intent.extras?.getParcelable(EXTRA_COMPLAINT)
         if (complaint != null) {
@@ -94,7 +93,8 @@ class ReportActivity : BaseActivity(),
 
     private fun setupRecyclerView() {
         rvReport.setHasFixedSize(false)
-        reportAdapter = ReportAdapter(complaint, categories != null)
+        reportAdapter.showCategories = categories != null
+        reportAdapter.complaint = complaint
         reportAdapter.onItemClickListener = this
         reportAdapter.onAssetClickListener = this
         rvReport.adapter = reportAdapter
@@ -282,7 +282,6 @@ class ReportActivity : BaseActivity(),
     // endregion
 
     override fun showError(error: Throwable) {
-        hideLoading()
         AlertDialogFragment
                 .create(this) {
                     title = "Falha ao reportar problema"
@@ -442,6 +441,8 @@ class ReportActivity : BaseActivity(),
     }
 
     companion object {
+        val TAG = ReportActivity::class.simpleName!!
+
         private val EXTRA_ENTERPRISE = "EXTRA_ENTERPRISE"
         private val EXTRA_CATEGORY = "EXTRA_CATEGORY"
         private val EXTRA_CATEGORIES = "EXTRA_CATEGORIES"

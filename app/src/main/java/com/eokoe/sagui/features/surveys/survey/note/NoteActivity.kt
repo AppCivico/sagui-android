@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Bundle
 import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Comment
-import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.extensions.ErrorType
 import com.eokoe.sagui.extensions.errorType
 import com.eokoe.sagui.features.base.view.BaseActivity
@@ -14,6 +13,7 @@ import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
 import com.eokoe.sagui.widgets.dialog.LoadingDialog
 import kotlinx.android.synthetic.main.activity_note.*
+import org.koin.android.ext.android.inject
 
 /**
  * @author Pedro Silva
@@ -21,7 +21,7 @@ import kotlinx.android.synthetic.main.activity_note.*
  */
 class NoteActivity : BaseActivity(), NoteContract.View, ViewPresenter<NoteContract.Presenter> {
 
-    override lateinit var presenter: NoteContract.Presenter
+    override val presenter by inject<NoteContract.Presenter>()
     private lateinit var progressDialog: LoadingDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -33,7 +33,6 @@ class NoteActivity : BaseActivity(), NoteContract.View, ViewPresenter<NoteContra
     override fun setUp(savedInstanceState: Bundle?) {
         super.setUp(savedInstanceState)
         showBackButton()
-        presenter = NotePresenter(SaguiModelImpl(this))
         progressDialog = LoadingDialog.newInstance(getString(R.string.sending_note))
     }
 
@@ -86,6 +85,8 @@ class NoteActivity : BaseActivity(), NoteContract.View, ViewPresenter<NoteContra
     }
 
     companion object {
+        val TAG = NoteActivity::class.simpleName!!
+
         private val EXTRA_SUBMISSIONS_ID = "EXTRA_SUBMISSIONS_ID"
 
         fun getIntent(context: Context, submissionsId: String): Intent {

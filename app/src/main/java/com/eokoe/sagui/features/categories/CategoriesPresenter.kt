@@ -18,7 +18,9 @@ class CategoriesPresenter constructor(private val saguiModel: SaguiModel)
 
     inner class CategoriesObserver : DefaultObserver<List<Category>>(view) {
         override fun onSuccess(result: List<Category>?) {
-            if (result != null) view?.load(result)
+            if (result != null) {
+                view?.load(result)
+            }
         }
     }
 }

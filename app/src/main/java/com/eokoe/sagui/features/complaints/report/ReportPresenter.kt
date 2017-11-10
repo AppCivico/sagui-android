@@ -2,9 +2,9 @@ package com.eokoe.sagui.features.complaints.report
 
 import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.model.SaguiModel
+import com.eokoe.sagui.features.base.DefaultObserver
 import com.eokoe.sagui.features.base.presenter.BasePresenterImpl
 import io.reactivex.Observable
-import io.reactivex.observers.DisposableObserver
 
 /**
  * @author Pedro Silva
@@ -14,26 +14,19 @@ class ReportPresenter constructor(private val saguiModel: SaguiModel)
     : ReportContract.Presenter, BasePresenterImpl<ReportContract.View>() {
 
     override fun saveComplaint(complaint: Complaint): Observable<Complaint> {
-        if (view?.isValidForm() == true) {
-            view?.showLoading()
-            return exec(saguiModel.sendComplaint(complaint), ComplaintObservable())
+        return if (view?.isValidForm() == true) {
+            exec(saguiModel.sendComplaint(complaint), ComplaintObservable())
+        } else {
+            Observable.empty()
         }
-        return Observable.empty()
     }
 
-    inner class ComplaintObservable : DisposableObserver<Complaint>() {
-        override fun onNext(complaint: Complaint) {
-            view?.onSaveSuccess(complaint)
-        }
-
-        override fun onComplete() {
+    inner class ComplaintObservable : DefaultObserver<Complaint>(view) {
+        override fun onSuccess(result: Complaint?) {
+            if (result != null) {
+                view?.onSaveSuccess(result)
+            }
             view?.uploadAssets()
-            view?.hideLoading()
         }
-
-        override fun onError(error: Throwable) {
-            view?.showError(error)
-        }
-
     }
 }

@@ -18,6 +18,8 @@ import com.eokoe.sagui.features.base.presenter.BasePresenter
 import com.eokoe.sagui.utils.LocationHelper
 import com.eokoe.sagui.utils.LogUtil
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
+import org.koin.android.ext.android.getKoin
+import org.koin.standalone.releaseContext
 
 
 /**
@@ -43,6 +45,13 @@ abstract class BaseActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         (this as? ViewLocation)?.locationHelper?.start()
+    }
+
+    override fun onPause() {
+        getKoin().beanRegistry.scopes
+                .firstOrNull { it.name == this::class.simpleName!! }
+                ?.let { releaseContext(it.name) }
+        super.onPause()
     }
 
     override fun onStop() {
