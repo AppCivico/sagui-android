@@ -51,7 +51,7 @@ class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHold
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(enterprise: Enterprise) {
             with(itemView) {
-                val cover = enterprise.images.first()
+                val cover = enterprise.images.firstOrNull()
                 imgEnterprise.setImageURI(cover?.thumbnail ?: cover?.remotePath)
                 tvEnterpriseName.text = enterprise.name
                 tvLocation.text = enterprise.address
@@ -62,7 +62,7 @@ class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHold
                 setOnClickListener {
                     onItemClickListener?.onClick(enterprise)
                 }
-                if (enterprise.images.size > 0) {
+                if (enterprise.images.isNotEmpty()) {
                     rvImgEnterprise.setHasFixedSize(true)
                     val imageAdapter = ImageAdapter(enterprise.images)
                     imageAdapter.onItemClickListener = onImageClickListener

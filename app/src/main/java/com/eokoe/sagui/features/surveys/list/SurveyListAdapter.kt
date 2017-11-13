@@ -1,6 +1,5 @@
 package com.eokoe.sagui.features.surveys.list
 
-import android.support.v4.content.ContextCompat
 import android.support.v7.widget.RecyclerView
 import android.view.View
 import android.view.ViewGroup
@@ -57,11 +56,11 @@ class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder>()
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(survey: Survey) {
             with(itemView) {
-                val bgColor = ContextCompat.getColor(context,
+                /*val bgColor = ContextCompat.getColor(context,
                         if (!survey.hasAnswer) R.color.bg_survey
                         else R.color.bg_survey_answered
                 )
-                setBackgroundColor(bgColor)
+                setBackgroundColor(bgColor)*/
                 tvSurveyTitle.text = survey.name
                 setOnClickListener {
                     onItemClickListener?.onClick(survey)
