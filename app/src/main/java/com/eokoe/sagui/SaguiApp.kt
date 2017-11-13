@@ -3,6 +3,7 @@ package com.eokoe.sagui
 import android.app.Application
 import android.content.Context
 import android.support.multidex.MultiDex
+import android.support.v7.app.AppCompatDelegate
 import com.eokoe.sagui.data.net.ServiceGenerator
 import com.eokoe.sagui.data.parcel.adapters.AnswerListAdapter
 import com.eokoe.sagui.data.parcel.adapters.AssetListAdapter
@@ -34,6 +35,7 @@ class SaguiApp : Application() {
         initRealm()
         Fresco.initialize(this)
         AppInjector.init(this)
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true)
     }
 
     override fun attachBaseContext(base: Context) {

@@ -12,7 +12,7 @@ import com.eokoe.sagui.R
  * @author Pedro Silva
  * @since 05/10/17
  */
-class CustomButton : Button {
+class   CustomButton : Button {
     constructor(context: Context) : super(context)
 
     constructor(context: Context, attrs: AttributeSet?) : super(context, attrs) {

@@ -32,10 +32,6 @@ class CheckableImageView : SimpleDraweeView, Checkable, View.OnClickListener {
 
     constructor(context: Context, attrs: AttributeSet?, defStyleAttr: Int) : super(context, attrs, defStyleAttr)
 
-    override fun onDraw(canvas: Canvas) {
-        super.onDraw(canvas)
-    }
-
     override fun isChecked() = mChecked
 
     override fun setChecked(checked: Boolean) {

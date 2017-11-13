@@ -2,15 +2,19 @@ package com.eokoe.sagui.utils
 
 import android.annotation.SuppressLint
 import android.app.Activity
+import android.app.Dialog
+import android.app.PendingIntent.getActivity
 import android.content.IntentSender
 import android.location.Location
 import android.os.Bundle
 import com.google.android.gms.common.ConnectionResult
+import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.GoogleApiClient
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.location.LocationSettingsRequest
 import com.google.android.gms.location.LocationSettingsStatusCodes
+import java.security.AccessController.getContext
 
 
 /**
@@ -22,7 +26,8 @@ class LocationHelper : GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnCo
     private var googleApiClient: GoogleApiClient? = null
     private var listener: OnLocationReceivedListener? = null
     private var resolvingGooglePlayError = false
-    private lateinit var activity: Activity
+    private var activity: Activity? = null
+    private var errorDialog: Dialog? = null
 
     fun requestLocation(activity: Activity, listener: OnLocationReceivedListener) {
         this.activity = activity
@@ -32,13 +37,23 @@ class LocationHelper : GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnCo
                     .addOnConnectionFailedListener(this)
                     .addApi(LocationServices.API)
                     .build()
-            start()
+            start(activity)
         }
         this.listener = listener
     }
 
-    fun start() {
-        googleApiClient?.connect()
+    fun resume() {
+        if (!resolvingGooglePlayError) {
+            errorDialog?.cancel()
+            errorDialog = null
+        }
+    }
+
+    fun start(activity: Activity) {
+        this.activity = activity
+        if (isGooglePlayServicesAvailable()) {
+            googleApiClient?.connect()
+        }
     }
 
     fun stop() {
@@ -98,6 +113,20 @@ class LocationHelper : GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnCo
     }
 
     override fun onConnectionSuspended(i: Int) {
+    }
+
+    private fun isGooglePlayServicesAvailable(): Boolean {
+        val googleAPI = GoogleApiAvailability.getInstance()
+        val result = googleAPI.isGooglePlayServicesAvailable(activity)
+        if(result != ConnectionResult.SUCCESS) {
+            resolvingGooglePlayError = true
+            if (googleAPI.isUserResolvableError(result)) {
+                errorDialog = googleAPI.getErrorDialog(activity, result, REQUEST_GOOGLE_PLAY_RESOLVE_ERROR)
+                errorDialog?.show()
+            }
+            return false
+        }
+        return true
     }
 
     companion object {

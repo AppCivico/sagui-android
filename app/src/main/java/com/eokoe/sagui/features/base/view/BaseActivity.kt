@@ -42,9 +42,14 @@ abstract class BaseActivity : AppCompatActivity() {
         init(savedInstanceState)
     }
 
+    override fun onResume() {
+        super.onResume()
+        (this as? ViewLocation)?.locationHelper?.resume()
+    }
+
     override fun onStart() {
         super.onStart()
-        (this as? ViewLocation)?.locationHelper?.start()
+        (this as? ViewLocation)?.locationHelper?.start(this)
     }
 
     override fun onPause() {
