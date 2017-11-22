@@ -17,7 +17,7 @@ import com.eokoe.sagui.data.entities.Category
 import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.extensions.*
-import com.eokoe.sagui.features.asset.ShowAssetActivity
+import com.eokoe.sagui.features.asset.ViewAssetActivity
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.report.ReportAdapter.ItemType
@@ -125,7 +125,7 @@ class ReportActivity : BaseActivity(),
     override fun onItemClick(file: Asset) {
         getAlertList(arrayOf(getString(R.string.visualize), getString(R.string.remove))) { dialog, position ->
             if (position == 0) {
-                val intent = ShowAssetActivity.getIntent(this@ReportActivity,
+                val intent = ViewAssetActivity.getIntent(this@ReportActivity,
                         complaint.files.toList(), complaint.files.indexOf(file))
                 startActivity(intent)
             } else if (position == 1) {
@@ -308,7 +308,8 @@ class ReportActivity : BaseActivity(),
             AlertDialogFragment
                     .create(this) {
                         title = "Falha ao reportar problema"
-                        message = "Preencha os seguintes campos:\n" + msgErr.substring(0, msgErr.length - 1)
+                        message = "Preencha os seguintes campos:\n" +
+                                msgErr.substring(0, msgErr.length - 1)
                     }
                     .show(supportFragmentManager)
         }

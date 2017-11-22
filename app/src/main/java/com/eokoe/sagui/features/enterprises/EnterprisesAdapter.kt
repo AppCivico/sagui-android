@@ -24,8 +24,10 @@ class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHold
                 ITEM_VIEW_TYPE -> ItemViewHolder(inflate(R.layout.item_enterprise, parent))
                 LOADING_VIEW_TYPE -> SimpleViewHolder(inflate(R.layout.item_progress, parent))
                 ERROR_VIEW_TYPE -> ErrorViewHolder(inflate(R.layout.item_error, parent))
-                EMPTY_LIST_VIEW_TYPE -> SimpleViewHolder(inflate(R.layout.item_enterprises_empty, parent))
-                else -> TextViewHolder(inflate(R.layout.item_header, parent), R.id.title, R.string.choose_enterprise)
+                EMPTY_LIST_VIEW_TYPE -> SimpleViewHolder(
+                        inflate(R.layout.item_enterprises_empty, parent))
+                else -> TextViewHolder(inflate(R.layout.item_header, parent),
+                        R.id.title, R.string.choose_enterprise)
             }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -56,7 +58,8 @@ class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHold
                 tvEnterpriseName.text = enterprise.name
                 tvLocation.text = enterprise.address
                 tvQtyConfirmations.text = itemView.resources.getQuantityString(
-                        R.plurals.qty_complaints, enterprise.data.complaints, enterprise.data.complaints)
+                        R.plurals.qty_complaints, enterprise.data.complaints,
+                        enterprise.data.complaints)
                 tvQtyCases.text = itemView.resources.getQuantityString(
                         R.plurals.qty_causes, enterprise.data.cases, enterprise.data.cases)
                 setOnClickListener {
@@ -67,7 +70,8 @@ class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHold
                     val imageAdapter = ImageAdapter(enterprise.images)
                     imageAdapter.onItemClickListener = onImageClickListener
                     rvImgEnterprise.adapter = imageAdapter
-                    rvImgEnterprise.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+                    rvImgEnterprise.layoutManager = LinearLayoutManager(context,
+                            LinearLayoutManager.HORIZONTAL, false)
                 }
             }
         }

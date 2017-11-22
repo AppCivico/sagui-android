@@ -23,7 +23,7 @@ abstract class RecyclerViewAdapter<E, VH : RecyclerView.ViewHolder> : RecyclerVi
 
     protected val itemList = ArrayList<E>()
 
-    var items: Collection<E>?
+    var items: List<E>?
         get() = itemList
         set(value) {
             itemList.clear()

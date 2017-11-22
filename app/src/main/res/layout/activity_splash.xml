@@ -16,7 +16,10 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="@dimen/logo_margin_top"
+            android:adjustViewBounds="true"
             android:contentDescription="@string/app_name"
+            android:maxWidth="200dp"
+            android:scaleType="centerInside"
             android:src="@drawable/ic_logo"/>
 
         <com.eokoe.sagui.widgets.CustomTextView

@@ -2,7 +2,7 @@
 
 buildscript {
     ext {
-        kotlinVersion = '1.1.51'
+        kotlinVersion = '1.1.60'
         realmVersion = '3.5.0'
     }
 

@@ -15,7 +15,7 @@ import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Confirmation
 import com.eokoe.sagui.data.entities.ContributeOptions
 import com.eokoe.sagui.extensions.*
-import com.eokoe.sagui.features.asset.ShowAssetActivity
+import com.eokoe.sagui.features.asset.ViewAssetActivity
 import com.eokoe.sagui.features.base.view.BaseActivity
 import com.eokoe.sagui.features.base.view.ViewPresenter
 import com.eokoe.sagui.features.complaints.ComplaintsActivity
@@ -101,8 +101,9 @@ class ComplaintDetailsActivity : BaseActivity(),
         rvComplaintDetails.setHasFixedSize(true)
         detailsAdapter.complaint = complaint
         detailsAdapter.onImageClickListener = object : AssetsAdapter.OnItemClickListener {
-            override fun onItemClick(asset: Asset) {
-                val intent = ShowAssetActivity.getIntent(this@ComplaintDetailsActivity, asset)
+            override fun onItemClick(position: Int, asset: Asset) {
+                val intent = ViewAssetActivity.getIntent(this@ComplaintDetailsActivity,
+                        complaint!!.files, position)
                 startActivity(intent)
             }
         }
@@ -341,7 +342,7 @@ class ComplaintDetailsActivity : BaseActivity(),
     }
 
     private fun openPreview() {
-        val intent = ShowAssetActivity.getIntent(this, confirmation.files,
+        val intent = ViewAssetActivity.getIntent(this, confirmation.files,
                 showSendButton = true)
         startActivityForResult(intent, RequestCode.Intent.PREVIEW_ASSET.value)
     }

@@ -96,7 +96,7 @@
             android:label="@string/title_activity_complaint_details"/>
 
         <activity
-            android:name=".features.asset.ShowAssetActivity"
+            android:name=".features.asset.ViewAssetActivity"
             android:label=""
             android:theme="@style/AppTheme.NoActionBar"/>
 

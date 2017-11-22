@@ -32,7 +32,7 @@ class AssetsAdapter : RecyclerViewAdapter<Asset, RecyclerView.ViewHolder>() {
         init {
             itemView.setOnClickListener {
                 if (adapterPosition > -1) {
-                    onItemClickListener?.onItemClick(getItem(adapterPosition))
+                    onItemClickListener?.onItemClick(adapterPosition, getItem(adapterPosition))
                 }
             }
         }
@@ -63,6 +63,6 @@ class AssetsAdapter : RecyclerViewAdapter<Asset, RecyclerView.ViewHolder>() {
     }
 
     interface OnItemClickListener {
-        fun onItemClick(asset: Asset)
+        fun onItemClick(position: Int, asset: Asset)
     }
 }

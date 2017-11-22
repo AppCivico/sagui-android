@@ -8,7 +8,7 @@ import com.eokoe.sagui.R
 import com.eokoe.sagui.data.entities.Asset
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.extensions.friendlyMessage
-import com.eokoe.sagui.features.asset.ShowAssetActivity
+import com.eokoe.sagui.features.asset.ViewAssetActivity
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import com.eokoe.sagui.features.base.view.ViewPresenter
@@ -73,8 +73,9 @@ class EnterprisesActivity : BaseActivityNavDrawer(),
             }
         }
         enterprisesAdapter.onImageClickListener = object : ImageAdapter.OnItemClickListener {
-            override fun onItemClick(image: Asset) {
-                val intent = ShowAssetActivity.getIntent(this@EnterprisesActivity, image)
+            override fun onItemClick(position: Int, assets: List<Asset>) {
+                val intent = ViewAssetActivity.getIntent(this@EnterprisesActivity,
+                        assets, position)
                 startActivity(intent)
             }
         }

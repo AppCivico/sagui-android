@@ -33,7 +33,7 @@ class ImageAdapter(items: List<Asset>) : RecyclerViewAdapter<Asset, RecyclerView
         init {
             itemView.setOnClickListener {
                 if (adapterPosition > -1) {
-                    onItemClickListener?.onItemClick(getItem(adapterPosition))
+                    onItemClickListener?.onItemClick(adapterPosition, itemList)
                 }
             }
         }
@@ -44,6 +44,6 @@ class ImageAdapter(items: List<Asset>) : RecyclerViewAdapter<Asset, RecyclerView
     }
 
     interface OnItemClickListener {
-        fun onItemClick(image: Asset)
+        fun onItemClick(position: Int, assets: List<Asset>)
     }
 }
