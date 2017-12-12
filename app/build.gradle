@@ -38,10 +38,12 @@ android {
     productFlavors {
         dev {
             applicationIdSuffix = '.dev'
+            versionNameSuffix "-DEV"
             manifestPlaceholders.filesAuthority = getFilesAuthority(applicationId, applicationIdSuffix)
         }
         staging {
             applicationIdSuffix = '.staging'
+            versionNameSuffix "-STAGING"
             manifestPlaceholders.filesAuthority = getFilesAuthority(applicationId, applicationIdSuffix)
         }
         prod {}
@@ -63,55 +65,55 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion"
-    compile "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
-    compile "com.android.support:multidex:$multidexVersion"
+    implementation fileTree(dir: 'libs', include: ['*.jar'])
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jre7:$kotlinVersion"
+    implementation "org.jetbrains.kotlin:kotlin-reflect:$kotlinVersion"
+    implementation "com.android.support:multidex:$multidexVersion"
 
-    compile('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
+    implementation('com.crashlytics.sdk.android:crashlytics:2.6.8@aar') {
         transitive = true
     }
 
-    compile "com.android.support:design:$supportLibraryVersion"
-    compile "com.android.support:appcompat-v7:$supportLibraryVersion"
-    compile "com.android.support:recyclerview-v7:$supportLibraryVersion"
-    compile "com.android.support:gridlayout-v7:$supportLibraryVersion"
-    compile "com.android.support:cardview-v7:$supportLibraryVersion"
-    compile "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
+    implementation "com.android.support:design:$supportLibraryVersion"
+    implementation "com.android.support:appcompat-v7:$supportLibraryVersion"
+    implementation "com.android.support:recyclerview-v7:$supportLibraryVersion"
+    implementation "com.android.support:gridlayout-v7:$supportLibraryVersion"
+    implementation "com.android.support:cardview-v7:$supportLibraryVersion"
+    implementation "com.android.support.constraint:constraint-layout:$constraintLayoutVersion"
 
-    compile "com.google.android.gms:play-services-location:$playServicesVersion"
-    compile "com.google.android.gms:play-services-maps:$playServicesVersion"
-    compile "com.google.maps.android:android-maps-utils:$mapUtilsVersion"
+    implementation "com.google.android.gms:play-services-location:$playServicesVersion"
+    implementation "com.google.android.gms:play-services-maps:$playServicesVersion"
+    implementation "com.google.maps.android:android-maps-utils:$mapUtilsVersion"
 //    compile "com.google.firebase:firebase-core:$playServicesVersion"
-    compile "com.google.firebase:firebase-messaging:$playServicesVersion"
+    implementation "com.google.firebase:firebase-messaging:$playServicesVersion"
 
     // Dependency injection
-    compile "org.koin:koin-android:$koinVersion"
-    testCompile "org.koin:koin-test:$koinVersion"
+    implementation "org.koin:koin-android:$koinVersion"
+    testImplementation "org.koin:koin-test:$koinVersion"
 
     // ReactiveX
-    compile "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
-    compile "io.reactivex.rxjava2:rxkotlin:$rxKotlinVersion"
-    compile "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
-    compile "com.jakewharton.rxbinding2:rxbinding:$rxBindingVersion"
+    implementation "io.reactivex.rxjava2:rxjava:$rxJavaVersion"
+    implementation "io.reactivex.rxjava2:rxkotlin:$rxKotlinVersion"
+    implementation "io.reactivex.rxjava2:rxandroid:$rxAndroidVersion"
+    implementation "com.jakewharton.rxbinding2:rxbinding:$rxBindingVersion"
 
     // Parcel
-    compile "nz.bradcampbell:paperparcel:$paperParcelVersion"
-    compile "nz.bradcampbell:paperparcel-kotlin:$paperParcelVersion"
+    implementation "nz.bradcampbell:paperparcel:$paperParcelVersion"
+    implementation "nz.bradcampbell:paperparcel-kotlin:$paperParcelVersion"
     kapt "nz.bradcampbell:paperparcel-compiler:$paperParcelVersion"
 
     // Network
-    compile "com.squareup.retrofit2:retrofit:$retrofitVersion"
-    compile "com.squareup.retrofit2:converter-gson:$retrofitVersion"
-    compile "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
-    compile "com.squareup.okhttp3:logging-interceptor:$okhttpVersion"
-    compile "com.facebook.fresco:fresco:$frescoVersion"
+    implementation "com.squareup.retrofit2:retrofit:$retrofitVersion"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofitVersion"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofitVersion"
+    implementation "com.squareup.okhttp3:logging-interceptor:$okhttpVersion"
+    implementation "com.facebook.fresco:fresco:$frescoVersion"
 
-    testCompile "junit:junit:$junitVersion"
-    testCompile "junit:junit:$junitVersion"
-    testCompile "org.mockito:mockito-all:$mockitoVersion"
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "junit:junit:$junitVersion"
+    testImplementation "org.mockito:mockito-all:$mockitoVersion"
 
-    androidTestCompile("com.android.support.test.espresso:espresso-core:$espressoVersion", {
+    androidTestImplementation("com.android.support.test.espresso:espresso-core:$espressoVersion", {
         exclude group: 'com.android.support', module: 'support-annotations'
     })
 }

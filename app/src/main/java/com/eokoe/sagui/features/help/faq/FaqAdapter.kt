@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import com.eokoe.sagui.R
 import com.eokoe.sagui.extensions.collapse
 import com.eokoe.sagui.extensions.expand
-import com.eokoe.sagui.extensions.isVisible
+import com.eokoe.sagui.extensions.rotate
 import com.eokoe.sagui.features.base.view.RecyclerViewAdapter
 import kotlinx.android.synthetic.main.item_faq.view.*
 
@@ -34,12 +34,16 @@ class FaqAdapter : RecyclerViewAdapter<FaqAdapter.Item, FaqAdapter.ItemViewHolde
 
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         init {
-            itemView.setOnClickListener {
-                if (adapterPosition >= 0) {
-                    if (itemView.tvFaqAnswer.isVisible) {
-                        itemView.tvFaqAnswer.collapse()
-                    } else {
-                        itemView.tvFaqAnswer.expand()
+            itemView.run {
+                setOnClickListener {
+                    if (adapterPosition >= 0) {
+                        if (tvFaqAnswer.isShown) {
+                            tvFaqAnswer.collapse()
+                            ivArrow.rotate(90f, 0f, 200)
+                        } else {
+                            tvFaqAnswer.expand()
+                            ivArrow.rotate(0f, 90f, 200)
+                        }
                     }
                 }
             }

@@ -7,7 +7,6 @@ import android.content.ComponentName
 import android.content.Context
 import android.os.Build
 import com.eokoe.sagui.services.JobSchedulerService
-import com.eokoe.sagui.services.Retry
 import com.eokoe.sagui.utils.Job
 
 /**
@@ -15,7 +14,7 @@ import com.eokoe.sagui.utils.Job
  * @since 03/10/17
  */
 @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-class UploadFilesRetryLollipop : Retry {
+class UploadFilesRetryLollipop : UploadFilesRetry {
     override fun schedule(context: Context) {
         val jobScheduler = context.getSystemService(Context.JOB_SCHEDULER_SERVICE) as JobScheduler
         val builder = JobInfo.Builder(Job.UPLOAD_FILES_RETRY,

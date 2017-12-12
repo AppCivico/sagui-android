@@ -51,8 +51,8 @@ class PendenciesAdapter : RecyclerViewAdapter<Pendency, RecyclerView.ViewHolder>
         }
 
         fun bind(pendency: Pendency) {
-            with(itemView) {
-                tvTitle.text = "Apontamento não enviado"
+            itemView.run {
+                tvTitle.text = context.getString(R.string.complaint_not_sent)
                 tvDescription.text = pendency.message
             }
         }

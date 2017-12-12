@@ -13,7 +13,6 @@ import com.eokoe.sagui.data.entities.Complaint
 import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.entities.LatLong
 import com.eokoe.sagui.extensions.invisibleSlidingBottom
-import com.eokoe.sagui.extensions.isVisible
 import com.eokoe.sagui.extensions.setup
 import com.eokoe.sagui.extensions.showSlidingTop
 import com.eokoe.sagui.features.base.view.BaseActivityNavDrawer
@@ -204,7 +203,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
     // region Box details
     private fun hideBoxDetails(): Boolean {
         complaintSelected = null
-        if (rlBoxComplaint.isVisible) {
+        if (rlBoxComplaint.isShown) {
             rlBoxComplaint.invisibleSlidingBottom()
             return true
         }
@@ -216,7 +215,7 @@ class ComplaintsActivity : BaseActivityNavDrawer(), OnMapReadyCallback,
             complaintSelected = complaint.id
             map.animateCamera(CameraUpdateFactory.newLatLng(complaint.location!!.toLatLng()))
             populateDetails(complaint)
-            if (!rlBoxComplaint.isVisible) {
+            if (!rlBoxComplaint.isShown) {
                 rlBoxComplaint.showSlidingTop()
             }
         }

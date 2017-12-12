@@ -38,7 +38,7 @@ class AssetsAdapter : RecyclerViewAdapter<Asset, RecyclerView.ViewHolder>() {
         }
 
         fun bind(asset: Asset) {
-            with(itemView) {
+            itemView.run {
                 ivPlay.hide()
                 ivThumbnail.hierarchy.setPlaceholderImage(null)
                 ivThumbnail.setImageURI("")

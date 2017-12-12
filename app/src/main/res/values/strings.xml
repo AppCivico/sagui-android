@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Sagui</string>
+    <string name="app_name">SAGUI</string>
 
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
@@ -95,4 +95,5 @@
     <string name="reporting_problem">Reportando problema…</string>
     <string name="visualize">Visualizar</string>
     <string name="remove">Remover</string>
+    <string name="complaint_not_sent">Apontamento não enviado</string>
 </resources>

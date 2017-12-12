@@ -8,9 +8,7 @@
         <item name="android:windowDrawsSystemBarBackgrounds">true</item>
     </style>
 
-    <style name="AppTheme.TransparentStatus" parent="AppTheme.FullScreen">
-        <item name="android:statusBarColor">@android:color/transparent</item>
-    </style>
+    <style name="AppTheme.TransparentStatus" parent="AppTheme.FullScreen"/>
 
     <style name="Button.Action" parent="Button">
         <item name="android:textColor">@android:color/white</item>

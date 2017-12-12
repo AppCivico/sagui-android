@@ -47,17 +47,16 @@ class FetchAddressService : IntentService(TAG) {
             val address = addresses!![0]
             val addressFragments = ArrayList<String>()
             (0..address.maxAddressLineIndex)
-                    .mapTo(addressFragments) {
-                        address.getAddressLine(it)
-                    }
+                    .mapTo(addressFragments) { address.getAddressLine(it) }
             deliverResultToReceiver(SUCCESS_RESULT,
                     TextUtils.join(System.getProperty("line.separator"), addressFragments))
         }
     }
 
     private fun deliverResultToReceiver(resultCode: Int, message: String) {
-        val bundle = Bundle()
-        bundle.putString(RESULT_DATA_KEY, message)
+        val bundle = Bundle().also {
+            it.putString(RESULT_DATA_KEY, message)
+        }
         receiver?.send(resultCode, bundle)
     }
 
@@ -69,12 +68,10 @@ class FetchAddressService : IntentService(TAG) {
         val SUCCESS_RESULT = 0
         val FAILURE_RESULT = 1
 
-        fun getIntent(context: Context, receiver: ResultReceiver, location: LatLong): Intent {
-            val intent = Intent(context, FetchAddressService::class.java)
-            intent.putExtra(RECEIVER, receiver)
-            intent.putExtra(LOCATION_DATA_EXTRA, location)
-            intent.addFlags(Intent.FLAG_RECEIVER_REPLACE_PENDING)
-            return intent
-        }
+        fun getIntent(context: Context, receiver: ResultReceiver, location: LatLong): Intent =
+            Intent(context, FetchAddressService::class.java)
+                    .putExtra(RECEIVER, receiver)
+                    .putExtra(LOCATION_DATA_EXTRA, location)
+                    .addFlags(Intent.FLAG_RECEIVER_REPLACE_PENDING)
     }
 }

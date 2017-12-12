@@ -5,10 +5,7 @@ import android.os.Build
 import android.support.annotation.RequiresApi
 import android.view.View
 import android.view.ViewGroup
-import android.view.animation.AccelerateDecelerateInterpolator
-import android.view.animation.Animation
-import android.view.animation.DecelerateInterpolator
-import android.view.animation.Transformation
+import android.view.animation.*
 import com.eokoe.sagui.widgets.listeners.VisibilityAnimatorListener
 
 /**
@@ -27,15 +24,8 @@ fun View.invisible() {
     visibility = View.INVISIBLE
 }
 
-val View.isVisible: Boolean
-    get() = visibility == View.VISIBLE
-
 fun View.showAnimated() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-        showAnimated(VisibilityAnimatorListener.show(this))
-    } else {
-        show()
-    }
+    showAnimated(VisibilityAnimatorListener.show(this))
 }
 
 @RequiresApi(Build.VERSION_CODES.HONEYCOMB_MR1)
@@ -44,31 +34,20 @@ fun View.showAnimated(listener: Animator.AnimatorListener) {
 }
 
 fun View.showSlidingTop() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-        showSlidingTop(VisibilityAnimatorListener.show(this))
-    } else {
-        show()
-    }
+    showSlidingTop(VisibilityAnimatorListener.show(this))
 }
 
 @RequiresApi(Build.VERSION_CODES.HONEYCOMB_MR1)
 fun View.showSlidingTop(listener: Animator.AnimatorListener) {
-    var parent = this.parent as? View
-    if (parent == null) {
-        parent = this
-    }
+    val parent = this.parent as? View ?: this
     parent.post {
         changeVisibilitySliding(fromAlpha = 0f, toAlpha = 1f,
-                fromY = (parent!!.height - top).toFloat(), toY = 0f, listener = listener)
+                fromY = (parent.height - top).toFloat(), toY = 0f, listener = listener)
     }
 }
 
 fun View.hideAnimated() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-        hideAnimated(VisibilityAnimatorListener.hide(this))
-    } else {
-        hide()
-    }
+    hideAnimated(VisibilityAnimatorListener.hide(this))
 }
 
 @RequiresApi(Build.VERSION_CODES.HONEYCOMB_MR1)
@@ -77,82 +56,80 @@ fun View.hideAnimated(listener: Animator.AnimatorListener) {
 }
 
 fun View.hideSlidingBottom() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-        hideSlidingBottom(VisibilityAnimatorListener.hide(this))
-    } else {
-        hide()
-    }
+    hideSlidingBottom(VisibilityAnimatorListener.hide(this))
 }
 
 fun View.invisibleSlidingBottom() {
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1) {
-        hideSlidingBottom(VisibilityAnimatorListener.invisible(this))
-    } else {
-        hide()
-    }
+    hideSlidingBottom(VisibilityAnimatorListener.invisible(this))
 }
 
 @RequiresApi(Build.VERSION_CODES.HONEYCOMB_MR1)
 fun View.hideSlidingBottom(listener: Animator.AnimatorListener) {
-    post {
-        changeVisibilitySliding(fromAlpha = 1f, toAlpha = 0f,
-                fromY = 0f, toY = height.toFloat(), listener = listener)
+    measure()
+    changeVisibilitySliding(fromAlpha = 1f, toAlpha = 0f,
+            fromY = 0f, toY = measuredHeight.toFloat(), listener = listener)
+}
+
+fun View.measure() {
+    val widthSpec = if (layoutParams.width == ViewGroup.LayoutParams.MATCH_PARENT) {
+        View.MeasureSpec.makeMeasureSpec((parent as View).width, View.MeasureSpec.EXACTLY)
+    } else {
+        layoutParams.width
     }
+    val heightSpec = if (layoutParams.height == ViewGroup.LayoutParams.MATCH_PARENT) {
+        View.MeasureSpec.makeMeasureSpec((parent as View).height, View.MeasureSpec.EXACTLY)
+    } else {
+        layoutParams.height
+    }
+    measure(widthSpec, heightSpec)
 }
 
 fun View.expand() {
-    post {
-        measure(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT)
-        val targetHeight = measuredHeight
+    measure()
+    val targetHeight = measuredHeight
 
-        layoutParams.height = 1
-        visibility = View.VISIBLE
+    layoutParams.height = 1
+    visibility = View.VISIBLE
 
-        val animation = object : Animation() {
-            override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-                layoutParams.height = if (interpolatedTime == 1f)
-                    ViewGroup.LayoutParams.WRAP_CONTENT
-                else
-                    (targetHeight * interpolatedTime).toInt()
-                requestLayout()
-            }
-
-            override fun willChangeBounds() = true
+    val animation = object : Animation() {
+        override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
+            layoutParams.height = if (interpolatedTime == 1f)
+                ViewGroup.LayoutParams.WRAP_CONTENT
+            else
+                (targetHeight * interpolatedTime).toInt()
+            requestLayout()
         }
-        animation.duration = targetHeight / context.resources.displayMetrics.density.toLong()
-        startAnimation(animation)
+
+        override fun willChangeBounds() = true
     }
+    animation.duration = ((targetHeight / context.resources.displayMetrics.density.toLong()) * 1f).toLong()
+    startAnimation(animation)
 }
 
 fun View.collapse() {
-    post {
-        val initialHeight = measuredHeight
-
-        val animation = object : Animation() {
-            override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
-                if (interpolatedTime == 1f) {
-                    visibility = View.GONE
-                } else {
-                    layoutParams.height = initialHeight - (initialHeight * interpolatedTime).toInt()
-                    requestLayout()
-                }
+    val initialHeight = measuredHeight
+    val animation = object : Animation() {
+        override fun applyTransformation(interpolatedTime: Float, t: Transformation?) {
+            if (interpolatedTime == 1f) {
+                visibility = View.GONE
+            } else {
+                layoutParams.height = initialHeight - (initialHeight * interpolatedTime).toInt()
+                requestLayout()
             }
-
-            override fun willChangeBounds() = true
         }
 
-        animation.duration = initialHeight / context.resources.displayMetrics.density.toLong()
-        startAnimation(animation)
+        override fun willChangeBounds() = true
     }
+
+    animation.duration = ((initialHeight / context.resources.displayMetrics.density.toLong()) * 1f).toLong()
+    startAnimation(animation)
 }
 
 @RequiresApi(Build.VERSION_CODES.HONEYCOMB_MR1)
 fun View.changeVisibilityAnimated(
         duration: Long = resources.getInteger(android.R.integer.config_shortAnimTime).toLong(),
         fromAlpha: Float? = null, toAlpha: Float, listener: Animator.AnimatorListener) {
-    if (fromAlpha != null) {
-        alpha = fromAlpha
-    }
+    alpha = fromAlpha ?: alpha
     animate().alpha(toAlpha)
             .translationY(0f)
             .setDuration(duration)
@@ -165,10 +142,7 @@ fun View.changeVisibilitySliding(
         duration: Long = resources.getInteger(android.R.integer.config_mediumAnimTime).toLong(),
         fromAlpha: Float? = null, toAlpha: Float, fromY: Float, toY: Float,
         listener: Animator.AnimatorListener) {
-    if (fromAlpha != null) {
-        alpha = fromAlpha
-    }
-
+    alpha = fromAlpha ?: alpha
     translationY = fromY
     animate().alpha(toAlpha)
             .translationY(toY)
@@ -185,3 +159,19 @@ fun View.disable() {
     isEnabled = false
 }
 
+fun View.rotate(fromDegrees: Float, toDegrees: Float, duration: Long = 300) {
+    val animSet = AnimationSet(true)
+    animSet.interpolator = DecelerateInterpolator()
+    animSet.fillAfter = true
+    animSet.isFillEnabled = true
+
+    val animRotate = RotateAnimation(fromDegrees, toDegrees,
+            RotateAnimation.RELATIVE_TO_SELF, 0.5f,
+            RotateAnimation.RELATIVE_TO_SELF, 0.5f)
+
+    animRotate.duration = duration
+    animRotate.fillAfter = true
+    animSet.addAnimation(animRotate)
+
+    startAnimation(animSet)
+}

@@ -340,8 +340,8 @@ class SaguiModelImpl(
     override fun getAssetsPendingUpload(): Observable<List<Asset>> {
         return Observable
                 .merge(
-                        pendingFilesFrom(Complaint::class.java),
-                        pendingFilesFrom(Confirmation::class.java)
+                        pendingFilesFrom<Complaint>(),
+                        pendingFilesFrom<Confirmation>()
                 )
                 .flatMapIterable { it }
                 .flatMapIterable { it.files }
@@ -350,10 +350,10 @@ class SaguiModelImpl(
                 .toObservable()
     }
 
-    private fun <T : HasFiles> pendingFilesFrom(clazz: Class<T>): Observable<List<HasFiles>> {
+    private inline fun <reified T : HasFiles> pendingFilesFrom(): Observable<List<HasFiles>> {
         return Observable.create<List<HasFiles>> { emitter ->
             Realm.getDefaultInstance().use { realm ->
-                val result = realm.where(clazz)
+                val result = realm.where(T::class.java)
                         .equalTo("files.sent", false)
                         .findAll()
                 if (result != null) {

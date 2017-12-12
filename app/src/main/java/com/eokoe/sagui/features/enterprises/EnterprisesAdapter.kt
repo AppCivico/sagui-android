@@ -52,7 +52,7 @@ class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHold
 
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(enterprise: Enterprise) {
-            with(itemView) {
+            itemView.run {
                 val cover = enterprise.images.firstOrNull()
                 imgEnterprise.setImageURI(cover?.thumbnail ?: cover?.remotePath)
                 tvEnterpriseName.text = enterprise.name
@@ -79,7 +79,7 @@ class EnterprisesAdapter : RecyclerViewAdapter<Enterprise, RecyclerView.ViewHold
 
     inner class ErrorViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(error: String?, retryClickListener: OnRetryClickListener?) {
-            with(itemView) {
+            itemView.run {
                 tvError.text = error
                 setOnClickListener {
                     retryClickListener?.retry()

@@ -23,6 +23,7 @@
     </style>
 
     <style name="AppTheme.TransparentStatus" parent="AppTheme.NoActionBar">
+        <item name="android:windowContentOverlay">@null</item>
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar"/>

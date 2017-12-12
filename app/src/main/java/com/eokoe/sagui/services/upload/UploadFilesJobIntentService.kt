@@ -2,15 +2,12 @@ package com.eokoe.sagui.services.upload
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.support.v4.app.JobIntentService
 import com.eokoe.sagui.data.model.SaguiModel
-import com.eokoe.sagui.data.model.impl.SaguiModelImpl
-import com.eokoe.sagui.data.net.ServiceGenerator
-import com.eokoe.sagui.data.net.services.SaguiService
-import com.eokoe.sagui.services.Retry
 import com.eokoe.sagui.utils.Job
 import com.eokoe.sagui.utils.LogUtil
+import org.koin.android.ext.android.inject
+import org.koin.standalone.releaseContext
 
 /**
  * @author Pedro Silva
@@ -18,18 +15,8 @@ import com.eokoe.sagui.utils.LogUtil
  */
 class UploadFilesJobIntentService : JobIntentService() {
 
-    private lateinit var saguiModel: SaguiModel
-    private lateinit var retry: Retry
-
-    override fun onCreate() {
-        super.onCreate()
-        saguiModel = SaguiModelImpl(applicationContext, ServiceGenerator.getService(SaguiService::class.java))
-        retry = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
-            UploadFilesRetryLollipop()
-        } else {
-            UploadFilesRetryDefault()
-        }
-    }
+    private val saguiModel by inject<SaguiModel>()
+    private val retry by inject<UploadFilesRetry>()
 
     override fun onHandleWork(intent: Intent) {
         saguiModel.getAssetsPendingUpload()
@@ -42,12 +29,17 @@ class UploadFilesJobIntentService : JobIntentService() {
                             if (count > 0) retry::schedule
                             else retry::cancel
                     call(applicationContext)
-                }, { err ->
-                    LogUtil.error(this, err)
-                })
+                }, { err -> LogUtil.error(this, err) })
+    }
+
+    override fun onDestroy() {
+        releaseContext(TAG)
+        super.onDestroy()
     }
 
     companion object {
+        val TAG = UploadFilesJobIntentService::class.simpleName!!
+
         fun enqueueWork(context: Context) {
             enqueueWork(context, UploadFilesJobIntentService::class.java, Job.UPLOAD_FILES,
                     Intent(context, UploadFilesJobIntentService::class.java))

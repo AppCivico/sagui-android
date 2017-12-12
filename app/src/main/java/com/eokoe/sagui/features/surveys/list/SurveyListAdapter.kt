@@ -55,7 +55,7 @@ class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder>()
 
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(survey: Survey) {
-            with(itemView) {
+            itemView.run {
                 /*val bgColor = ContextCompat.getColor(context,
                         if (!survey.hasAnswer) R.color.bg_survey
                         else R.color.bg_survey_answered
@@ -71,7 +71,7 @@ class SurveyListAdapter : RecyclerViewAdapter<Survey, RecyclerView.ViewHolder>()
 
     inner class ErrorViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(error: String?, retryClickListener: OnRetryClickListener?) {
-            with(itemView) {
+            itemView.run {
                 tvError.text = error
                 setOnClickListener {
                     retryClickListener?.retry()

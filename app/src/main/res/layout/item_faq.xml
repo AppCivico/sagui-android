@@ -7,20 +7,20 @@
     android:layout_height="wrap_content"
     android:layout_marginTop="16dp"
     android:background="#f7f7f7"
-    android:clickable="true"
-    android:paddingLeft="16dp"
-    android:paddingRight="16dp">
+    android:clickable="true">
 
     <com.eokoe.sagui.widgets.CustomTextView
         android:id="@+id/tvTitle"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp"
         android:layout_toLeftOf="@+id/ivArrow"
         android:layout_toStartOf="@+id/ivArrow"
         android:paddingBottom="16dp"
         android:paddingTop="16dp"
         android:textStyle="bold"
-        tools:text="Lorem ipsum?"/>
+        tools:text="Lorem ipsum?" />
 
     <ImageView
         android:id="@id/ivArrow"
@@ -30,9 +30,11 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentRight="true"
         android:layout_alignTop="@id/tvTitle"
+        android:layout_marginEnd="16dp"
         android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:layout_marginStart="16dp"
-        app:srcCompat="@drawable/ic_arrow_right"/>
+        app:srcCompat="@drawable/ic_arrow_right" />
 
     <com.eokoe.sagui.widgets.CustomTextView
         android:id="@+id/tvFaqAnswer"
@@ -40,7 +42,10 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/tvTitle"
         android:clickable="true"
+        android:focusable="true"
         android:paddingBottom="16dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
         android:visibility="gone"
-        tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ultrices ante nec tristique placerat. Mauris lacus elit, sagittis sit amet neque vel, malesuada ultrices elit. Praesent hendrerit viverra elit sit amet accumsan. Phasellus interdum magna ex, nec efficitur arcu suscipit ultrices. Suspendisse sit amet magna eget lectus dignissim vulputate. "/>
+        tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris ultrices ante nec tristique placerat. Mauris lacus elit, sagittis sit amet neque vel, malesuada ultrices elit. Praesent hendrerit viverra elit sit amet accumsan. Phasellus interdum magna ex, nec efficitur arcu suscipit ultrices. Suspendisse sit amet magna eget lectus dignissim vulputate. " />
 </RelativeLayout>

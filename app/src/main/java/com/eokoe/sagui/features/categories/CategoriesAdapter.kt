@@ -47,7 +47,7 @@ class CategoriesAdapter : RecyclerViewAdapter<Category, RecyclerView.ViewHolder>
 
     inner class ItemViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(category: Category) {
-            with(itemView) {
+            itemView.run {
                 tvSymbol.text = category.symbol
                 tvCategoryName.text = category.name
                 setOnClickListener {
@@ -59,7 +59,7 @@ class CategoriesAdapter : RecyclerViewAdapter<Category, RecyclerView.ViewHolder>
 
     inner class ErrorViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         fun bind(error: String?, retryClickListener: OnRetryClickListener?) {
-            with(itemView) {
+            itemView.run {
                 tvError.text = error
                 setOnClickListener {
                     retryClickListener?.retry()

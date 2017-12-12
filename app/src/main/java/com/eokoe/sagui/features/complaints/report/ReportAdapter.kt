@@ -131,7 +131,7 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
 
     inner class ThumbnailsViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         init {
-            with(itemView) {
+            itemView.run {
                 rvThumbnails.setHasFixedSize(true)
                 val adapter = ThumbnailAdapter()
                 adapter.onItemClickListener = object : ThumbnailAdapter.OnItemClickListener {
@@ -160,7 +160,7 @@ class ReportAdapter : RecyclerViewAdapter<ReportAdapter.Item, RecyclerView.ViewH
         }
 
         fun bind(item: Item) {
-            with(itemView) {
+            itemView.run {
                 ivActionIcon.setImageResource(item.icon!!)
                 if (item.value == null) {
                     tvActionName.setText(item.actionName!!)

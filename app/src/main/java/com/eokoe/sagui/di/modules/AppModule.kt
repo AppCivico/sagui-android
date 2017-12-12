@@ -1,5 +1,6 @@
 package com.eokoe.sagui.di.modules
 
+import android.os.Build
 import com.eokoe.sagui.data.model.SaguiModel
 import com.eokoe.sagui.data.model.impl.SaguiModelImpl
 import com.eokoe.sagui.data.net.ServiceGenerator
@@ -41,6 +42,10 @@ import com.eokoe.sagui.features.surveys.survey.SurveyPresenter
 import com.eokoe.sagui.features.surveys.survey.note.NoteActivity
 import com.eokoe.sagui.features.surveys.survey.note.NoteContract
 import com.eokoe.sagui.features.surveys.survey.note.NotePresenter
+import com.eokoe.sagui.services.upload.UploadFilesJobIntentService
+import com.eokoe.sagui.services.upload.UploadFilesRetry
+import com.eokoe.sagui.services.upload.UploadFilesRetryDefault
+import com.eokoe.sagui.services.upload.UploadFilesRetryLollipop
 import org.koin.android.module.AndroidModule
 
 /**
@@ -50,7 +55,7 @@ import org.koin.android.module.AndroidModule
 class AppModule : AndroidModule() {
     override fun context() = applicationContext {
         provide { SaguiModelImpl(get(), get()) } bind SaguiModel::class
-        provide { ServiceGenerator.getService(SaguiService::class.java) } bind SaguiService::class
+        provide { ServiceGenerator.getService<SaguiService>() } bind SaguiService::class
 
         context(CategoriesActivity.TAG) {
             provide { CategoriesPresenter(get()) } bind CategoriesContract.Presenter::class
@@ -105,6 +110,16 @@ class AppModule : AndroidModule() {
 
         context(SurveyActivity.TAG) {
             provide { SurveyPresenter(get()) } bind SurveyContract.Presenter::class
+        }
+
+        context(UploadFilesJobIntentService.TAG) {
+            provide {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    UploadFilesRetryLollipop()
+                } else {
+                    UploadFilesRetryDefault()
+                }
+            } bind UploadFilesRetry::class
         }
     }
 }

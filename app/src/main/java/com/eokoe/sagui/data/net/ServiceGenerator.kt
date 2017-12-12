@@ -21,7 +21,8 @@ object ServiceGenerator {
     lateinit var BASE_URL: String
         private set
 
-    private lateinit var retrofitBuilder: Retrofit.Builder
+    lateinit var retrofitBuilder: Retrofit.Builder
+        private set
 
     fun init(context: Context, baseUrl: String) {
         this.BASE_URL = baseUrl
@@ -53,5 +54,5 @@ object ServiceGenerator {
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
     }
 
-    fun <T> getService(serviceClass: Class<T>): T = retrofitBuilder.build().create(serviceClass)
+    inline fun <reified T> getService(): T = retrofitBuilder.build().create(T::class.java)
 }

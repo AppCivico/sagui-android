@@ -17,7 +17,6 @@ import com.eokoe.sagui.data.entities.Enterprise
 import com.eokoe.sagui.data.entities.LatLong
 import com.eokoe.sagui.data.exceptions.SaguiException
 import com.eokoe.sagui.extensions.hideSlidingBottom
-import com.eokoe.sagui.extensions.isVisible
 import com.eokoe.sagui.extensions.setup
 import com.eokoe.sagui.extensions.showSlidingTop
 import com.eokoe.sagui.features.base.view.BaseActivity
@@ -118,7 +117,7 @@ class PinActivity : BaseActivity(), OnMapReadyCallback,
         map.setup(this)
 
         map.setOnCameraMoveStartedListener {
-            if (llBoxAddress.isVisible) {
+            if (llBoxAddress.isShown) {
                 llBoxAddress.hideSlidingBottom()
             }
         }

@@ -97,7 +97,7 @@ class SurveyActivity : BaseActivity(),
     }
 
     override fun onBackPressed() {
-        if (!rlQuestionsBox.isVisible) {
+        if (!rlQuestionsBox.isShown) {
             super.onBackPressed()
         } else {
             presenter.back()
@@ -106,7 +106,7 @@ class SurveyActivity : BaseActivity(),
 
     override fun showQuestion(question: Question, answer: Answer?) {
         questionBoxOpened = true
-        if (!rlQuestionsBox.isVisible) {
+        if (!rlQuestionsBox.isShown) {
             backdrop.showAnimated()
             rlQuestionsBox.showSlidingTop()
             window.statusBarOverlay()

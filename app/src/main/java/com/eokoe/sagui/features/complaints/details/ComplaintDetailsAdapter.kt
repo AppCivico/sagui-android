@@ -67,7 +67,7 @@ class ComplaintDetailsAdapter : RecyclerViewAdapter<ComplaintDetailsAdapter.Item
 
     inner class DetailsViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(complaint: Complaint) {
-            with(itemView) {
+            itemView.run {
                 val resources = context.resources
                 tvTitle.text = complaint.title
                 tvCategoryName.text = complaint.category?.name
@@ -87,7 +87,7 @@ class ComplaintDetailsAdapter : RecyclerViewAdapter<ComplaintDetailsAdapter.Item
 
     inner class CommentViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         fun bind(comment: Comment) {
-            with(itemView) {
+            itemView.run {
                 tvCommentDate.text = comment.createdAt?.format("dd.MM.yyyy")
                 tvComment.text = comment.content
             }
@@ -96,7 +96,7 @@ class ComplaintDetailsAdapter : RecyclerViewAdapter<ComplaintDetailsAdapter.Item
 
     inner class AssetsViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
         init {
-            with(itemView) {
+            itemView.run {
                 rvAssets.setHasFixedSize(true)
                 val assetsAdapter = AssetsAdapter()
                 assetsAdapter.onItemClickListener = onImageClickListener

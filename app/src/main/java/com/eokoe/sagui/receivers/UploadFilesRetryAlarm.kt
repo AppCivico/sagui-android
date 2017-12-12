@@ -20,7 +20,9 @@ class UploadFilesRetryAlarm : BroadcastReceiver() {
     companion object {
         fun startAlarm(context: Context) {
             val alarmMgr = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
-            alarmMgr.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (1000 * 60 * 60), getPendingIntent(context))
+            alarmMgr.set(AlarmManager.RTC_WAKEUP,
+                    System.currentTimeMillis() + (1000 * 60 * 60),
+                    getPendingIntent(context))
         }
 
         fun cancelAlarm(context: Context) {
@@ -28,7 +30,7 @@ class UploadFilesRetryAlarm : BroadcastReceiver() {
             alarmMgr.cancel(getPendingIntent(context))
         }
 
-        fun getPendingIntent(context: Context): PendingIntent {
+        private fun getPendingIntent(context: Context): PendingIntent {
             val intent = Intent(context, UploadFilesRetryAlarm::class.java)
             return PendingIntent.getBroadcast(context, Job.UPLOAD_FILES_RETRY, intent, PendingIntent.FLAG_UPDATE_CURRENT)
         }
