@@ -6,56 +6,64 @@ apply plugin: 'realm-android'
 apply plugin: 'io.fabric'
 
 // App version
-ext.versionMajor = 0
-ext.versionMinor = 1
-ext.versionPatch = 6
-ext.jenkinsBuildNumber = Integer.valueOf(System.env.BUILD_NUMBER ?: 0)
+ext {
+    versionMajor = 0
+    versionMinor = 1
+    versionPatch = 6
+    jenkinsBuildNumber = Integer.valueOf(System.env.BUILD_NUMBER ?: 0)
+}
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
     buildToolsVersion rootProject.ext.buildToolsVersion
     defaultConfig {
-        applicationId "com.eokoe.sagui"
+        applicationId rootProject.ext.applicationId
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode computeVersionCode()
         versionName computeVersionName()
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         vectorDrawables.useSupportLibrary = true
+        multiDexEnabled true
 
-        def filesAuthorityValue = getFilesAuthority(applicationId, applicationIdSuffix)
-        def apiBaseUrl = System.getenv("SAGUI_API_BASE_URL") ?: API_BASE_URL
         manifestPlaceholders = [
                 fabricApiKey: System.getenv("FABRIC_API_KEY") ?: FABRIC_API_KEY,
                 mapsApiKey: System.getenv("SAGUI_MAPS_API_KEY") ?: MAPS_API_KEY,
-                filesAuthority: filesAuthorityValue,
         ]
-        buildConfigField "String", "API_BASE_URL", "\"${apiBaseUrl}\""
-
-        multiDexEnabled true
     }
     flavorDimensions 'default'
     productFlavors {
         dev {
             applicationIdSuffix = '.dev'
             versionNameSuffix "-DEV"
-            manifestPlaceholders.filesAuthority = getFilesAuthority(applicationId, applicationIdSuffix)
+            ext.apiBaseUrl = System.getenv("SAGUI_API_BASE_URL") ?: API_BASE_URL_DEV
         }
         staging {
             applicationIdSuffix = '.staging'
             versionNameSuffix "-STAGING"
-            manifestPlaceholders.filesAuthority = getFilesAuthority(applicationId, applicationIdSuffix)
+            ext.apiBaseUrl = System.getenv("SAGUI_API_BASE_URL") ?: API_BASE_URL_HOM
         }
-        prod {}
+        prod {
+            ext.apiBaseUrl = System.getenv("SAGUI_API_BASE_URL") ?: API_BASE_URL_PROD
+        }
     }
+
+    applicationVariants.all { variant ->
+        def filesAuthority = applicationId + ".files"
+        def flavorExt = variant.productFlavors[0].ext
+        def apiBaseUrl = flavorExt.has('apiBaseUrl') ? flavorExt.apiBaseUrl : ''
+
+        variant.mergedFlavor.manifestPlaceholders.filesAuthority = filesAuthority
+        buildConfigField "String", "FILES_AUTHORITY", "\"${filesAuthority}\""
+        buildConfigField "String", "API_BASE_URL", "\"${apiBaseUrl}\""
+    }
+
     buildTypes {
-        debug {
-            buildConfigField "String", "FILES_AUTHORITY", "\"${manifestPlaceholders.filesAuthority}\""
-        }
+        debug {}
+
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            buildConfigField "String", "FILES_AUTHORITY", "\"${manifestPlaceholders.filesAuthority}\""
         }
     }
     compileOptions {
@@ -120,16 +128,10 @@ dependencies {
 
 apply plugin: 'com.google.gms.google-services'
 
-@SuppressWarnings("GrMethodMayBeStatic")
 def computeVersionName() {
-    return "${versionMajor}.${versionMinor}.${versionPatch}"
+    return "${ext.versionMajor}.${ext.versionMinor}.${ext.versionPatch}"
 }
 
-@SuppressWarnings("GrMethodMayBeStatic")
 def computeVersionCode() {
-    return (versionMajor * 100_000) + (versionMinor * 10_000) + (versionPatch * 1_000) + jenkinsBuildNumber
-}
-
-static def getFilesAuthority(applicationId, applicationIdSuffix) {
-    return applicationId + applicationIdSuffix + ".files"
+    return (ext.versionMajor * 100_000) + (ext.versionMinor * 10_000) + (ext.versionPatch * 1_000) + ext.jenkinsBuildNumber
 }

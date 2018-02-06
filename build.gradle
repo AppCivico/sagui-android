@@ -35,6 +35,8 @@ task clean(type: Delete) {
 }
 
 ext {
+    applicationId = "com.eokoe.sagui"
+
     buildToolsVersion = '26.0.2'
     compileSdkVersion = 26
     minSdkVersion = 16
@@ -45,12 +47,12 @@ ext {
     crashlyticsVersion = '2.6.8@aar'
     crashlyticsNdkVersion = '1.1.6@aar'
 
-    supportLibraryVersion = '27.0.1'
+    supportLibraryVersion = '27.0.2'
     constraintLayoutVersion = '1.0.2'
-    playServicesVersion = '11.6.0'
+    playServicesVersion = '11.8.0'
     mapUtilsVersion = '0.5+'
 
-    koinVersion = '0.5.2'
+    koinVersion = '0.6.0'
     rxJavaVersion = '2.1.2'
     rxKotlinVersion = '2.0.3'
     rxAndroidVersion = '2.0.1'

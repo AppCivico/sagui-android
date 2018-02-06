@@ -2,7 +2,7 @@ package com.eokoe.sagui.di
 
 import android.app.Application
 import com.eokoe.sagui.di.modules.AppModule
-import org.koin.android.ext.android.startAndroidContext
+import org.koin.android.ext.android.startKoin
 
 /**
  * @author Pedro Silva
@@ -11,6 +11,6 @@ import org.koin.android.ext.android.startAndroidContext
 object AppInjector {
     @JvmStatic
     fun init(app: Application) {
-        app.startAndroidContext(app, listOf(AppModule()))
+        app.startKoin(app, listOf(AppModule()))
     }
 }

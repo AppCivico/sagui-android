@@ -14,12 +14,11 @@ import android.support.v7.app.AppCompatActivity
 import android.view.MenuItem
 import android.view.View
 import android.view.inputmethod.InputMethodManager
+import com.eokoe.sagui.extensions.releaseContext
 import com.eokoe.sagui.features.base.presenter.BasePresenter
 import com.eokoe.sagui.utils.LocationHelper
 import com.eokoe.sagui.utils.LogUtil
 import com.eokoe.sagui.widgets.dialog.AlertDialogFragment
-import org.koin.android.ext.android.getKoin
-import org.koin.standalone.releaseContext
 
 
 /**
@@ -53,9 +52,7 @@ abstract class BaseActivity : AppCompatActivity() {
     }
 
     override fun onPause() {
-        getKoin().beanRegistry.scopes
-                .firstOrNull { it.name == this::class.simpleName!! }
-                ?.let { releaseContext(it.name) }
+        releaseContext()
         super.onPause()
     }
 

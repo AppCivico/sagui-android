@@ -26,39 +26,40 @@ class FCMService : FirebaseMessagingService() {
 
     override fun onMessageReceived(remoteMessage: RemoteMessage) {
         LogUtil.startCrashlytics(this)
-        if (remoteMessage.data?.isNotEmpty() == true) {
-            remoteMessage.data.run {
-                val createdAt = Date().fromString(DATE_FORMAT, getValue("create_at"))
-                val notification = Notification(
-                        eventStr = getValue("event"),
-                        typeStr = getValue("type"),
-                        resourceId = getValue("id").toLowerCase(),
-                        message = getValue("message"),
-                        createdAt = createdAt
-                )
-                saveNotification(notification)
-            }
-        }
+        remoteMessage.data?.parseNotification()?.saveAndShow()
     }
 
-    private fun saveNotification(notification: Notification) {
-        saguiModel.saveNotification(notification)
+    private fun MutableMap<String, String>.parseNotification(): Notification? {
+        return if (isNotEmpty()) {
+            Notification(
+                    eventStr = getValue("event"),
+                    typeStr = getValue("type"),
+                    resourceId = getValue("id").toLowerCase(),
+                    message = getValue("message"),
+                    createdAt = Date().fromString(DATE_FORMAT, getValue("create_at"))
+            )
+        } else null
+    }
+
+    private fun Notification.saveAndShow() {
+        saguiModel.saveNotification(this)
                 .subscribe(
-                        { showNotification(notification) },
+                        { show() },
                         { LogUtil.error(this, it) }
                 )
     }
 
-    private fun showNotification(notification: Notification) {
+    private fun Notification.show() {
+        val context = applicationContext
         val intent = ComplaintDetailsActivity.getIntent(
-                this, notification.resourceId, notification.id!!, true)
-        val pendingIntent = PendingIntent.getActivity(this, 0, intent,
+                context, resourceId, id!!, true)
+        val pendingIntent = PendingIntent.getActivity(context, 0, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT)
 
-        val builder = NotificationCompat.Builder(this, notification.eventStr)
+        val builder = NotificationCompat.Builder(context, eventStr)
                 .setSmallIcon(R.mipmap.ic_launcher)
                 .setContentTitle(getString(R.string.app_name))
-                .setContentText(notification.message)
+                .setContentText(message)
                 .setContentIntent(pendingIntent)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)
                 .setVibrate(arrayOf(1000L, 500L, 1000L, 500L, 1000L).toLongArray())

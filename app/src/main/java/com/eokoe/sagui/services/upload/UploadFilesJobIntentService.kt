@@ -4,10 +4,10 @@ import android.content.Context
 import android.content.Intent
 import android.support.v4.app.JobIntentService
 import com.eokoe.sagui.data.model.SaguiModel
+import com.eokoe.sagui.extensions.releaseContext
 import com.eokoe.sagui.utils.Job
 import com.eokoe.sagui.utils.LogUtil
 import org.koin.android.ext.android.inject
-import org.koin.standalone.releaseContext
 
 /**
  * @author Pedro Silva
@@ -33,7 +33,7 @@ class UploadFilesJobIntentService : JobIntentService() {
     }
 
     override fun onDestroy() {
-        releaseContext(TAG)
+        releaseContext()
         super.onDestroy()
     }
 
